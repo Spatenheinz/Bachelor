@@ -1,0 +1,14 @@
+# Ignore everything
+*
+#Dont ignore
+!*/
+!/.gitignore
+!*.cs
+!*.csproj
+!*.tex
+!*.pdf
+!*.jpeg
+!*.jpg
+!*.png
+!*.svg
+!*.zip
