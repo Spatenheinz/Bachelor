@@ -1,0 +1,3 @@
+[submodule "sme"]
+	path = sme
+	url = https://github.com/kenkendk/sme.git
