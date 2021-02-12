@@ -1,0 +1,32 @@
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_COMPILER: pdflatex
+#+LATEX_HEADER: \input{baseHeader.tex}
+#+OPTIONS: toc:t
+#+OPTIONS: \n:nil
+
+#+TITLE: Crypto in SME for FPGA
+#+AUTHOR: Jacob Herbst (mwr148)
+#+LATEX_HEADER_EXTRA: \assignment{} \subtitle{} \date{12 06 2021} \advisor{Advisor: Kenneth Skovhede} \frontpage{}
+
+#+INCLUDE: "introduction.org"
+
+#+INCLUDE: "background.org"
+
+#+INCLUDE: "implementation.org"
+
+#+INCLUDE: "benchmarks.org"
+
+#+INCLUDE: "discussion.org"
+
+#+INCLUDE: "conclusion.org"
+
+# #bibliography
+\bibliographystyle{unsrt}
+\bibliography{ref}
+
+\begin{appendix}
+
+....
+
+\end{appendix}
