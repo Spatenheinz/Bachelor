@@ -6,6 +6,7 @@
 !*.cs
 !*.csproj
 !*.tex
+!*.sty
 !*.org
 !*.pdf
 !*.jpeg
