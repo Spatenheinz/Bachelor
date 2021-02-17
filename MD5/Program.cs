@@ -1,10 +1,83 @@
 ﻿using System;
 using System.Text;
 using SME;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using static MD5.MD5Config;
 
 namespace MD5
 {
-    class MD5 {
+
+    public static class MD5Config {
+        public const int MAX_BUFFER_SIZE = 1024;
+        public const int DIGEST_SIZE = 4;
+    }
+    public class Tester : SimulationProcess {
+        [InputBus]
+        public IDigest Digest;
+        [OutputBus]
+        public IMessage Message = Scope.CreateBus<IMessage>();
+
+        private readonly string[] MESSAGES;
+
+        public Tester(params string[] messages) {
+            if (messages == null)
+                throw new ArgumentNullException(nameof(messages));
+            if (messages.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(messages), "No images to send?");
+            MESSAGES = messages;
+        }
+
+        public async override Task Run() {
+
+            await ClockAsync();
+            foreach (string message in MESSAGES) {
+                for(int i = 0 ; i < message.Length; i++)
+                    Message.Message[i] = (byte)message[i];
+                Message.Size = message.Length;
+                Message.Valid = true;
+                await ClockAsync();
+                Message.Valid = false;
+            }
+            Debug.Assert(Digest.Valid, "failed to produce output");
+        }
+    }
+
+    public interface IMessage : IBus {
+        [InitialValue(false)]
+        bool Valid { get; set; }
+        [FixedArrayLength(MAX_BUFFER_SIZE)]
+        IFixedArray<byte> Message { get; set; }
+        int Size { get; set; }
+        bool Overflow { get; set; }
+    }
+
+    public interface IDigest : IBus {
+        [InitialValue(false)]
+        bool Valid { get; set; }
+        [FixedArrayLength(DIGEST_SIZE)]
+        IFixedArray<uint> Digest { get; set; }
+    }
+
+    class MD5 : SimpleProcess {
+        [InputBus]
+        public IMessage Message;
+
+        [OutputBus]
+        public IDigest Digest = Scope.CreateBus<IDigest>();
+
+        protected override void OnTick() {
+            if (Message.Valid)
+            {
+                var tmp = calculateMD5(Message.Message, Message.Size);
+                for (int i = 0; i < DIGEST_SIZE; i++)
+                {
+                    Console.WriteLine(tmp[i].ToString("x8"));
+                    Digest.Digest[i] = tmp[i];
+                }
+                Digest.Valid = true;
+            }
+        }
 
         // This is the s array, which we can optimize since it has a lot of repetition.
         private readonly static int [] Round = new int[64]
@@ -44,47 +117,48 @@ namespace MD5
         private uint[] block = new uint[16];
 
         // The main function to calculate MD
-        public string calculateMD5(string mes) {
+        public uint[] calculateMD5(IFixedArray<byte> mes, int size)
+        {
             //preprocess
-            byte[] msgB = preprocess(mes);
+            byte[] msgB = preprocess(mes, size);
             // break up chunks and process.
-            uint blocks = (uint)(msgB.Length * 8) / 32;
-            for (uint i = 0; i < blocks / 16; i++) {
+            uint blocks = (uint)(msgB.Length * 8) >> 5;
+            for (uint i = 0; i < blocks >> 4; i++)
+            {
                 fetchBlock(msgB, i);
                 processBlock();
             }
             //format
-            return reverseByte(A).ToString("X8") +
-                reverseByte(B).ToString("X8") +
-                reverseByte(C).ToString("X8") +
-                reverseByte(D).ToString("X8");
+            return new[] { reverseByte(A), reverseByte(B), reverseByte(C), reverseByte(D) };
         }
 
-
-        public byte[] preprocess(string mes) {
+        public byte[] preprocess(IFixedArray<byte> mes, int size)
+        {
             // Preprocessing
-            int temp = (448 - ((mes.Length * 8) % 512));
+            int temp = (448 - ((size * 8) % 512));
             // the amount of padding 448 mod 512
-            uint padding = (uint)((temp + 512+1) % 512);
+            uint padding = (uint)((temp + 512 + 1) % 512);
             // the size of the digest buffer
-            uint buffSize = (uint)(mes.Length + (padding / 8) + 8);
+            uint buffSize = (uint)(size + (padding >> 3) + 8);
             // the size of the message
-            ulong inpSize = (ulong)(mes.Length * 8);
+            ulong inpSize = (ulong)(size << 3);
             //buffer for the working buffer
             byte[] buff = new byte[buffSize];
             //copy over the message to the working buffer
-            for (int i = 0; i < mes.Length; i++) {
+            for (int i = 0; i < size; i++)
+            {
                 buff[i] = (byte)mes[i];
             }
             // add 1 to padding
-            buff[mes.Length] = 0x80;
+            buff[size] = 0x80;
             // add the length to the padding
-            for (int i = 8; i > 0; i--) {
-				buff[buffSize-i]=(byte) (inpSize>>((8-i)*8) & 0x00000000000000ff);
+            for (int i = 8; i > 0; i--)
+            {
+                buff[buffSize - i] = (byte)(inpSize >> ((8 - i) << 3) & 0x00000000000000ff);
             }
             return buff;
-
         }
+
         #region Digest calculation
         // this will move the b block into the smaller buffer block
         // will be called 16 times.
@@ -153,14 +227,34 @@ namespace MD5
         }
         #endregion
     }
-    class Program
+class Program
     {
         static void Main(string[] args)
         {
-            // new Simulation().BuildCSVFile();
-            var md = new MD5();
-            var res = md.calculateMD5("hello world");
-            Console.WriteLine(res);
+            using (var sim = new Simulation()) {
+                var md5 = new MD5();
+                var tester = new Tester("hello world");
+                md5.Message = tester.Message;
+                tester.Digest = md5.Digest;
+                    sim.AddTopLevelInputs(md5.Message)
+                        .AddTopLevelOutputs(md5.Digest)
+                        .BuildCSVFile()
+                        .BuildGraph()
+                        // .BuildVHDL()
+                        .Run();
+            }
+            // var md = new MD5();
+            // byte[] buffer = new byte[1024];
+            // string str = "hello world";
+            // for (int i = 0; i < str.Length; i++) {
+            //     Console.WriteLine(str[i]);
+            //     buffer[i] = (byte)str[i];
+            // }
+            // Console.WriteLine(buffer);
+            // var res = md.calculateMD5(buffer, str.Length);
+            // for (int i = 0; i < res.Length; i++) {
+            //     Console.Write(res[i].ToString("x8"));
+            // }
         }
     }
 }
