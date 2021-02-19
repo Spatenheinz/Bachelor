@@ -14,9 +14,10 @@ namespace MD5
                 var md5 = new MD5();
                 string str = "";
                 // Nice to be able to test buffer sizes
-                for (int i = 65; i > 0; i--){
-                    str += 1.ToString();
+                for (int i = 54; i > 0; i--){
+                    str += 2.ToString();
                 }
+                Console.WriteLine(str);
                     var tester = new Tester(str);
                 md5.Message = tester.Message;
                 tester.Digest = md5.Digest;
@@ -24,7 +25,7 @@ namespace MD5
                         .AddTopLevelOutputs(md5.Digest)
                         .BuildCSVFile()
                         .BuildGraph()
-                        // .BuildVHDL()
+                        .BuildVHDL()
                         .Run();
             }
         }

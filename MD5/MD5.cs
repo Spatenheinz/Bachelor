@@ -13,12 +13,14 @@ namespace MD5
 
         protected override void OnTick() {
             if (Message.Valid) {
-                var tmp = calculateMD5(Message.Message, Message.BufferSize);
-                for (int i = 0; i < DIGEST_SIZE; i++) {
-                    Console.WriteLine(tmp[i].ToString("x8"));
-                    Digest.Digest[i] = tmp[i];
+                calculateMD5(Message.Message);
+                if (Message.Last) {
+                    Digest.Digest[0] = reverseByte(A);
+                    Digest.Digest[1] = reverseByte(B);
+                    Digest.Digest[2] = reverseByte(C);
+                    Digest.Digest[3] = reverseByte(D);
+                    Digest.Valid = true;
                 }
-                Digest.Valid = true;
             }
         }
 
@@ -28,63 +30,57 @@ namespace MD5
         private uint B = 0xefcdab89;
         private uint C = 0x98badcfe;
         private uint D = 0x10325476;
-        private uint AA = 0;
-        private uint BB = 0;
-        private uint CC = 0;
-        private uint DD = 0;
 
         // This works as the temporary buffer in which we store each of the 32bit
         // words in the 512 bit chunk
         private uint[] block = new uint[16];
+        private byte[] workingBuffer = new byte[MAX_BUFFER_SIZE];
 
         // The main function to calculate MD
-        public uint[] calculateMD5(IFixedArray<byte> mes, int size)
+        public void calculateMD5(IFixedArray<byte> mes)
         {
-            //preprocess
-            byte[] msgB = preprocess(mes, size);
+            preprocess(mes);
             // break up chunks and process.
-            uint blocks = (uint)(msgB.Length * 8) >> 5;
-            for (uint i = 0; i < blocks >> 4; i++) {
-                fetchBlock(msgB, i);
+                fetchBlock(workingBuffer, 0);
                 processBlock();
-            }
-            //format
-            return new[] { reverseByte(A), reverseByte(B), reverseByte(C), reverseByte(D) };
         }
 
-        public byte[] preprocess(IFixedArray<byte> mes, int size)
+        public void preprocess(IFixedArray<byte> mes)
         {
             // the amount of padding 448 mod 512, only applies to the last block
             uint padding = 0;
-            if (Message.Last) {
-                int temp = (448 - ((size * 8) % 512));
-                Console.WriteLine("its the last round");
-                padding = (uint)((temp + 512) % 512);
-                if (padding == 0 && Message.Last) padding = 512;
+            for (int i = 0; i < MAX_BUFFER_SIZE; i++) {
+                workingBuffer[i] = mes[i];
             }
+                if (Message.Last)
+                {
+                    int temp = (448 - ((Message.BufferSize * 8) % 512));
+                    padding = (uint)((temp + 512) % 512);
+                    if (padding == 0) padding = 512;
+                    // Console.WriteLine("last round");
+                    workingBuffer[Message.BufferSize] = 0x80;
+                    // Console.WriteLine(mes[Message.BufferSize]);
+                    ulong fullSize = (ulong)(Message.MessageSize << 3);
+                    for (int i = 8; i > 0; i--)
+                    {
+                        workingBuffer[MAX_BUFFER_SIZE - i] = (byte)(fullSize >> ((8 - i) << 3) & 0x00000000000000ff);
+                    }
+                }
             // the size of the digest buffer
-            uint buffSize = (uint)(size + (padding >> 3) + 8);
             // the size of the message
-            ulong fullSize = (ulong)(Message.MessageSize << 3);
             //buffer for the working buffer
-            byte[] buff = new byte[buffSize];
             //copy over the message to the working buffer
-            for (int i = 0; i < size; i++) { buff[i] = (byte)mes[i]; }
             // add 1 to padding
-            buff[size] |= 0x80;
             // add the length to the padding
-            for (int i = 8; i > 0; i--) {
-                buff[buffSize - i] = (byte)(fullSize >> ((8 - i) << 3) & 0x00000000000000ff);
-            }
-            return buff;
+            // return buff;
         }
 
         #region Digest calculation
         // this will move the b block into the smaller buffer block
         // will be called 16 times.
-        private void fetchBlock(byte[] buff, uint b) {
+        private void fetchBlock(byte[] buff, int b) {
 			b=b<<6;
-			for (uint j=0; j<61;j+=4) {
+			for (int j=0; j<61;j+=4) {
 				block[j>>2]=(((uint) buff[b+(j+3)]) <<24 ) |
 						    (((uint) buff[b+(j+2)]) <<16 ) |
 						    (((uint) buff[b+(j+1)]) <<8 ) |
@@ -94,7 +90,7 @@ namespace MD5
         // the loop in the algorithm, might be interesting to unfold the loop as
         // RFC explains it and see which is faster
         private void processBlock(){
-            AA = A; BB = B; CC = C; DD = D;
+            uint AA = A, BB = B, CC = C, DD = D;
             // round 1
             FF(ref A, B, C, D, 0, 7, 0); FF(ref D, A, B, C, 1, 12, 1);
             FF(ref C, D, A, B, 2, 17, 2); FF(ref B, C, D, A, 3, 22, 3);
