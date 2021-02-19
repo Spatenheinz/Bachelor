@@ -14,7 +14,7 @@ namespace MD5
                 var md5 = new MD5();
                 string str = "";
                 // Nice to be able to test buffer sizes
-                for (int i = 54; i > 0; i--){
+                for (int i = 200; i > 0; i--){
                     str += 2.ToString();
                 }
                 Console.WriteLine(str);

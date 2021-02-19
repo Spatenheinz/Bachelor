@@ -71,6 +71,7 @@ namespace MD5
             }
 
             Debug.Assert(Digest.Valid, "failed to produce any output");
+            await ClockAsync();
         }
     }
 }
