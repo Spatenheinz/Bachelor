@@ -13,6 +13,9 @@ namespace MD5
 
         protected override void OnTick() {
             if (Message.Valid) {
+                if (Message.Head) {
+                    A = READA; B = READB; C = READC; D = READD;
+                }
                 calculateMD5(Message.Message);
                 if (Message.Last) {
                     Digest.Digest[0] = reverseByte(A);
@@ -25,6 +28,10 @@ namespace MD5
         }
 
         // The 4 32bit parts of the digest.
+        private readonly uint READA = 0x67452301;
+        private readonly uint READB = 0xefcdab89;
+        private readonly uint READC = 0x98badcfe;
+        private readonly uint READD = 0x10325476;
         private uint A = 0x67452301;
         private uint B = 0xefcdab89;
         private uint C = 0x98badcfe;
@@ -39,9 +46,13 @@ namespace MD5
         public void calculateMD5(IFixedArray<byte> mes)
         {
             preprocess(mes);
-            // break up chunks and process.
+            // for (int i = 0; i < MAX_BUFFER_SIZE; i++){
+            //     Console.WriteLine(workingBuffer[i]);
+            // }
+                // Console.WriteLine();
+                // break up chunks and process.
                 fetchBlock(workingBuffer, 0);
-                processBlock();
+            processBlock();
         }
 
         public void preprocess(IFixedArray<byte> mes)
@@ -50,15 +61,23 @@ namespace MD5
             for (int i = 0; i < MAX_BUFFER_SIZE; i++) {
                 workingBuffer[i] = mes[i];
             }
-                if (Message.Last)
-                {
-                    workingBuffer[Message.BufferSize] = 0x80;
-                    ulong fullSize = (ulong)(Message.MessageSize << 3);
-                    for (int i = 8; i > 0; i--)
-                    {
-                        workingBuffer[MAX_BUFFER_SIZE - i] = (byte)(fullSize >> ((8 - i) << 3) & 0x00000000000000ff);
-                    }
-                }
+
+            if (Message.Last)
+            {
+                if (!Message.Set) { workingBuffer[Message.BufferSize] = 0x80; }
+                ulong fullSize = (ulong)(Message.MessageSize << 3);
+                workingBuffer[MAX_BUFFER_SIZE - 8] = (byte)(fullSize >> 0 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 7] = (byte)(fullSize >> 8 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 6] = (byte)(fullSize >> 16 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 5] = (byte)(fullSize >> 24 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 4] = (byte)(fullSize >> 32 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 3] = (byte)(fullSize >> 40 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 2] = (byte)(fullSize >> 48 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 1] = (byte)(fullSize >> 56 & 0x00000000000000ff);
+            }
+            else if (Message.Set) {
+                workingBuffer[Message.BufferSize] = 0x80;
+            }
         }
 
         #region Digest calculation

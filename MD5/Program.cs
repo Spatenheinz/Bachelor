@@ -12,13 +12,9 @@ namespace MD5
         {
             using (var sim = new Simulation()) {
                 var md5 = new MD5();
-                string str = "";
                 // Nice to be able to test buffer sizes
-                for (int i = 200; i > 0; i--){
-                    str += 2.ToString();
-                }
-                Console.WriteLine(str);
-                    var tester = new Tester(str);
+                // Console.WriteLine(str);
+                var tester = new Tester();
                 md5.Message = tester.Message;
                 tester.Digest = md5.Digest;
                     sim.AddTopLevelInputs(md5.Message)
