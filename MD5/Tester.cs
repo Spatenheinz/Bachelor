@@ -16,13 +16,10 @@ namespace MD5
 
         private readonly string[] MESSAGES;
 
+        private static int testsize = 10;
+        private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
-        private static string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
+
 
         private System.Security.Cryptography.MD5 Target = System.Security.Cryptography.MD5.Create();
 
@@ -30,17 +27,20 @@ namespace MD5
             if (messages == null)
                 throw new ArgumentNullException(nameof(messages));
             if (messages.Length == 0) {
-                string[] randomStrings = new string[21];
-                int memSize = 0;
-                for (int i = 1; i <= 21; i++) {
-                    randomStrings[i-1] = RandomString(i * 100);
-                    // Console.WriteLine(randomStrings[i-1]);
-                    memSize += i * 100 * 8;
+                for (int i = 0; i < testsize; i++) {
+                    randomStrings[i] = RandomString((i+1) * 1000);
                 }
-                // Console.WriteLine(memSize);
                 MESSAGES = randomStrings;
             } else { MESSAGES = messages; }
 
+        }
+
+
+        private static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         private string targetHash(string message) {
