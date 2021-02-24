@@ -179,20 +179,16 @@ namespace MD5
 
         #region bitwise operators
         private void FF(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            uint tmp = aa + F(bb, cc, dd) + blockD[k] + TAB[i];
-            aa = bb + (LeftRotate(tmp, s));
+            aa = bb + (LeftRotate(aa + F(bb, cc, dd) + blockD[k] + TAB[i], s));
         }
         private void GG(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            uint tmp = aa + G(bb, cc, dd) + blockD[k] + TAB[i];
-            aa = bb + (LeftRotate(tmp, s));
+            aa = bb + (LeftRotate(aa + G(bb, cc, dd) + blockD[k] + TAB[i], s));
         }
         private void HH(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            uint tmp = aa + H(bb, cc, dd) + blockD[k] + TAB[i];
-            aa = bb + (LeftRotate(tmp, s));
+            aa = bb + (LeftRotate(aa + H(bb, cc, dd) + blockD[k] + TAB[i], s));
         }
         private void II(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            uint tmp = aa + Ia(bb, cc, dd) + blockD[k] + TAB[i];
-            aa = bb + (LeftRotate(tmp, s));
+            aa = bb + (LeftRotate(aa + Ia(bb, cc, dd) + blockD[k] + TAB[i], s));
         }
 
         private uint F(uint x, uint y, uint z) {

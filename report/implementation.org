@@ -1,1 +1,13 @@
 * Implementation
+
+** Approaches
+
+*** naive
+
+*** pipelined
+
+** MD5
+
+*** naive
+
+*** pipeline 1
