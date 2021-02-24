@@ -16,7 +16,7 @@ namespace MD5
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 10;
+        private static int testsize = 5;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -29,6 +29,8 @@ namespace MD5
             if (messages.Length == 0) {
                 for (int i = 0; i < testsize; i++) {
                     randomStrings[i] = RandomString((i+1) * 1000);
+                    // Console.WriteLine(i);
+                    // Console.WriteLine(randomStrings[i]);
                 }
                 MESSAGES = randomStrings;
             } else { MESSAGES = messages; }
