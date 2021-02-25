@@ -1,4 +1,4 @@
-% Created 2021-02-25 Thu 14:17
+% Created 2021-02-25 Thu 15:42
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
@@ -33,16 +33,16 @@
 
 \newpage
 \section{Introduction}
-\label{sec:orge7f229a}
+\label{sec:org87f5a0a}
 
 \section{Background}
-\label{sec:orga206965}
+\label{sec:org6fba24d}
 
-\subsection{FPGA}
-\label{sec:orgcccb15d}
+\subsection{Field Programmable Gate Arrays}
+\label{sec:org3e220b9}
 
-\subsection{SME and CSP}
-\label{sec:org31cfa11}
+\subsection{Synchronous Message Exchange}
+\label{sec:org9c10d27}
 Synchronous Message Exchange (SME) is a programming model to enable FPGA development using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs as a strict subset of said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}. Using the following concepts from the CSP model, SME can be derived:
 \begin{itemize}
 \item A program consists of a set of named processes.
@@ -60,43 +60,54 @@ Without going into too much detail about the syntax and semantics of CSP\cite{CS
 Later we will show this can easily show abstractions of algorithms when using SME. SME has a similar notion of processes. There exist two types of SME processes, \texttt{simple process} and a \texttt{simulation process}. Of these, the simple process corresponds to a process in CSP as described above. Each simple process in SME will only share communication channels and constants with the other processes. For the communications channels, SME extends the concepts from CSP by using buses. Instead of using explicit naming for sources and destinations, each process will consist of a set of input and output busses that it can read and write to, respectively. Furthermore, these buses use broadcasting as means of synchronization instead of the blocking non-buffered approach.  The broadcasting happens every clock-cycle on the internal clock.
 A bus is essentially just a collection of fields that can be read and written to depending on the process's access, merely a data transfer object. Here the syntax described above comes in hand. \texttt{message.text} would thus be the text field of the bus \texttt{message}. Corollary, we could define a very minimal process as such \texttt{[messageIn.text?messageOut.text]}, which would read the text field from the \texttt{messageIn} input bus and write it to the \texttt{messageOut} output bus. From these abstractions, one might be able to see how this effortlessly coincides with the hardware model.
 \subsection{A crypto library}
-\label{sec:org91f869f}
+\label{sec:org60924af}
 
 \subsubsection{Hashing}
-\label{sec:org1b3aca9}
+\label{sec:orgca2643a}
 
 \subsubsection{MD5}
-\label{sec:org952fd00}
+\label{sec:org633dd3e}
+The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{}. MD5 uses a Merkle-Damgård construction.
+The MD5 algorithm work by partition the input message into blocks of 512 bits. It is done by always padding the message with a single set bit followed by a series of 0's until the message = 448 mod 512. That is, even when the original message has a length of 448 mod 512, a 1' followed by 511 bits of 0's.
+Next, a 64-bit representation of the message length mod 2\textsuperscript{64} is appended to the padded message.
+The digest will be calculated in a 32-bit 4-word buffer (A, B, C, D), with the initial value:
+A: 0x67542301
+B: 0xefcdab89
+C: 0x98badcfe
+D: 0x10325476
+and we use the following functions corresponding to each of the four rounds:
+F(X, Y, Z) = XY \(\wedge\) \(\neg{}\) X Z
+It is worth noting that MD5 is not a very good hashing algorithm for cryptography, as collision attacks exist, but still show use for data integrity purposes and such.
 
 \section{Implementation}
-\label{sec:org6f71d42}
+\label{sec:orgd80e8f6}
 
 \subsection{Approaches}
-\label{sec:orgb42831d}
+\label{sec:org1509e68}
 
 \subsubsection{naive}
-\label{sec:org5fb0dbf}
+\label{sec:orgdf13a6a}
 
 \subsubsection{pipelined}
-\label{sec:org3b2f4bd}
+\label{sec:org9b3e193}
 
 \subsection{MD5}
-\label{sec:orgf1b8b92}
+\label{sec:orgbcebb52}
 
 \subsubsection{naive}
-\label{sec:org092f1e5}
+\label{sec:orgd21d4bf}
 
 \subsubsection{pipeline 1}
-\label{sec:org0d26415}
+\label{sec:orgd326d33}
 
 \section{Benchmarks}
-\label{sec:org58685a5}
+\label{sec:org21b0cbe}
 
 \section{Discussion}
-\label{sec:org23a43ee}
+\label{sec:orga855a14}
 
 \section{Conclusion}
-\label{sec:org73e5435}
+\label{sec:org8369c14}
 
 \bibliographystyle{unsrt}
 \bibliography{ref}

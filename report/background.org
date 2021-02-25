@@ -1,8 +1,8 @@
 * Background
 
-** FPGA
+** Field Programmable Gate Arrays
 
-** SME and CSP
+** Synchronous Message Exchange
 Synchronous Message Exchange (SME) is a programming model to enable FPGA development using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs as a strict subset of said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}. Using the following concepts from the CSP model, SME can be derived:
 - A program consists of a set of named processes.
 - Each process runs on its own processor with no form of sharing with other processes.
@@ -20,3 +20,14 @@ A bus is essentially just a collection of fields that can be read and written to
 *** Hashing
 
 *** MD5
+The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{}. MD5 uses a Merkle-Damgård construction.
+The MD5 algorithm work by partition the input message into blocks of 512 bits. It is done by always padding the message with a single set bit followed by a series of 0's until the message = 448 mod 512. That is, even when the original message has a length of 448 mod 512, a 1' followed by 511 bits of 0's.
+Next, a 64-bit representation of the message length mod 2^64 is appended to the padded message.
+The digest will be calculated in a 32-bit 4-word buffer (A, B, C, D), with the initial value:
+A: 0x67542301
+B: 0xefcdab89
+C: 0x98badcfe
+D: 0x10325476
+and we use the following functions corresponding to each of the four rounds:
+F(X, Y, Z) = XY \wedge \neg X Z
+It is worth noting that MD5 is not a very good hashing algorithm for cryptography, as collision attacks exist, but still show use for data integrity purposes and such.
