@@ -8,7 +8,7 @@
 #+TITLE: Crypto in SME for FPGA
 #+AUTHOR: Jacob Herbst (mwr148), Jonas Flach Jensen ()
 #+LATEX_HEADER_EXTRA: \assignment{} \subtitle{} \date{12 06 2021} \advisor{Advisor: Kenneth Skovhede} \frontpage{}
-
+\newpage
 #+INCLUDE: "introduction.org"
 
 #+INCLUDE: "background.org"
@@ -26,7 +26,5 @@
 \bibliography{ref}
 
 \begin{appendix}
-
-....
 
 \end{appendix}

@@ -3,7 +3,18 @@
 ** FPGA
 
 ** SME and CSP
-
+Synchronous Message Exchange (SME) is a programming model to enable FPGA development using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs as a strict subset of said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}. Using the following concepts from the CSP model, SME can be derived:
+- A program consists of a set of named processes.
+- Each process runs on its own processor with no form of sharing with other processes.
+- Concurrent processes can communicate using message passing with a ~send(!)~ and a ~receive(?)~ command. This message passing is Blocking and Non-buffered.
+Without going into too much detail about the syntax and semantics of CSP\cite{CSP}, we can use the following syntax to describe a program.
+- ~x :: PROCESS~, which assigns the PROCESS to the name x.
+- ~x.in~ is a compound name similar to an object field ~in~ of the object. Notice this abstraction makes the connection to SME and its C# implementation more obvious.
+- ~x.out!y.in~ This is the sending message passing. It will send y.in to x.out.
+- ~x.out?y.in~. This is the receiving message passing. It will read x.out to y.in.
+- ~x || y~ will denote two concurrent processes, x and y.
+Later we will show this can easily show abstractions of algorithms when using SME. SME has a similar notion of processes. There exist two types of SME processes, ~simple process~ and a ~simulation process~. Of these, the simple process corresponds to a process in CSP as described above. Each simple process in SME will only share communication channels and constants with the other processes. For the communications channels, SME extends the concepts from CSP by using buses. Instead of using explicit naming for sources and destinations, each process will consist of a set of input and output busses that it can read and write to, respectively. Furthermore, these buses use broadcasting as means of synchronization instead of the blocking non-buffered approach.  The broadcasting happens every clock-cycle on the internal clock.
+A bus is essentially just a collection of fields that can be read and written to depending on the process's access, merely a data transfer object. Here the syntax described above comes in hand. ~message.text~ would thus be the text field of the bus ~message~. Corollary, we could define a very minimal process as such ~[messageIn.text?messageOut.text]~, which would read the text field from the ~messageIn~ input bus and write it to the ~messageOut~ output bus. From these abstractions, one might be able to see how this effortlessly coincides with the hardware model.
 ** A crypto library
 
 *** Hashing
