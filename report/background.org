@@ -1,8 +1,15 @@
 * Background
 
+<<<<<<< variant A
 ** Field Programmable Gate Arrays
 
 ** Synchronous Message Exchange
+>>>>>>> variant B
+** FPGA
+Why use FPGA's? To get a speed increase by moving frequently used functions and calculations from the CPU to a specialized chip (the FPGA).
+This will result less time "wasted" on the CPU, and the specialized chip will ideally also be able to do the computations faster than a generic CPU.
+** SME and CSP
+======= end
 Synchronous Message Exchange (SME) is a programming model to enable FPGA development using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs as a strict subset of said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}. Using the following concepts from the CSP model, SME can be derived:
 - A program consists of a set of named processes.
 - Each process runs on its own processor with no form of sharing with other processes.
@@ -16,9 +23,18 @@ Without going into too much detail about the syntax and semantics of CSP\cite{CS
 Later we will show this can easily show abstractions of algorithms when using SME. SME has a similar notion of processes. There exist two types of SME processes, ~simple process~ and a ~simulation process~. Of these, the simple process corresponds to a process in CSP as described above. Each simple process in SME will only share communication channels and constants with the other processes. For the communications channels, SME extends the concepts from CSP by using buses. Instead of using explicit naming for sources and destinations, each process will consist of a set of input and output busses that it can read and write to, respectively. Furthermore, these buses use broadcasting as means of synchronization instead of the blocking non-buffered approach.  The broadcasting happens every clock-cycle on the internal clock.
 A bus is essentially just a collection of fields that can be read and written to depending on the process's access, merely a data transfer object. Here the syntax described above comes in hand. ~message.text~ would thus be the text field of the bus ~message~. Corollary, we could define a very minimal process as such ~[messageIn.text?messageOut.text]~, which would read the text field from the ~messageIn~ input bus and write it to the ~messageOut~ output bus. From these abstractions, one might be able to see how this effortlessly coincides with the hardware model.
 ** A crypto library
+Cryptografic functions are used by developers of across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
+So there is a motive for having a crypto library for FPGA's. Infact such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"(ref. https://web.archive.org/web/20170808032012/http://www.research.ibm.com/people/s/sailer/publications/2001/ibm4758.pdf).% Another point is modern Hardware security modules (HSM) which also does this.
+However the problem with the exsisting solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in reseach and academics.
+So we set out to create an opensource crypto library.
 
+The crypto library consists of an implementation of various cryptografic functions, such as AES and SHA256. It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
+These implementations should also be optimized in terms of speed so that they are competitive with the exsisting software solutions.
+%Creating a cypto library for FPGA's ...
 *** Hashing
-
+Hashing is a mathematical concept refering to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptografic hash functions is a subset of all hash functions.
+The reason for this is that for a hash function to be a cryptografic hash function it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementaion of hash functions. Lastly and most importantly, computers can't do randomness.
+If a hash function can be implemented in with a limited input space, is pseudo random, and upholds certain properties it can be categorized as a "Cryptografic Hash Function". One such example is the outdated MD5 algorithm.
 *** MD5
 The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{}. MD5 uses a Merkle-Damgård construction.
 The MD5 algorithm work by partition the input message into blocks of 512 bits. It is done by always padding the message with a single set bit followed by a series of 0's until the message = 448 mod 512. That is, even when the original message has a length of 448 mod 512, a 1' followed by 511 bits of 0's.
