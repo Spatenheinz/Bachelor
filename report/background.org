@@ -1,46 +1,65 @@
 * Background
 
 ** Field Programmable Gate Arrays
+TODO: write something more in-depth.
 
 Why use FPGA's? To get a speed increase by moving frequently used functions and calculations from the CPU to a specialized chip (the FPGA).
-This will result less time "wasted" on the CPU, and the specialized chip will ideally also be able to do the computations faster than a generic CPU.
+This will result in less time "wasted" on the CPU, and the specialized chip will ideally also be able to do the computations faster than a generic CPU.
 ** Synchronous Message Exchange
-Synchronous Message Exchange (SME) is a programming model to enable FPGA development using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs as a strict subset of said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}. Using the following concepts from the CSP model, SME can be derived:
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: SME
+:END:
+Synchronous Message Exchange (SME) is a programming model to enable FPGA development using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs as a strict subset of said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}\footnote{sme ref}. Using the following concepts from the CSP model, SME can be derived:
+
+
 - A program consists of a set of named processes.
 - Each process runs on its own processor with no form of sharing with other processes.
 - Concurrent processes can communicate using message passing with a ~send(!)~ and a ~receive(?)~ command. This message passing is Blocking and Non-buffered.
 Without going into too much detail about the syntax and semantics of CSP\cite{CSP}, we can use the following syntax to describe a program.
-- ~x :: PROCESS~, which assigns the PROCESS to the name x.
+- ~x::PROCESS~, which assigns the PROCESS to the name x.
 - ~x.in~ is a compound name similar to an object field ~in~ of the object. Notice this abstraction makes the connection to SME and its C# implementation more obvious.
 - ~x.out!y.in~ This is the sending message passing. It will send y.in to x.out.
 - ~x.out?y.in~. This is the receiving message passing. It will read x.out to y.in.
-- ~x || y~ will denote two concurrent processes, x and y.
+- ~x || y~ will denote two concurrent processes, x, and y.\footnote{this does not make any sense, diagrams are more readable or does it indeed makes it easier to reason about concurrency?}
+
 Later we will show this can easily show abstractions of algorithms when using SME. SME has a similar notion of processes. There exist two types of SME processes, ~simple process~ and a ~simulation process~. Of these, the simple process corresponds to a process in CSP as described above. Each simple process in SME will only share communication channels and constants with the other processes. For the communications channels, SME extends the concepts from CSP by using buses. Instead of using explicit naming for sources and destinations, each process will consist of a set of input and output busses that it can read and write to, respectively. Furthermore, these buses use broadcasting as means of synchronization instead of the blocking non-buffered approach.  The broadcasting happens every clock-cycle on the internal clock.
 A bus is essentially just a collection of fields that can be read and written to depending on the process's access, merely a data transfer object. Here the syntax described above comes in hand. ~message.text~ would thus be the text field of the bus ~message~. Corollary, we could define a very minimal process as such ~[messageIn.text?messageOut.text]~, which would read the text field from the ~messageIn~ input bus and write it to the ~messageOut~ output bus. From these abstractions, one might be able to see how this effortlessly coincides with the hardware model.
 ** A crypto library
-Cryptografic functions are used by developers of across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
-So there is a motive for having a crypto library for FPGA's. Infact such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"(ref. https://web.archive.org/web/20170808032012/http://www.research.ibm.com/people/s/sailer/publications/2001/ibm4758.pdf).% Another point is modern Hardware security modules (HSM) which also does this.
-However the problem with the exsisting solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in reseach and academics.
-So we set out to create an opensource crypto library.
+Cryptographic functions are used by developers across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
+So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"(ref. https://web.archive.org/web/20170808032012/http://www.research.ibm.com/people/s/sailer/publications/2001/ibm4758.pdf).% Another point is modern Hardware security modules (HSM) which also does this.
+However, the problem with the existing solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in research, and academics.
+So we set out to create an open-source crypto library.
 
-The crypto library consists of an implementation of various cryptografic functions, such as AES and SHA256. It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
-These implementations should also be optimized in terms of speed so that they are competitive with the exsisting software solutions.
-%Creating a cypto library for FPGA's ...
+The crypto library consists of an implementation of various cryptographic functions, such as AES and SHA256. It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
+These implementations should also be optimized in terms of speed so that they are competitive with the existing software solutions.
+%Creating a crypto library for FPGA's ...
 *** Hashing
-Hashing is a mathematical concept refering to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptografic hash functions is a subset of all hash functions.
-The reason for this is that for a hash function to be a cryptografic hash function it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementaion of hash functions. Lastly and most importantly, computers can't do randomness.
-If a hash function can be implemented in with a limited input space, is pseudo random, and upholds certain properties it can be categorized as a "Cryptografic Hash Function". One such example is the outdated MD5 algorithm.
+Hashing is a mathematical concept referring to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptographic hash functions are a subset of all hash functions.
+The reason for this is that for a hash function to be a cryptographic hash function it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementation of hash functions. Lastly and most importantly, computers can't do true randomness.
+If a hash function can be implemented with a limited input space, is pseudo-random, and upholds certain properties listed below, it can be categorized as a "Cryptographic Hash Function". One such example is the outdated MD5 algorithm.
+- It should be deterministic, as it is important that the same hash is computed given some input.
+- It is unreasonably hard to predict the hashed value. One reason for this is the requirement to exercise the avalanche effect, meaning the tiniest change in the input message would resolve in big changes in the hash.
+- It is collision-resistant, meaning it is unreasonably hard to find two distinct messages to have the same hash.
+
 **** Merkle-Damgård construction
+One way approach that is widely used in cryptographic hashing is the Merkle-Damgård construction. One of the reasons this approach is desirable when developing a cryptographic hashing algorithm is because the hash function will be collision-resistant given the compression function itself is collision-resistant.
+From figure \ref{fig:Merkle} one can see the construction of the hashing function. One can see that the message will be padded to have a certain length since any compression function must work on static size. The compression function ~f~ will initially take two arguments, the initialization vector, and the first block. f will then produce a result of the same size as the initialization vector. This result will then be fed into the next iteration of ~f~ along with the second block of the message. This is repeated until the entire padded message has been processed. From here a potential finalization function can be used to improve the hash. Lastly, the hashed value will be produced.
+
+#+CAPTION: Merkle-Damgård construction
+#+LABEL: fig:Merkle
+[[./Merkle.png]]
 
 *** MD5
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: MD5alg
+:END:
 The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{}. MD5 uses a Merkle-Damgård construction.
 The MD5 algorithm work by partition the input message into blocks of 512 bits. It is done by always padding the message with a single set bit followed by a series of 0's until the message = 448 mod 512. That is, even when the original message has a length of 448 mod 512, a 1 is followed by 511 bits of 0's.
 Next, a 64-bit representation of the message length mod 2^64 is appended to the padded message.
-The digest will be calculated in a 32-bit 4-word buffer (A, B, C, D), with the initial value:\\
-~A: 0x67542301~\\
-~B: 0xefcdab89~\\
-~C: 0x98badcfe~\\
-~D: 0x10325476~\\
+The digest will be calculated in a 32-bit 4-word initialization (A, B, C, D), with the initial value:\\
+~[~ ~A: 0x67542301~, ~B: 0xefcdab89~, ~C: 0x98badcfe~, ~D: 0x10325476~ ~]~\\
 and we use the following functions corresponding to each of the four rounds:\\
 F(X, Y, Z) = XY \vee \neg X Z\\
 G(X, Y, Z) = XZ \vee Y \neg Z\\
@@ -48,10 +67,11 @@ H(X, Y, Z) = X \oplus Y \oplus Z\\
 I(X, Y, Z) = Y \oplus ( X \vee \neg Z)\\
 These are defined as such to in "bitwise parallel" produce independent and unbiased bits in each of the rounds.
 
-
 Process each 16-word block (512 bits) by copying it into a buffer X,
 save the current digest buffer and perform the following rounds:
-For each round a function [abcd k s i] denoting ~a = b + (( a + round(b,c,d) + X[k] + T[i]) <<< s)~, where round denotes the function corresponding to that round.
+For each round a function [abcd k s i] denoting\\
+a = b + (( a + round(b,c,d) + X[k] + T[i]) \lll s)
+, where round denotes the function corresponding to that round.\footnote{this might be unecessary to show}
 #+BEGIN_SRC
 round 1  :: F
 [ABCD  0  7  1] [DABC  1 12  2] [CDAB  2 17  3] [BCDA  3 22  4]
