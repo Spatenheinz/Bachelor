@@ -57,10 +57,10 @@ namespace MD5
         private readonly uint READB = 0xefcdab89;
         private readonly uint READC = 0x98badcfe;
         private readonly uint READD = 0x10325476;
-        private uint A = 0x67452301;
-        private uint B = 0xefcdab89;
-        private uint C = 0x98badcfe;
-        private uint D = 0x10325476;
+        private uint A;
+        private uint B;
+        private uint C;
+        private uint D;
 
         // This works as the temporary buffer in which we store each of the 32bit
         // words in the 512 bit chunk
@@ -71,13 +71,8 @@ namespace MD5
         public void calculateMD5(IFixedArray<byte> mes)
         {
             preprocess(mes);
-            // for (int i = 0; i < MAX_BUFFER_SIZE; i++){
-            //     Console.WriteLine(workingBuffer[i]);
-            // }
-                // Console.WriteLine();
-                // break up chunks and process.
                 fetchBlock(workingBuffer, 0);
-            processBlock();
+                processBlock();
         }
 
         public void preprocess(IFixedArray<byte> mes)

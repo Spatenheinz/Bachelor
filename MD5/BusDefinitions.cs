@@ -30,4 +30,30 @@ namespace MD5
         [FixedArrayLength(DIGEST_SIZE)]
         IFixedArray<uint> Digest { get; set; }
     }
+// pipeline (optimisation 1)
+    public interface IPadded : IBus {
+        [InitialValue(false)]
+        bool Valid { get; set; }
+
+        [FixedArrayLength(MAX_BUFFER_SIZE)]
+        IFixedArray<byte> buffer { get; set; }
+    }
+
+    public interface IBlock : IBus {
+        [InitialValue(false)]
+        bool Valid { get; set; }
+
+        [FixedArrayLength(BLOCK_SIZE)]
+        IFixedArray<uint> buffer { get; set; }
+    }
+
+    public interface IRound : IBus {
+        [InitialValue(false)]
+        bool Valid { get; set; }
+
+        uint A { get; set; }
+        uint B { get; set; }
+        uint C { get; set; }
+        uint D { get; set; }
+    }
 }
