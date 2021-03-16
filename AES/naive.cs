@@ -4,19 +4,19 @@ using SME;
 namespace AES
 {
     public static class AESConfig {
-        public const int BLOCK_SIZE = 16;
         public const int BLOCK_SIZE_BITS = 128;
-        public const int KEY_128 = 16;
-        public const int KEY_192 = 24;
-        public const int KEY_256 = 32;
+        public const int BLOCK_SIZE = BLOCK_SIZE_BITS >> 3;
+        public const int N_KEY_128 = 4;
+        public const int ROUND_SIZE_128 = (11 * 4);
+
     }
 
     public interface IMessage : IBus {
         [InitialValue(false)]
         bool Valid { get; set; }
 
-        ulong Data0 { get; set; }
-        ulong Data1 { get; set; }
+        [FixedArrayLength(4)]
+        IFixedArray<uint> Data { get; set; }
     }
 
 
@@ -27,7 +27,50 @@ namespace AES
         [OutputBus]
         public IDigest Digest = Scope.CreateBus<IDigest>();
 
+        private byte[] state = new byte[BLOCK_SIZE];
+        private uint[] expanded_key128 = new uint[ROUND_128];
+        private uint[] tmp = new uint[ROUND_128];
+
+
         protected override void OnTick() {
+            if (Message.Valid) {
+                Expand128(Message.Data);
+                for (int i = 0; i < BLOCK_SIZE; i++) {
+                    tmp = Message.Data ^ expanded_key128;
+                }
+            }
+        }
+
+
+
+        private uint LeftRotate(uint x, int k) {
+            return ((x << k) | (x >> (32 - k)));
+        }
+
+        private uint SubWord(uint x) {
+            return
+                   ((uint)S[0xff & (x>> 24)] << 24) |
+                   ((uint)S[0xff & (x>> 16)] << 16) |
+                   ((uint)S[0xff & (x>> 8)] << 8) |
+                   | ((uint)S[0xff & x])
+        }
+
+        private void Expand128(uint key) {
+            for (int i = 0; i < N_KEY_128<<2; i+=4) {
+                expanded_key128[i>>2] = ((uint)key[i+3] << 24) |
+                                        ((uint)key[i+2] << 16) |
+                                        ((uint)key[i+1] << 8) |
+                                        ((uint)key[i]);
+            }
+            for (int i = N_KEY_128; i < ROUND_SIZE_128; i++) {
+                uint w = expand_key128[i-1];
+                if (i % N_KEY_128) {
+                    w = SubWord(LeftRotate(w,8)) ^ Round(i / N_KEY_128);
+                } else if ( KEY_128 > 4 && (i %4) == ROUND_SIZE_128) {
+                    w = SubWord(w);
+                }
+                expanded_key128[i] = expandedKey[i-N_KEY_128] ^ w;
+            }
         }
 
 		static readonly byte[] S = new byte[] {
@@ -70,8 +113,6 @@ namespace AES
 		static readonly uint[] Round = new uint[] {
 			0x00000000, 0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000, 0x20000000, 0x40000000,
 			0x80000000, 0x1b000000, 0x36000000, 0x6c000000, 0xd8000000, 0xab000000, 0x4d000000, 0x9a000000,
-			0x2f000000, 0x5e000000, 0xbc000000, 0x63000000, 0xc6000000, 0x97000000, 0x35000000, 0x6a000000,
-			0xd4000000, 0xb3000000, 0x7d000000, 0xfa000000, 0xef000000, 0xc5000000
 		};
     }
 }
