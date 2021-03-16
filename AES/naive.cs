@@ -14,17 +14,22 @@ namespace AES
 
     public interface IMessage : IBus {
         [InitialValue(false)]
-        bool Valid { get; set; }
+        bool ValidKey { get; set; }
 
-        [FixedArrayLength(BUFFER_SIZE)]
-        IFixedArray<uint> Data { get; set; }
+        [FixedArrayLength(BLOCK_SIZE)]
+        IFixedArray<byte> Key { get; set; }
+
+        [InitialValue(false)]
+        bool ValidData { get; set; }
+        [FixedArrayLength(BLOCK_SIZE)]
+        IFixedArray<byte> Data { get; set; }
 
     }
     public interface ICypher : IBus {
         [InitialValue(false)]
         bool Valid { get; set; }
 
-        [FixedArrayLength(BUFFER_SIZE)]
+        [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<uint> Data { get; set; }
 
     }
@@ -34,7 +39,7 @@ namespace AES
         public IMessage Message;
 
         [OutputBus]
-        public IDigest Digest = Scope.CreateBus<IDigest>();
+        public ICypher Cypher = Scope.CreateBus<ICypher>();
 
         private byte[] IV = new byte[BLOCK_SIZE];
         private byte[] state = new byte[BLOCK_SIZE];
@@ -42,15 +47,48 @@ namespace AES
 
 
         protected override void OnTick() {
-            if (Message.Valid) {
-                Expand128(Message.Data);
+            if (Message.ValidKey) {
+                Expand128(Message.Key);
+                for(int i = 0; i < BLOCK_SIZE; i++) {
+                    IV[i] = Message.Data[i];
+                }
+            } else if (Message.ValidData) {
                 for(int i = 0; i < BLOCK_SIZE; i++) {
                     state[i] ^= IV[i];
                 }
                 Encrypt128();
+                for(int i = 0; i < BLOCK_SIZE; i++) {
+                    Cypher.Data = IV[i];
+                }
+                Cypher.Valid = true;
             }
         }
 
+        private uint SubWord(uint x) {
+            return
+                   ((uint)S[0xff & (x>> 24)] << 24) |
+                   ((uint)S[0xff & (x>> 16)] << 16) |
+                   ((uint)S[0xff & (x>> 8)] << 8) |
+                   | ((uint)S[0xff & x])
+        }
+
+        private void Expand128(uint key) {
+            for (int i = 0; i < N_KEY_128<<2; i+=4) {
+                expanded_key128[i>>2] = ((uint)key[i+3] << 24) |
+                                        ((uint)key[i+2] << 16) |
+                                        ((uint)key[i+1] << 8) |
+                                        ((uint)key[i]);
+            }
+            for (int i = N_KEY_128; i < ROUND_SIZE_128; i++) {
+                uint w = expand_key128[i-1];
+                if (i % N_KEY_128) {
+                    w = SubWord(LeftRotate(w,8)) ^ Round(i / N_KEY_128);
+                } else if ( KEY_128 > 4 && (i %4) == ROUND_SIZE_128) {
+                    w = SubWord(w);
+                }
+                expanded_key128[i] = expandedKey[i-N_KEY_128] ^ w;
+            }
+        }
 
         private void Encrypt128() {
 
@@ -138,31 +176,6 @@ namespace AES
             return ((x << k) | (x >> (32 - k)));
         }
 
-        private uint SubWord(uint x) {
-            return
-                   ((uint)S[0xff & (x>> 24)] << 24) |
-                   ((uint)S[0xff & (x>> 16)] << 16) |
-                   ((uint)S[0xff & (x>> 8)] << 8) |
-                   | ((uint)S[0xff & x])
-        }
-
-        private void Expand128(uint key) {
-            for (int i = 0; i < N_KEY_128<<2; i+=4) {
-                expanded_key128[i>>2] = ((uint)key[i+3] << 24) |
-                                        ((uint)key[i+2] << 16) |
-                                        ((uint)key[i+1] << 8) |
-                                        ((uint)key[i]);
-            }
-            for (int i = N_KEY_128; i < ROUND_SIZE_128; i++) {
-                uint w = expand_key128[i-1];
-                if (i % N_KEY_128) {
-                    w = SubWord(LeftRotate(w,8)) ^ Round(i / N_KEY_128);
-                } else if ( KEY_128 > 4 && (i %4) == ROUND_SIZE_128) {
-                    w = SubWord(w);
-                }
-                expanded_key128[i] = expandedKey[i-N_KEY_128] ^ w;
-            }
-        }
 
 		static readonly byte[] S = new byte[] {
 			0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
