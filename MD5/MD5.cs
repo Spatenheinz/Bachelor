@@ -11,7 +11,10 @@ namespace MD5
         [OutputBus]
         public IDigest Digest = Scope.CreateBus<IDigest>();
 
+        public int counter = 0;
+
         protected override void OnTick() {
+            counter++;
             if (Message.Valid) {
                 if (Message.Head) {
                     A = READA; B = READB; C = READC; D = READD;

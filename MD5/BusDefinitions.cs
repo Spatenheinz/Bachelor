@@ -19,8 +19,6 @@ namespace MD5
         bool Head { get; set; }
         [InitialValue(false)]
         bool Set { get; set; }
-
-
     }
 
     public interface IDigest : IBus {
