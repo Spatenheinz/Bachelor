@@ -12,17 +12,17 @@ namespace MD5
         [InputBus]
         public IDigest Digest;
 
-        [InputBus]
-        public IRound Digest2;
+        // [InputBus]
+        // public IRound Digest2;
 
-        [OutputBus]
-        public IRound optDigest = Scope.CreateBus<IRound>();
+        // [OutputBus]
+        // public IRound optDigest = Scope.CreateBus<IRound>();
         [OutputBus]
         public IMessage Message = Scope.CreateBus<IMessage>();
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 15;
+        private static int testsize = 1;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -34,7 +34,7 @@ namespace MD5
                 throw new ArgumentNullException(nameof(messages));
             if (messages.Length == 0) {
                 for (int i = 0; i < testsize; i++) {
-                    randomStrings[i] = RandomString((i+1) * 2000);
+                    randomStrings[i] = RandomString((i+1) * 129);
 
                 }
                 MESSAGES = randomStrings;
@@ -66,17 +66,17 @@ namespace MD5
 
             await ClockAsync();
             foreach (string message in MESSAGES) {
-                optDigest.A = 0x67452301;
-                optDigest.B = 0xefcdab89;
-                optDigest.C = 0x98badcfe;
-                optDigest.D = 0x10325476;
+                // optDigest.A = 0x67452301;
+                // optDigest.B = 0xefcdab89;
+                // optDigest.C = 0x98badcfe;
+                // optDigest.D = 0x10325476;
                 int counter = 0;
                 Message.MessageSize = message.Length;
                 Message.Head = true;
 
                 int i = message.Length;
                 while (i >= 0) {
-                optDigest.Valid = true;
+                // optDigest.Valid = true;
                     int offset = MAX_BUFFER_SIZE;
                     if (i < 56)
                     {
@@ -106,31 +106,31 @@ namespace MD5
                         await ClockAsync();
                         // Console.WriteLine("i am here");
                         // Console.WriteLine($"called cob Out: {Digest2.A}, {Digest2.B}, {Digest2.C}, {Digest2.D}");
-                        Digest2.Valid = false;
-                        Message.Valid = false;
-                    optDigest.A = Digest2.A;
-                    optDigest.B = Digest2.B;
-                    optDigest.C = Digest2.C;
-                    optDigest.D = Digest2.D;
-                    Digest2.Valid = false;
+                        // Digest2.Valid = false;
+                        // Message.Valid = false;
+                    // optDigest.A = Digest2.A;
+                    // optDigest.B = Digest2.B;
+                    // optDigest.C = Digest2.C;
+                    // optDigest.D = Digest2.D;
+                    // Digest2.Valid = false;
                     Message.Valid = false;
                 }
-                await ClockAsync();
+                // await ClockAsync();
                 string str = "";
-                string str2 = "";
-                str2 += reverseByte(optDigest.A).ToString("X8");
-                str2 += reverseByte(optDigest.B).ToString("X8");
-                str2 += reverseByte(optDigest.C).ToString("X8");
-                str2 += reverseByte(optDigest.D).ToString("X8");
+                // string str2 = "";
+                // str2 += reverseByte(optDigest.A).ToString("X8");
+                // str2 += reverseByte(optDigest.B).ToString("X8");
+                // str2 += reverseByte(optDigest.C).ToString("X8");
+                // str2 += reverseByte(optDigest.D).ToString("X8");
                 for(int j = 0; j < 4; j++) {
                     str += Digest.Digest[j].ToString("X8");
                 }
                 Debug.Assert(str == targetHash(message), $"String {message} with Hash nr. {0} - {str} doesnt match the MS library {targetHash(message)}");
-                Debug.Assert(str2 == targetHash(message), $"String2 {message} with Hash nr. {0} - {str2} doesnt match the MS library {targetHash(message)}");
+                // Debug.Assert(str2 == targetHash(message), $"String2 {message} with Hash nr. {0} - {str2} doesnt match the MS library {targetHash(message)}");
             }
 
-            Debug.Assert(Digest.Valid && optDigest.Valid, "failed to produce any output");
-            await ClockAsync();
+            // Debug.Assert(Digest.Valid && optDigest.Valid, "failed to produce any output");
+            // await ClockAsync();
         }
     }
 }
