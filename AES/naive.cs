@@ -1,39 +1,9 @@
 using System;
 using SME;
+using static AES.AESConfig;
 
 namespace AES
 {
-    public static class AESConfig {
-        public const int BLOCK_SIZE_BITS = 128;
-        public const int BLOCK_SIZE = BLOCK_SIZE_BITS >> 3;
-        public const int BLOCK_SIZE_UINT = BLOCK_SIZE_BITS >> 5;
-        public const int N_KEY_128 = 4;
-        public const int ROUND_SIZE_128 = (11 * 4);
-
-    }
-
-    public interface IMessage : IBus {
-        [InitialValue(false)]
-        bool ValidKey { get; set; }
-
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<byte> Key { get; set; }
-
-        [InitialValue(false)]
-        bool ValidData { get; set; }
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<byte> Data { get; set; }
-
-    }
-    public interface ICypher : IBus {
-        [InitialValue(false)]
-        bool Valid { get; set; }
-
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<uint> Data { get; set; }
-
-    }
-
     class naive : SimpleProcess {
         [InputBus]
         public IMessage Message;
@@ -69,7 +39,7 @@ namespace AES
                    ((uint)S[0xff & (x>> 24)] << 24) |
                    ((uint)S[0xff & (x>> 16)] << 16) |
                    ((uint)S[0xff & (x>> 8)] << 8) |
-                   | ((uint)S[0xff & x])
+                   ((uint)S[0xff & x]);
         }
 
         private void Expand128(uint key) {
@@ -200,7 +170,7 @@ namespace AES
 			0x00000000, 0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000, 0x20000000, 0x40000000,
 			0x80000000, 0x1b000000, 0x36000000, 0x6c000000, 0xd8000000, 0xab000000, 0x4d000000, 0x9a000000,
 		};
-    static readonly uint[] T0 = {
+        static readonly uint[] T0 = {
 			0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d, 0xfff2f20d, 0xd66b6bbd, 0xde6f6fb1, 0x91c5c554,
 			0x60303050, 0x02010103, 0xce6767a9, 0x562b2b7d, 0xe7fefe19, 0xb5d7d762, 0x4dababe6, 0xec76769a,
 			0x8fcaca45, 0x1f82829d, 0x89c9c940, 0xfa7d7d87, 0xeffafa15, 0xb25959eb, 0x8e4747c9, 0xfbf0f00b,
