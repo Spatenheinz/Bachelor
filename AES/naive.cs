@@ -159,7 +159,7 @@ namespace AES
 			IV[13] = (byte)(S[(byte)(b0 >> 16)] ^ (byte)(expandedKey128[43] >> 16));
 			IV[14] = (byte)(S[(byte)(b1 >> 8)] ^ (byte)(expandedKey128[43] >> 8));
 			IV[15] = (byte)(S[(byte)b2] ^ (byte)expandedKey128[43]);
-            Console.Write($"output: ");
+            Console.Write($"output :");
             for(int i = 0; i < BLOCK_SIZE; i++) {
                 Console.Write($"{IV[i].ToString("x2")}");
             }
