@@ -118,7 +118,7 @@ namespace MD5
         // the loop in the algorithm, might be interesting to unfold the loop as
         // RFC explains it and see which is faster
         private void processBlock(){
-            uint cow = A, BB = B, CC = C, DD = D;
+            uint AA = A, BB = B, CC = C, DD = D;
             // round 1
             FF(ref A, B, C, D, 0, 7, 0);    FF(ref D, A, B, C, 1, 12, 1);
             FF(ref C, D, A, B, 2, 17, 2);   FF(ref B, C, D, A, 3, 22, 3);
@@ -168,7 +168,7 @@ namespace MD5
             II(ref A, B, C, D, 4, 6, 60);   II(ref D, A, B, C, 11, 10, 61);
             II(ref C, D, A, B, 2, 15, 62);  II(ref B, C, D, A, 9, 21, 63);
 
-            A += cow;
+            A += AA;
             B += BB;
             C += CC;
             D += DD;

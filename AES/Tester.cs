@@ -20,6 +20,8 @@ namespace AES
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
+        private const string key = "000102030405060708090a0b0c0d0e0f";
+
 
         private System.Security.Cryptography.Aes Target = System.Security.Cryptography.Aes.Create();
 
@@ -31,6 +33,7 @@ namespace AES
                     randomStrings[i] = RandomString((i+1) * 129);
 
                 }
+                randomStrings[0] = "00112233445566778899aabbccddeeff";
                 MESSAGES = randomStrings;
             } else { MESSAGES = messages; }
 
@@ -42,7 +45,12 @@ namespace AES
                 ((i & 0x00ff0000) >> 8) |
                 ((i & 0x0000ff00) << 8);
         }
-
+        public static byte[] StringToByteArray(string hex) {
+			return Enumerable.Range(0, hex.Length)
+				.Where(x => x % 2 == 0)
+				.Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+				.ToArray();
+		}
 
         private static string RandomString(int length)
         {
@@ -60,7 +68,23 @@ namespace AES
 
             await ClockAsync();
             foreach (string message in MESSAGES) {
-                string str = "";
+                Message.ValidData = false;
+                Message.ValidKey = true;
+                byte[] tmpData = StringToByteArray(message);
+                for(int i = 0; i < tmpData.Length; i++) {
+                    Message.Data[i] = tmpData[i];
+                }
+                byte[] tmpKey = StringToByteArray(key);
+                for(int i = 0; i < tmpKey.Length; i++) {
+                    Message.Key[i] = tmpKey[i];
+                }
+                await ClockAsync();
+
+                Message.ValidKey = false;
+                Message.ValidData = true;
+
+                await ClockAsync();
+
             }
         }
     }
