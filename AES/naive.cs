@@ -56,14 +56,14 @@ namespace AES
                 uint w = expandedKey128[i-1];
                 if (i % N_KEY_128 == 0) {
                     w = SubWord(LeftRotate(w,8)) ^ Round[i / N_KEY_128];
-                } else if ( N_KEY_128 > 4 && (i %4) == ROUND_SIZE_128) {
+                } else if ( N_KEY_128 > 6 && (i % N_KEY_128) == 4) {
                     w = SubWord(w);
                 }
                 expandedKey128[i] = expandedKey128[i-N_KEY_128] ^ w;
             }
         }
         private uint LeftRotate(uint x, int k) {
-            return ((x << k) | (x >> (32 - k)));
+            return ((x << k) | ((x >> (32 - k)) & 0xff));
         }
 
 
@@ -138,6 +138,8 @@ namespace AES
 			b2 = T0[a2 >> 24] ^ T1[(byte)(a3 >> 16)] ^ T2[(byte)(a0 >> 8)] ^ T3[(byte)a1] ^ expandedKey128[38];
 			b3 = T0[a3 >> 24] ^ T1[(byte)(a0 >> 16)] ^ T2[(byte)(a1 >> 8)] ^ T3[(byte)a2] ^ expandedKey128[39];
 
+            Console.WriteLine($"k_sch r10: {expandedKey128[36].ToString("x8")}{expandedKey128[37].ToString("x8")}{expandedKey128[38].ToString("x8")}{expandedKey128[39].ToString("x8")}");
+            Console.WriteLine($"start r10: {b0.ToString("x8")}{b1.ToString("x8")}{b2.ToString("x8")}{b3.ToString("x8")}");
             IV[0] = (byte)(S[b0 >> 24] ^ (byte)(expandedKey128[40] >> 24));
 			IV[1] = (byte)(S[(byte)(b1 >> 16)] ^ (byte)(expandedKey128[40] >> 16));
 			IV[2] = (byte)(S[(byte)(b2 >> 8)] ^ (byte)(expandedKey128[40] >> 8));
@@ -157,6 +159,11 @@ namespace AES
 			IV[13] = (byte)(S[(byte)(b0 >> 16)] ^ (byte)(expandedKey128[43] >> 16));
 			IV[14] = (byte)(S[(byte)(b1 >> 8)] ^ (byte)(expandedKey128[43] >> 8));
 			IV[15] = (byte)(S[(byte)b2] ^ (byte)expandedKey128[43]);
+            Console.Write($"output: ");
+            for(int i = 0; i < BLOCK_SIZE; i++) {
+                Console.Write($"{IV[i].ToString("x2")}");
+            }
+            Console.WriteLine("");
         }
 
 
@@ -180,8 +187,9 @@ namespace AES
 		};
 
 		static readonly uint[] Round = new uint[] {
-			0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
-			0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a,
+			0x00000000, 0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000, 0x20000000, 0x40000000,
+			0x80000000, 0x1b000000, 0x36000000, 0x6c000000, 0xd8000000, 0xab000000, 0x4d000000, 0x9a000000,
+			0x2f000000
 		};
         static readonly uint[] T0 = {
 			0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d, 0xfff2f20d, 0xd66b6bbd, 0xde6f6fb1, 0x91c5c554,
