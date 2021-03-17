@@ -21,7 +21,7 @@ namespace AES
         bool Valid { get; set; }
 
         [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<uint> Data { get; set; }
+        IFixedArray<byte> Data { get; set; }
 
     }
 }
