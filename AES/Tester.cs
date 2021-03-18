@@ -22,8 +22,8 @@ namespace AES
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
-        private byte[] key = StringToByteArray("00000000000000000000000000000000");
-        private byte[] IV = StringToByteArray("00000000000000000000000000000000");
+        private byte[] key = StringToByteArray("000102030405060708090a0b0c0d0e0f");
+        private byte[] IV = StringToByteArray("00112233445566778899aabbccddeeff");
 
         public Tester(params string[] messages) {
             if (messages == null)
@@ -32,7 +32,7 @@ namespace AES
                 for (int i = 0; i < testsize; i++) {
                     randomStrings[i] = RandomString((i+1) * 128);
                 }
-                randomStrings[0] = "6a84867cd77e12ad07ea1be895c53fa3";
+                randomStrings[0] = "00112233445566778899aabbccddeeff";
                 MESSAGES = randomStrings;
             } else { MESSAGES = messages; }
 
@@ -71,6 +71,7 @@ namespace AES
         private string targetCypher(byte[] message, byte[] key, byte[] iv) {
             using(AesManaged aes = new AesManaged()) {
                 ICryptoTransform encryptor = aes.CreateEncryptor(key, iv);
+                Console.WriteLine(ByteArrayToString(message));
         return ByteArrayToString(encryptor.TransformFinalBlock(message, 0, message.Length));
         }
         }
