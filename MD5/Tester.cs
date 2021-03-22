@@ -49,7 +49,6 @@ namespace MD5
                 ((i & 0x0000ff00) << 8);
         }
 
-
         private static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

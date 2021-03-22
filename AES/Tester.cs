@@ -13,8 +13,13 @@ namespace AES
         [InputBus]
         public ICypher Cypher;
 
+        [InputBus]
+        public IPlainText PlainDecrypt;
+
         [OutputBus]
-        public IMessage Message = Scope.CreateBus<IMessage>();
+        public IPlainText PlainText = Scope.CreateBus<IPlainText>();
+        [OutputBus]
+        public ICypher CypherDecrypt = Scope.CreateBus<ICypher>();
 
         private readonly string[] MESSAGES;
 
@@ -68,11 +73,11 @@ namespace AES
             .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private string targetCypher(byte[] message, byte[] key, byte[] iv) {
+        private string targetCypher(byte[] PlainText, byte[] key, byte[] iv) {
             using(AesManaged aes = new AesManaged()) {
                 ICryptoTransform encryptor = aes.CreateEncryptor(key, iv);
-                Console.WriteLine(ByteArrayToString(message));
-        return ByteArrayToString(encryptor.TransformFinalBlock(message, 0, message.Length));
+                // Console.WriteLine(ByteArrayToString(PlainText));
+        return ByteArrayToString(encryptor.TransformFinalBlock(PlainText, 0, PlainText.Length));
         }
         }
 
@@ -80,26 +85,37 @@ namespace AES
 
             await ClockAsync();
             foreach (string message in MESSAGES) {
-                Message.ValidData = false;
-                Message.ValidKey = true;
+                PlainText.ValidData = false;
+                PlainText.ValidKey = true;
                 byte[] tmpData = StringToByteArray(message);
-                for(int i = 0; i < tmpData.Length; i++) {
-                    Message.Data[i] = tmpData[i];
-                }
                 for(int i = 0; i < key.Length; i++) {
-                    Message.Key[i] = key[i];
+                    PlainText.Key[i] = key[i];
                 }
                 await ClockAsync();
 
-                Message.ValidKey = false;
-                Message.ValidData = true;
+                PlainText.ValidKey = false;
+                for(int i = 0; i < tmpData.Length; i++) {
+                    PlainText.Data[i] = tmpData[i];
+                }
+                PlainText.ValidData = true;
 
                 await ClockAsync();
                 string res = ByteArrayToString(Cypher.Data);
                 string target = targetCypher(tmpData, key, IV);
-                // Debug.Assert(res == target, $"String {message} with Hash nr. {0} - {res} doesnt match the MS library {target}");
+                // Debug.Assert(res == target, $"String {message} - {res} doesnt match the MS library {target}");
 
-
+                CypherDecrypt.ValidKey = true;
+                for(int i = 0; i < key.Length; i++) {
+                    CypherDecrypt.Key[i] = key[i];
+                }
+                await ClockAsync();
+                CypherDecrypt.ValidKey = false;
+                CypherDecrypt.ValidData = true;
+                for(int i = 0; i < tmpData.Length; i++) {
+                    CypherDecrypt.Data[i] = Cypher.Data[i];
+                }
+                await ClockAsync();
+                string resD = ByteArrayToString(PlainDecrypt.Data);
             }
         }
     }
