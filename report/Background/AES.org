@@ -1,0 +1,37 @@
+The Advanced Encryption Standard (AES) is a symmetric block cipher which is specified as the standard for encryption by the National Institute of Standards and Technology (NIST). As AES is the standard for encryption it is used msotly everywhere and is critical to include in a cryptographic library. The algorithm behind AES is called Rijndahl and was chosen since it had a good balance of security, performance of a vast variety of devices. Rijndahl is an Substitution-permutation network which manipulates a block and keysize of any multiple of 32 in the range 128-256 bits. In the exact specification of AES the blocksize is fixed to 128 bits where the key potentially can be 128, 192 or 256 bits. The 128 bits is arranged in a 4 x 4 column-major order matrix. As stated AES is a SP-network, meaning it is constructed as a series of rounds of substitutions and permutations. More precisely the algorithm can listed as follows:
+1. KeyExpansion: The key, whether it be 128, 192 or 256 bits is expanded using a keyschedule\footnote{should we include the schedule} which will expand a key into the number of rounds + 1 keys.
+2. The initial round-key is xored with the plaintext.
+3. SP - round: the rounds of the SP is performed, by first doing a substitution which officially is called SubBytes\ref{}, followed by the permutation which consists of 2 functions ~ShiftRows~ ~MixColumns~, which will ensure the 4x4 matrix is permuted. Lastly the round-key is xored with the result. This is done 9, 11 or 13 times depending on whether the key-size is 128, 192 or 256 bits respectively.
+4. The last round will work like the other except it will only permute the rows and not the columns.
+
+Subbytes is non-linear byte substitution and is usually implemented as a lookup table\footnote{should we include the table?}. It is calculated in 2 steps first by taking the multiplicative inverse in the galois field GF(2^8) followed ny an affine transformation over GF(2):
+\(b_i = b_i \oplus b_{(i+4) \% 8} \oplus b_{(i+5) \% 8} \oplus b_{(i+6) \% 8} \oplus b_{(i+7) \% 8} \oplus c_i \) with b_i denoting the ith bit of the byte and c_i denoting the ith bit of 0x63. Since these and mostly every calculation in AES operates on galois fields we can be certain the cipher also will be 128 bits.
+
+ShiftRows will transform the 4x4 input matrix by rotating the rows 0 to 3 bytes to the left, meaning the first row {b_0, b_4, b_8, b_12} will not be rotated, the second row will be rotated one bit to the left, i.e. {b_5, b_9, b_13, b_1} after the rotation. Likewise the 3rd row is shifted 2 and the last row is shifted 3 to the left (or 1 to the right). The transformation can be seen in figure \ref{}
+
+
+#+CAPTION: ShiftRows
+#+LABEL: fig:Merkle
+[[./merkle.png]]
+
+MixColumns takes each column as a polynomial over the GF(2^8) and is multiplied (mod x^4 +1,as it is a finite field) by \(a(x) = 3x^3 + x^2 + x + 2\), which can be written as a matrix as:
+#+attr_latex: :mode math :environment bmatrix :math-suffix =
+| s_{0,c}' |
+| s_{1,c}' |
+| s_{2,c}' |
+| s_{3,c}' |
+#+attr_latex: :mode math :environment bmatrix
+| 2 | 3 | 1 | 1 |
+| 1 | 2 | 3 | 1 |
+| 1 | 1 | 2 | 3 |
+| 3 | 1 | 1 | 2 |
+#+attr_latex: :mode math :environment bmatrix
+| s_{0,c} |
+| s_{1,c} |
+| s_{2,c} |
+| s_{3,c} |
+where c denotes the column multiplication is as described above and addittion is xor. By now the input text should be pretty diffused.
+
+For decryption the equivalent inverse functions can be used, as Rijndahl is truely invertible, meaning an implementation in a reversible programming language would result in correct encryption or decryption based on whether the function was called or uncalled\footnote{ref to hermes?}.
+
+The original paper for Rijndahl describes how these different steps can be implemented as using lookup tables. This implementation can be realsied on any 32-bit system with 4096 bits of memory, as we would need 4 lookup tables of 256 32bit entries. That is one table for each column with all the 256 values in GF(2^8). This approach are generally considered faster as it reduces each round to 16 lookups and 16 xors compared to the normal approach where we memory nneds to be moved around. As the decryption is truely invertible there exist likewise a lookup table approach for decryption.

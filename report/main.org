@@ -11,9 +11,9 @@
 \newpage
 #+INCLUDE: "introduction.org"
 
-#+INCLUDE: "background.org"
+#+INCLUDE: "Background/background.org"
 
-#+INCLUDE: "implementation.org"
+#+INCLUDE: "Implementation/implementation.org"
 
 #+INCLUDE: "benchmarks.org"
 
