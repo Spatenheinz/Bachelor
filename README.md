@@ -1,6 +1,38 @@
 # Bachelor
 wuhu
 ## TODO:
-* Sæt rapport op og begynd at skriv
-* Se på getting started og prøv at implementere MD5
-(https://github.com/kenkendk/sme/tree/master/src/Examples/ColorBin)
+ - [] Code
+      - [] MD5
+      - [] SHA1
+      - [] SHA2
+      - [] AES
+ - [] Report
+      - [] Introduction
+           - [] What is the report about
+           - [] What is does the library include
+      - [] Background and Motivation
+           - [] Why a crypt library for FPGA's
+           - [] Why use SME
+           - [] Hashing
+                - [] Describe MD5
+                - [] Describe SHA1
+                - [] Describe SHA2
+           - [] Cyphers
+                - [] Describe AES
+      - [] Implementation
+           - [] MD5
+           - [] AES
+      - [] Benchmarks and results
+           - [] How does the pipelined versions compare to the naive
+           - [] If possible how does our version compare to other versions
+      - [] Discussion
+      - [] Conclusion
+      - [] Proofread
+           - [] references correct
+           - [] grammar
+           - [] ambiguities
+ - [] Vivado
+      - [] Find bug in the naive version of MD5
+      - [] AES
+ - [] FPGA
+      - [] make the code actually run on an FPGA

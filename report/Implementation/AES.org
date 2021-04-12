@@ -1,0 +1,23 @@
+** AES
+
+*** naive
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: AESnaive
+:END:
+Just like for the other algorithms AES can naively be implemented as a single simple process. That is we could implement the SME implentation of AES as a single process that can do both encryption and decryption and then have some checks in the ~OnTick~ function. This however poses some unwanted effects. First we add unecessary complication to the process as it would have to multiple things at once. Furthermore and more importantly a combined encrypter/decrypter reduces the utilizations of the library. Since AES is a block cypher and rarely only need to encrypt a block of 128 bits a sequence of blocks needs to be encrypted. This naive approach is not necessarily bad for some of the modes of operations such as Electronic Codebook (ECB) (which never really should be used anyway), Cipher Block chaining (CBC) (which eliminates parallelism) etc. as these will need a decryption algorithm. However is the programmer using this library choosing to operate under a Counter mode (CTR) or Galois-counter mode (GCM) the decryption algorithm itself would be unecessary as these modes uses the encryption function to both encrypt and decrypt. Thus in a hypotetical scenario where the design includes both encryption and decryption might take up 40 pct. of an FPGA and a design with only encryption would take up 20 pct. it is clear to see how many ressources is wasted. Thus we have decided that for the basecase implementation that encryption and decryption should be seperate processes. We will only go over the implementation of encryption as the process for decryption is the exact inverse computationally as described in section \ref{} and the structure thus follows symmetrically. For the design a single bus with 4 fields as seen below suffices.
+#+BEGIN_SRC csharp
+    public interface IPlainText : IBus {
+        [InitialValue(false)]
+        bool ValidKey { get; set; }
+
+        [FixedArrayLength(BLOCK_SIZE)]
+        IFixedArray<byte> Key { get; set; }
+
+        [InitialValue(false)]
+        bool ValidData { get; set; }
+        [FixedArrayLength(BLOCK_SIZE)]
+        IFixedArray<byte> Data { get; set; }
+
+    }
+#+END_SRC

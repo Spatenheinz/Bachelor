@@ -1,0 +1,5 @@
+** Field Programmable Gate Arrays
+TODO: write something more in-depth.
+
+Why use FPGA's? To get a speed increase by moving frequently used functions and calculations from the CPU to a specialized chip (the FPGA).
+This will result in less time "wasted" on the CPU, and the specialized chip will ideally also be able to do the computations faster than a generic CPU.
