@@ -27,6 +27,8 @@ From figure \ref{fig:Merkle} one can see the construction of the hashing functio
 #+CAPTION: Merkle-Damgård construction
 #+LABEL: fig:Merkle
 [[./merkle.png]]
+*** Cypher
+TODO: WRITE SOMETHING ABOUT CYPHERS
 
 ** MD5
 :PROPERTIES:
