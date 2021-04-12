@@ -13,13 +13,13 @@ namespace AES
         [InputBus]
         public ICypher Cypher;
 
-        [InputBus]
-        public IPlainText PlainDecrypt;
+        // [InputBus]
+        // public IPlainText PlainDecrypt;
 
         [OutputBus]
         public IPlainText PlainText = Scope.CreateBus<IPlainText>();
-        [OutputBus]
-        public ICypher CypherDecrypt = Scope.CreateBus<ICypher>();
+        // [OutputBus]
+        // public ICypher CypherDecrypt = Scope.CreateBus<ICypher>();
 
         private readonly string[] MESSAGES;
 
@@ -104,18 +104,18 @@ namespace AES
                 string target = targetCypher(tmpData, key, IV);
                 // Debug.Assert(res == target, $"String {message} - {res} doesnt match the MS library {target}");
 
-                CypherDecrypt.ValidKey = true;
-                for(int i = 0; i < key.Length; i++) {
-                    CypherDecrypt.Key[i] = key[i];
-                }
-                await ClockAsync();
-                CypherDecrypt.ValidKey = false;
-                CypherDecrypt.ValidData = true;
-                for(int i = 0; i < tmpData.Length; i++) {
-                    CypherDecrypt.Data[i] = Cypher.Data[i];
-                }
-                await ClockAsync();
-                string resD = ByteArrayToString(PlainDecrypt.Data);
+                // CypherDecrypt.ValidKey = true;
+                // for(int i = 0; i < key.Length; i++) {
+                //     CypherDecrypt.Key[i] = key[i];
+                // }
+                // await ClockAsync();
+                // CypherDecrypt.ValidKey = false;
+                // CypherDecrypt.ValidData = true;
+                // for(int i = 0; i < tmpData.Length; i++) {
+                //     CypherDecrypt.Data[i] = Cypher.Data[i];
+                // }
+                // await ClockAsync();
+                // string resD = ByteArrayToString(PlainDecrypt.Data);
             }
         }
     }

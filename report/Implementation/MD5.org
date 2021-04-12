@@ -5,7 +5,7 @@
 :UNNUMBERED: nil
 :CUSTOM_ID: MD5naive
 :END:
-As explained in section\ref{SME}, SME consists of busses and processes. We can define the MD5 algorithm naively by following figure\ref{fig:Merkle} and using two busses and one simple process. Overall there are two approaches,
+As explained in section \ref{SME}, SME consists of busses and processes. We can define the MD5 algorithm naively by following figure \ref{fig:Merkle} and using two busses and one simple process. Overall there are two approaches,
 Firstly, we could let the arrows in the diagram denote the busses, such that we would have a bus denoting the message-block and one denoting the digest. However, this approach requires an extra bus, thus the alternative. Since we use a c# implementation of SME, we can store the Digest locally inside the simpleProcess. Thus we will only require a bus with the message, corresponding to the downward-facing arrows and one for the Hash (the rightmost arrow).
 we can define the Message bus as such:
 #+BEGIN_SRC csharp
@@ -31,14 +31,11 @@ Set is used in the cases where the initial 1 should be set but where the block i
 
 The Digest on the other hand is simple. It only consists of a Valid flag and the Hash as an array of 4 32-bit words.
 
-Except for the handling of the padding in relation to SME, the simple process works as explained in section\ref{MD5alg}
+Except for the handling of the padding in relation to SME, the simple process works as explained in section \ref{MD5alg}
 
 *** First optimization approach
-To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. We can thus structure the program as such using a simple diagram. in figure\ref{fig:MD5opt1} one can see we can split the hash function as a whole up into 5 simple processes and build a pipeline from this. One process for message formatting, and one for each of the 4 rounds. along with an Imessage bus and a Digest bus as described in section\ref{MD5naive}. This construction will create a pipeline where each process can run concurrently and potentially execute faster than the naive approach.
+To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. We can thus structure the program as such using a simple diagram. in figure \ref{fig:MD5opt1} one can see we can split the hash function as a whole up into 5 simple processes and build a pipeline from this. One process for message formatting, and one for each of the 4 rounds. along with an Imessage bus and a Digest bus as described in section \ref{MD5naive}. This construction will create a pipeline where each process can run concurrently and potentially execute faster than the naive approach.
 #+CAPTION: MD5 pipeline
 #+LABEL: fig:MD5opt1
+#+ATTR_LATEX: :placement [H]
 [[./Implementation/md5.png]]
-
-*** Further optimizations
-This is just a question:
-In Programming massively parallel hardware, I had a project where we were to implement a single pass parallel prefix Scan. And I know it is a bit different but, the idea is that each partition on the GPU will compute its own internal prefix scan and then wait for the previous one to finish and then add the prefix to every element in its internal scan. I was wondering if it could be worth trying a similar approach since a Merkel-Damgård construction is quite sequential in nature. So I thought if one could calculate everything that does not use the output from the previous tick, it might go faster, but I'm unsure whether such a thing could work on an FPGA since I still don't know too much about it.?
