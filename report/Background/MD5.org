@@ -1,4 +1,4 @@
-The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{}. MD5 uses a Merkle-Damgård construction.
+The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{rfc1321}. MD5 uses a Merkle-Damgård construction.
 The MD5 algorithm work by partition the input message into blocks of 512 bits. It is done by always padding the message with a single set bit followed by a series of 0's until the message = 448 mod 512. That is, even when the original message has a length of 448 mod 512, a 1 is followed by 511 bits of 0's.
 Next, a 64-bit representation of the message length mod 2^64 is appended to the padded message.
 The digest will be calculated in a 32-bit 4-word initialization (A, B, C, D), with the initial value:\\

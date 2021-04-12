@@ -14,3 +14,6 @@
 !*.png
 !*.svg
 !*.zip
+!*.bib
+!/report/main.tex
+!/report/main.pdf
