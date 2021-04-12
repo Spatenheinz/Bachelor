@@ -5,13 +5,13 @@
 #+INCLUDE: "SME.org"
 ** A crypto library
 Cryptographic functions are used by developers across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
-So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"(ref. https://web.archive.org/web/20170808032012/http://www.research.ibm.com/people/s/sailer/publications/2001/ibm4758.pdf).% Another point is modern Hardware security modules (HSM) which also does this.
+So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"\cite{IBM4758}. Another point is modern Hardware security modules (HSM) which also does this.
 However, the problem with the existing solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in research, and academics.
 So we set out to create an open-source crypto library.
 
 The crypto library consists of an implementation of various cryptographic functions, such as AES and SHA256. It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
 These implementations should also be optimized in terms of speed so that they are competitive with the existing software solutions.
-%Creating a crypto library for FPGA's ...
+Creating a crypto library for FPGA's ...
 *** Hashing
 Hashing is a mathematical concept referring to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptographic hash functions are a subset of all hash functions.
 The reason for this is that for a hash function to be a cryptographic hash function it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementation of hash functions. Lastly and most importantly, computers can't do true randomness.
@@ -27,6 +27,8 @@ From figure \ref{fig:Merkle} one can see the construction of the hashing functio
 #+CAPTION: Merkle-Damgård construction
 #+LABEL: fig:Merkle
 [[./merkle.png]]
+*** Cypher
+TODO: WRITE SOMETHING ABOUT CYPHERS
 
 ** MD5
 :PROPERTIES:
