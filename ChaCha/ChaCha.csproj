@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../sme/src/SME/SME.csproj" />
+    <ProjectReference Include="../sme/src/SME.Tracer/SME.Tracer.csproj" />
+    <ProjectReference Include="../sme/src/SME.VHDL/SME.VHDL.csproj" />
+    <ProjectReference Include="../sme/src/SME.GraphViz/SME.GraphViz.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+</Project>
