@@ -1,4 +1,4 @@
-% Created 2021-04-12 Mon 16:08
+% Created 2021-04-13 Tue 14:40
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
@@ -15,31 +15,22 @@
 \usepackage{capt-of}
 \usepackage{hyperref}
 \input{baseHeader.tex}
-\assignment{} \subtitle{} \date{12 06 2021} \advisor{Advisor: Kenneth Skovhede} \frontpage{}
-\author{Jacob Herbst (mwr148), Jonas Flach Jensen ()}
-\date{\today}
-\title{Crypto in SME for FPGA}
-\hypersetup{
- pdfauthor={Jacob Herbst (mwr148), Jonas Flach Jensen ()},
- pdftitle={Crypto in SME for FPGA},
- pdfkeywords={},
- pdfsubject={},
- pdfcreator={Emacs 27.2 (Org mode 9.5)}, 
- pdflang={English}}
+\titel{\textbf{Bachelorproject}} \undertitel{Cryptographic library for FPGA's} \opgave{Bachelor Project} \forfatter{Jacob Herbst(mwr148), Jonas Flach Jensen ()} \dato{12 june 2021} \vejleder{Advisor: Kenneth Skovhede}
+\date{}
+\title{}
 \begin{document}
 
 \maketitle
 \tableofcontents
-
 \newpage
 \section{Introduction}
-\label{sec:org7a58eaf}
+\label{sec:org8e4b8c4}
 
 \section{Background}
-\label{sec:orgbadddd8}
+\label{sec:org2e51eda}
 
 \subsection{Field Programmable Gate Arrays}
-\label{sec:orga5609f5}
+\label{sec:org969cd8d}
 TODO: write something more in-depth.
 
 Why use FPGA's? To get a speed increase by moving frequently used functions and calculations from the CPU to a specialized chip (the FPGA).
@@ -59,7 +50,7 @@ SME has a similar notion of processes. There exist two types of SME processes, \
 For the communications channels, SME extends the concepts from CSP by using buses. Instead of using explicit naming for sources and destinations, each process will consist of a set of input and output busses that it can read and write to, respectively. Furthermore, these buses use broadcasting as means of synchronization instead of the blocking non-buffered approach.  The broadcasting happens every clock-cycle on the internal clock.
 A bus is essentially just a collection of fields that can be read and written to depending on the process' access, merely a data transfer object. Thus a simple (and pointless) process that adds two numbers might have two input busses X\{valid,x\} and Y\{valid,y\}. inside the \texttt{onTick} function, which will be run every tick of the internal clock of SME, could then add the two values x and y if their valid fields was set to true and write the result to a bus RES\{valid, res\}. It is worth noting that every process should have one and possibly multiple ``valid''-flags which shows if there is any data on the bus. It is easy to see how an SME model can be transformed into a dependency graph with processes being nodes and buses the edges.From the dependency graph it is possible to create an AST which can be translated into VHDL code\cite{SME}, thus creating the bridge from the high level model to the low-level hardware implementation. This in turn can be fed into a tool such as vivado\cite{} to synthesize the implementation to actual hardware. For the cryptographic library covered in this report we will be using a C\# implementation of SME by the models creators\cite{SME}.
 \subsection{A crypto library}
-\label{sec:org8dde2d5}
+\label{sec:org44fd06a}
 Cryptographic functions are used by developers across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
 So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own ``IBM 4758 Secure Coprocessor''\cite{IBM4758}. Another point is modern Hardware security modules (HSM) which also does this.
 However, the problem with the existing solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in research, and academics.
@@ -69,7 +60,7 @@ The crypto library consists of an implementation of various cryptographic functi
 These implementations should also be optimized in terms of speed so that they are competitive with the existing software solutions.
 Creating a crypto library for FPGA's \ldots{}
 \subsubsection{Hashing}
-\label{sec:org595eb4c}
+\label{sec:org86f5ac0}
 Hashing is a mathematical concept referring to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptographic hash functions are a subset of all hash functions.
 The reason for this is that for a hash function to be a cryptographic hash function it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementation of hash functions. Lastly and most importantly, computers can't do true randomness.
 If a hash function can be implemented with a limited input space, is pseudo-random, and upholds certain properties listed below, it can be categorized as a ``Cryptographic Hash Function''. One such example is the outdated MD5 algorithm.
@@ -81,7 +72,7 @@ If a hash function can be implemented with a limited input space, is pseudo-rand
 
 \begin{enumerate}
 \item Merkle-Damgård construction
-\label{sec:org044b50f}
+\label{sec:orgf00d57d}
 One approach that is widely used in cryptographic hashing is the Merkle-Damgård construction. One of the reasons this approach is desirable when developing a cryptographic hashing algorithm is because the hash function will be collision-resistant given the compression function itself is collision-resistant.
 From figure \ref{fig:Merkle} one can see the construction of the hashing function. One can see that the message will be padded to have a certain length since any compression function must work on static size. The compression function \texttt{f} will initially take two arguments, the initialization vector, and the first block. f will then produce a result of the same size as the initialization vector. This result will then be fed into the next iteration of \texttt{f} along with the second block of the message. This is repeated until the entire padded message has been processed. From here a potential finalization function can be used to improve the hash. Lastly, the hashed value will be produced.
 
@@ -91,6 +82,9 @@ From figure \ref{fig:Merkle} one can see the construction of the hashing functio
 \caption{\label{fig:Merkle}Merkle-Damgård construction}
 \end{figure}
 \end{enumerate}
+\subsubsection{Cypher}
+\label{sec:org060d34d}
+TODO: WRITE SOMETHING ABOUT CYPHERS
 
 \subsection{MD5}
 \label{MD5alg}
@@ -188,9 +182,9 @@ For decryption the equivalent inverse functions can be used, as Rijndahl is true
 The original paper for Rijndahl\cite{Rijndahl} describes how these different steps can be implemented as using lookup tables. This implementation can be realised on any 32-bit system with 4096 bits of memory, as we would need 4 lookup tables of 256 32-bit entries. That is one table for each column with all the 256 values in GF(2\textsuperscript{8}). This approach are generally considered faster as it reduces each round to 16 lookups and 16 xors compared to the normal approach where we memory needs to be moved around. As the decryption is truely invertible there exist likewise a lookup table approach for decryption.
 
 \section{Implementation}
-\label{sec:org9e85b8f}
+\label{sec:orgbef40db}
 \subsection{MD5}
-\label{sec:org448e546}
+\label{sec:org17fe542}
 
 \subsubsection{naive}
 \label{MD5naive}
@@ -223,7 +217,7 @@ The Digest on the other hand is simple. It only consists of a Valid flag and the
 Except for the handling of the padding in relation to SME, the simple process works as explained in section \ref{MD5alg}
 
 \subsubsection{First optimization approach}
-\label{sec:org50aff93}
+\label{sec:org057ebc1}
 To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. We can thus structure the program as such using a simple diagram. in figure \ref{fig:MD5opt1} one can see we can split the hash function as a whole up into 5 simple processes and build a pipeline from this. One process for message formatting, and one for each of the 4 rounds. along with an Imessage bus and a Digest bus as described in section \ref{MD5naive}. This construction will create a pipeline where each process can run concurrently and potentially execute faster than the naive approach.
 \begin{figure}[H]
 \centering
@@ -231,11 +225,11 @@ To make the algorithm more efficient, the length of the circuit produced in the 
 \caption{\label{fig:MD5opt1}MD5 pipeline}
 \end{figure}
 \subsection{AES}
-\label{sec:org885523a}
+\label{sec:orgd8e162b}
 
 \subsubsection{naive}
 \label{AESnaive}
-Just like for the other algorithms AES can naively be implemented as a single simple process. That is we could implement the SME implentation of AES as a single process that can do both encryption and decryption and then have some checks in the \texttt{OnTick} function. This however poses some unwanted effects. First we add unecessary complication to the process as it would have to multiple things at once. Furthermore and more importantly a combined encrypter/decrypter reduces the utilizations of the library. Since AES is a block cypher and rarely only need to encrypt a block of 128 bits a sequence of blocks needs to be encrypted. This naive approach is not necessarily bad for some of the modes of operations such as Electronic Codebook (ECB) (which never really should be used anyway), Cipher Block chaining (CBC) (which eliminates parallelism) etc. as these will need a decryption algorithm. However is the programmer using this library choosing to operate under a Counter mode (CTR) or Galois-counter mode (GCM) the decryption algorithm itself would be unecessary as these modes uses the encryption function to both encrypt and decrypt. Thus in a hypotetical scenario where the design includes both encryption and decryption might take up 40 pct. of an FPGA and a design with only encryption would take up 20 pct. it is clear to see how many ressources is wasted. Thus we have decided that for the basecase implementation that encryption and decryption should be seperate processes. We will only go over the implementation of encryption as the process for decryption is the exact inverse computationally as described in section \ref{AESalg} and the structure thus follows symmetrically. For the design a single bus with 4 fields as seen below suffices. It consists of two Valid flags which works in a similar matter to the one described for MD5. Furthermore there is two byte arrays with the size of \texttt{BLOCK\_SIZE} = 128 as this implementation is a 128 bit key AES. We have one array for storing the data and one for storing the key. Once again we dont want to make the process itself flexible with multiple AES versions as reduces the resource utilization. If 128 key encryption suffices the overhead from including the 4 extra rounds for 256 is wasteful.
+Just like for the other algorithms AES can naively be implemented as a single simple process. That is we could implement the SME implentation of AES as a single process that can do both encryption and decryption and then have some checks in the \texttt{OnTick} function. This however poses some unwanted effects. First we add unecessary complication to the process as it would have to multiple things at once. Furthermore and more importantly a combined encrypter/decrypter reduces the utilizations of the library. Since AES is a block cypher and rarely only need to encrypt a block of 128 bits a sequence of blocks needs to be encrypted. This naive approach is not necessarily bad for some of the modes of operations such as Electronic Codebook (ECB) (which never really should be used anyway), Cipher Block chaining (CBC) (which eliminates parallelism) etc. as these will need a decryption algorithm. However is the programmer using this library choosing to operate under a Counter mode (CTR) or Galois-counter mode (GCM) the decryption algorithm itself would be unecessary as these modes uses the encryption function to both encrypt and decrypt. Thus in a hypotetical scenario where the design includes both encryption and decryption might take up 40 pct. of an FPGA and a design with only encryption would take up 20 pct. it is clear to see how many ressources is wasted. Thus we have decided that for the basecase implementation that encryption and decryption should be seperate processes. We will only go over the implementation of encryption as the process for decryption is the exact inverse computationally as described in section \ref{AESalg} and the structure thus follows symmetrically. For the design a single bus with 4 fields as seen below suffices. It consists of two Valid flags which works in a similar matter to the one described for MD5. Furthermore there is two byte arrays with the size of \texttt{BLOCK\_SIZE} = 128 as this implementation is a 128 bit key AES. We have one array for storing the data and one for storing the key. Once again we dont want to make the process itself flexible with multiple AES versions as reduces the resource utilization. If 128 key encryption suffices the overhead from including the 4 extra rounds for 256 is wasteful. Notice furthmore, the bus i named IPlainText but could just as well have been called IData or something similar as the same bus can be used for both the plaintext and the cypher as the algorithm is symmetrical.
 \begin{verbatim}
     public interface IPlainText : IBus {
         [InitialValue(false)]
@@ -257,13 +251,13 @@ For the actual process we follow the T-box approach described earlier, as we wan
 Just like for the other algorithms its is a quite slow approach to use only a single process and we can try to pipeline the different aspects of the algorithm as smaller processes. We notice that AES likewise uses rounds and each round can be divided into its own process. However we can note that each round does not have a lot of computation as we use the T-box implementation. The key-expansion might therefore be the most computationally heavy part and could be split into smaller parts.
 
 \section{Benchmarks}
-\label{sec:org5bd963e}
+\label{sec:orgc0f3593}
 
 \section{Discussion}
-\label{sec:org5a49161}
+\label{sec:org9924691}
 
 \section{Conclusion}
-\label{sec:org198f499}
+\label{sec:orgc3b7ccb}
 
 \bibliographystyle{unsrt}
 \bibliography{ref}

@@ -2,18 +2,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage{latexsym}
 \usepackage{amssymb,amsmath}
-\usepackage{stmaryrd} %evaluation brackets
 \usepackage[pdftex]{graphicx}
-\usepackage[english, science, titlepage]{ku-frontpage}
-\usepackage{color}
+\usepackage[babel, en]{ku-forside}
 \usepackage{float}
 \usepackage{appendix}
-% \usepackage{fullpage}
 % use to make grammar
-\usepackage{array}
-\usepackage{txfonts}
 % ----------------------
-\usepackage{hyperref}
+% \usepack\def\HyperLinks{                        % Hyperlinks-pakke, der laver referencer til links og tillader links til www             %
+% \usepackage[pdftitle={\TITEL},pdfauthor={\FORFATTER}, %             %  Der er foretaget et lille trick så pakken indlæses efter  %
+% pdfsubject={\UNDERTITEL}, linkbordercolor={0.8 0.8 0.8}]{hyperref}} %  titlen defineres.                                         %
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
@@ -25,19 +22,10 @@
   basicstyle=\ttfamily,
   mathescape
 }
-\newcommand{\M}{\mathcal{M}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\B}{\square}
-\newcommand{\D}{\diamond}
-\newcommand{\llb}{\llbracket}
-\newcommand{\rrb}{\rrbracket}
-\newcommand{\empty}{\emptyset}
-\usepackage[showframe,paper=a4paper,margin=3in]{geometry}
-
-% \assignment{}
-% \author{Jacob Herbst (mwr148)}
-% \title{ARL}
-% \subtitle{}
-% \date{29 01 2021}
-% \advisor{Advisor: Kenneth Skovhede}
-% \frontpageimage{}
+% \setmainfont{cmr}
+\usepackage[a4paper, hmargin={1.5in, 1.5in}, vmargin={1.5in, 1.5in}]{geometry}      % Geometri-pakke: Styrer bl.a. maginer       %
+\usepackage{minted}
+\usepackage{mdframed}
+\usepackage{sourcecodepro}
+% \BeforeBeginEnvironment{verbatim}{\begin{mdframed}}
+%   \AfterEndEnvironment{verbatim}{\end{mdframed}}
