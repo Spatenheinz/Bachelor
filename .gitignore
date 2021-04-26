@@ -17,3 +17,8 @@
 !*.bib
 !/report/main.tex
 !/report/main.pdf
+!.c
+!.cpp
+!.cu
+!.h
+!.cu.h
