@@ -17,9 +17,9 @@
 !*.bib
 !/report/main.tex
 !/report/main.pdf
-!.c
-!.cpp
-!.cu
-!.h
-!.cu.h
+!*.c
+!*.cpp
+!*.cu
+!*.h
+!*.cu.h
 !data.txt
