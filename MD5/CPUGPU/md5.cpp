@@ -1,5 +1,5 @@
 #include "md5.h"
-
+#include "kernel.cu.h"
 void to_bytes(uint32_t val, uint8_t *bytes)
 {
     bytes[0] = (uint8_t) val;
