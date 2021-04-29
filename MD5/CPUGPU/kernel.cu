@@ -1,53 +1,13 @@
-#include "kernel.cu.h"
-#include "device_launch_parameters.h"
-
 #include <stdio.h>
 #include <sys/time.h>
-#define DEBUG_INFO  true
-uint32_t MAX_HWDTH;
-uint32_t MAX_BLOCK;
-uint32_t MAX_SHMEM;
+#include "cudaHelpers.cu.h"
+#include "kernel.cu.h"
 
-cudaDeviceProp prop;
-void initHwd() {
-    int nDevices;
-    cudaGetDeviceCount(&nDevices);
-    cudaGetDeviceProperties(&prop, 0);
-    MAX_HWDTH = prop.maxThreadsPerMultiProcessor * prop.multiProcessorCount;
-    MAX_BLOCK = prop.maxThreadsPerBlock;
-    MAX_SHMEM = prop.sharedMemPerBlock;
-
-    if (DEBUG_INFO) {
-        printf("Device name: %s\n", prop.name);
-        printf("Number of hardware threads: %d\n", MAX_HWDTH);
-        printf("Max block size: %d\n", MAX_BLOCK);
-        printf("Shared memory size: %d\n", MAX_SHMEM);
-        puts("====");
-    }
-}
-
-// Bad globals
+// Bad globals - not ideal
 uint32_t *dev_k = 0;
 uint32_t *dev_r = 0;
-int timeval_subtract(struct timeval *result, struct timeval *t2, struct timeval *t1)
-{
-    unsigned int resolution=1000000;
-    long int diff = (t2->tv_usec + resolution * t2->tv_sec) - (t1->tv_usec + resolution * t1->tv_sec);
-    result->tv_sec = diff / resolution;
-    result->tv_usec = diff % resolution;
-    return (diff<0);
-}
 
-#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
-{
-    if (code != cudaSuccess)
-    {
-        fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-        if (abort) exit(code);
-    }
-}
-__device__ void cuda_to_bytes(uint32_t val, uint8_t *bytes)
+__device__ void d_to_bytes(uint32_t val, uint8_t *bytes)
 {
     bytes[0] = (uint8_t) val;
     bytes[1] = (uint8_t) (val >> 8);
@@ -89,9 +49,9 @@ __global__ void md5kernel(const uint8_t *initial_msg, size_t initial_len, uint8_
     for (offset = initial_len + 1; offset < new_len; offset++)
         msg[offset] = 0; // append "0" bits
     // append the len in bits at the end of the buffer.
-    cuda_to_bytes(initial_len*8, msg + new_len);
+    d_to_bytes(initial_len*8, msg + new_len);
     // initial_len>>29 == initial_len*8>>32, but avoids overflow.
-    cuda_to_bytes(initial_len>>29, msg + new_len + 4);
+    d_to_bytes(initial_len>>29, msg + new_len + 4);
     // Process the message in successive 512-bit chunks:
     //for each 512-bit chunk of message:
     #pragma unroll
@@ -148,10 +108,10 @@ __global__ void md5kernel(const uint8_t *initial_msg, size_t initial_len, uint8_
     // cleanup
     free(msg);
     //var char digest[16] := A append B append C append D //(Output is in little-endian)
-    cuda_to_bytes(A, digest);
-    cuda_to_bytes(B, digest + 4);
-    cuda_to_bytes(C, digest + 8);
-    cuda_to_bytes(D, digest + 12);
+    d_to_bytes(A, digest);
+    d_to_bytes(B, digest + 4);
+    d_to_bytes(C, digest + 8);
+    d_to_bytes(D, digest + 12);
 }
 __global__ void many_md5kernel(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest) {
     // These vars will contain the hash
@@ -181,9 +141,9 @@ __global__ void many_md5kernel(const uint8_t *initial_msg, size_t initial_len, u
     for (offset = initial_len + 1; offset < new_len; offset++)
         msg[offset] = 0; // append "0" bits
     // append the len in bits at the end of the buffer.
-    cuda_to_bytes(initial_len*8, msg + new_len);
+    d_to_bytes(initial_len*8, msg + new_len);
     // initial_len>>29 == initial_len*8>>32, but avoids overflow.
-    cuda_to_bytes(initial_len>>29, msg + new_len + 4);
+    d_to_bytes(initial_len>>29, msg + new_len + 4);
     // Process the message in successive 512-bit chunks:
     //for each 512-bit chunk of message:
     #pragma unroll
@@ -240,16 +200,15 @@ __global__ void many_md5kernel(const uint8_t *initial_msg, size_t initial_len, u
     // cleanup
     free(msg);
     //var char digest[16] := A append B append C append D //(Output is in little-endian)
-    cuda_to_bytes(A, digest);
-    cuda_to_bytes(B, digest + 4);
-    cuda_to_bytes(C, digest + 8);
-    cuda_to_bytes(D, digest + 12);
+    d_to_bytes(A, digest);
+    d_to_bytes(B, digest + 4);
+    d_to_bytes(C, digest + 8);
+    d_to_bytes(D, digest + 12);
 }
 
 // Helper function for using CUDA to compute MD5 with timing
 int MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, int runs)
 {
-    unsigned long int elapsed;
     struct timeval t_start, t_end, t_diff;
     uint8_t *dev_initial_msg = 0;
     uint8_t *dev_digest = 0;
@@ -266,9 +225,9 @@ int MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, int run
     gpuErrchk(cudaDeviceSynchronize());
         gettimeofday(&t_end, NULL);
         timeval_subtract(&t_diff, &t_end, &t_start);
-        elapsed = (t_diff.tv_sec*1e6+t_diff.tv_usec) / runs;
-        double GBsec = initial_len * (2*sizeof(int) + sizeof(int)) * 1.0e-3f / elapsed;
-        printf("GPU2 runs in:       %lu microsecs,   GB/sec: %.2f\n", elapsed, GBsec);
+        float elapsed = (t_diff.tv_sec*1e6+t_diff.tv_usec) / runs;
+        double MBsec = initial_len / elapsed;
+        printf("CPU runs in:       %.0f microsecs,   MB/sec: %.2f\n", elapsed, MBsec);
 
     // Check for any errors launching the kernel
     gpuErrchk(cudaGetLastError());
@@ -288,7 +247,6 @@ int MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, int run
 
 int Many_MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, int runs)
 {
-    unsigned long int elapsed;
     struct timeval t_start, t_end, t_diff;
     uint8_t *dev_initial_msg = 0;
     uint8_t *dev_digest = 0;
@@ -309,9 +267,9 @@ int Many_MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, in
     gpuErrchk(cudaDeviceSynchronize());
         gettimeofday(&t_end, NULL);
         timeval_subtract(&t_diff, &t_end, &t_start);
-        elapsed = (t_diff.tv_sec*1e6+t_diff.tv_usec) / runs;
-        double GBsec = initial_len * (2*sizeof(int) + sizeof(int)) * 1.0e-3f / elapsed;
-        printf("GPU2 runs in:       %lu microsecs,   GB/sec: %.2f\n", elapsed, GBsec);
+        float elapsed = (t_diff.tv_sec*1e6+t_diff.tv_usec) / runs;
+        double MBsec = initial_len / elapsed;
+        printf("CPU runs in:       %.0f microsecs,   MB/sec: %.2f\n", elapsed, MBsec);
 
     // Check for any errors launching the kernel
     gpuErrchk(cudaGetLastError());

@@ -77,7 +77,7 @@ namespace AES
 			uint a2 = (((uint)state[8] << 24) | ((uint)state[9] << 16) | ((uint)state[10] << 8) | (uint)state[11]) ^ expandedKey128[2];
 			uint a3 = (((uint)state[12] << 24) | ((uint)state[13] << 16) | ((uint)state[14] << 8) | (uint)state[15]) ^ expandedKey128[3];
 
-            // Console.WriteLine($"k_sch: {expandedKey128[0].ToString("x8")}{expandedKey128[1].ToString("x8")}{expandedKey128[2].ToString("x8")}{expandedKey128[3].ToString("x8")}");
+            Console.WriteLine($"k_sch: {expandedKey128[0].ToString("x8")}{expandedKey128[1].ToString("x8")}{expandedKey128[2].ToString("x8")}{expandedKey128[3].ToString("x8")}");
             // Console.WriteLine($"start: {a0.ToString("x8")}{a1.ToString("x8")}{a2.ToString("x8")}{a3.ToString("x8")}");
             /* Round 1 */
 			uint b0 = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[4];

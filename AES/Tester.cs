@@ -102,6 +102,7 @@ namespace AES
                 await ClockAsync();
                 string res = ByteArrayToString(Cypher.Data);
                 string target = targetCypher(tmpData, key, IV);
+                // Console.WriteLine(res);
                 // Debug.Assert(res == target, $"String {message} - {res} doesnt match the MS library {target}");
 
                 // CypherDecrypt.ValidKey = true;
