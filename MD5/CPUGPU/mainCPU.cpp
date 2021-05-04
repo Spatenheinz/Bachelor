@@ -6,6 +6,7 @@
 #include "md5.h"
 #include "timer.h"
 
+#define HASHES 512
 int main(int argc, char **argv) {
 	int runs = 100;
     if (argc == 2) {
@@ -39,6 +40,28 @@ int main(int argc, char **argv) {
         timeval_subtract(&t_diff, &t_end, &t_start);
         float elapsed = (t_diff.tv_sec*1e6+t_diff.tv_usec) / runs;
         double MBsec = len / elapsed;
+        printf("CPU runs in:       %.0f microsecs,   MB/sec: %.2f\n", elapsed, MBsec);
+    // display result cpu
+    for (i = 0; i < 16; i++)
+        printf("%2.2x", result[i]);
+    puts("");
+    memset(result, 0, 16);
+
+    for (i = 0; i < 16; i++)
+        printf("%2.2x", result[i]);
+    puts("");
+	gettimeofday(&t_start, NULL);
+    for (i = 0; i < runs; i++) {
+
+        for(int j = 0; j < HASHES; j++) {
+            // printf("%d\n", msg[j+(len/HASHES)]);
+            md5((uint8_t*)msg+(j*(len/HASHES)), (len/HASHES), result);
+        }
+    }
+        gettimeofday(&t_end, NULL);
+        timeval_subtract(&t_diff, &t_end, &t_start);
+        elapsed = (t_diff.tv_sec*1e6+t_diff.tv_usec) / runs;
+        MBsec = len / elapsed;
         printf("CPU runs in:       %.0f microsecs,   MB/sec: %.2f\n", elapsed, MBsec);
     // display result cpu
     for (i = 0; i < 16; i++)

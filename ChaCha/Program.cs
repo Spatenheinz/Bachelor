@@ -77,14 +77,10 @@ namespace ChaCha
             QR(ref tmp[2], ref tmp[7], ref tmp[ 8], ref tmp[13]); // diagonal 3
             QR(ref tmp[3], ref tmp[4], ref tmp[ 9], ref tmp[14]); // diagonal 4
             }
-            for(int i = 0; i < 16; i++) {
-                Console.WriteLine(tmp[i].ToString("X8"));
-            }
-                Console.WriteLine("\n");
 
             for(int i = 0; i < config.BLOCK_SIZE; i++) {
-                InterState[i] += tmp[i];
-                Output.Values[i] = reverseByte(InterState[i]);
+                // InterState[i] += tmp[i];
+                Output.Values[i] = reverseByte(InterState[i]+tmp[i]);
             }
         }
         protected override void OnTick() {
@@ -97,17 +93,8 @@ namespace ChaCha
                     InterState[13] = Input.Nonce0;
                     InterState[14] = Input.Nonce1;
                     InterState[15] = Input.Nonce2;
-                    for(int i = 0; i < 16; i++) {
-                        Console.WriteLine(InterState[i].ToString("X8"));
-                    }
-                        Console.WriteLine("\n");
                     chacha();
-                    Console.WriteLine("after chacha:");
                     Output.Valid = true;
-                    for(int i = 0; i < 16; i++) {
-                        Console.WriteLine(InterState[i].ToString("X8"));
-                    }
-                        Console.WriteLine("\n");
             }
         }
 
@@ -136,11 +123,25 @@ namespace ChaCha
             return res;
 
         }
+        // Tester() {
+            // testkeys = new uint [1][];
+            // nonces = new uint [1][];
+            // plaintext = new byte [1][];
+            // for(int i = 0; i < 1; i++) {
+            //     testkeys[i] = StringToArray("0000000000000000000000000000000000000000000000000000000000000000");
+            //     nonces[i] = StringToArray("0000000000000000");
+
+            // }
+        // }
+        // private uint[][] testkeys;
+        // private uint[][] nonces;
+        // private byte[][] plaintext; //Encoding.ASCII.GetBytes("Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.");
         private uint[] testkey = StringToArray("03020100070605040b0a09080f0e0d0c13121110171615141b1a19181f1e1d1c");
         private byte[] plaintext = Encoding.ASCII.GetBytes("Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.");
         private string result;
 
         public async override Task Run() {
+
             await ClockAsync();
             while(true) {
                 State.Valid = true;
@@ -162,8 +163,8 @@ namespace ChaCha
                             result += (tmp[i] ^ plaintext[offset]).ToString("X2");
                         }
                     }
-                    Console.WriteLine(result);
                 }
+                Console.WriteLine(result);
                 break;
             }
         }

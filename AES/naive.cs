@@ -4,7 +4,7 @@ using static AES.AESConfig;
 
 namespace AES
 {
-    class naiveE : SimpleProcess {
+    class AESe : SimpleProcess {
         [InputBus]
         public IPlainText PlainText;
 
@@ -22,15 +22,15 @@ namespace AES
                 // for(int i = 0; i < BLOCK_SIZE; i++) {
                 //     IV[i] = PlainText.Data[i];
                 // }
-            } else if (PlainText.ValidData) {
+            } else if (PlainText.ValidBlock) {
                 for(int i = 0; i < BLOCK_SIZE; i++) {
-                    state[i] = PlainText.Data[i];
+                    state[i] = PlainText.block[i];
                 }
                 Encrypt128();
                 for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Cypher.Data[i] = IV[i];
+                    Cypher.block[i] = IV[i];
                 }
-                Cypher.ValidData = true;
+                Cypher.ValidBlock = true;
             }
         }
 
@@ -66,18 +66,12 @@ namespace AES
 
         private void Encrypt128() {
 
-            // Console.Write($"CBC : ");
-            // for(int i = 0; i < BLOCK_SIZE; i++) {
-            //     Console.Write($"{state[i].ToString("x2")}");
-            // }
-            // Console.WriteLine("");
-
             uint a0 = (((uint)state[0] << 24) | ((uint)state[1] << 16) | ((uint)state[2] << 8) | (uint)state[3]) ^ expandedKey128[0];
 			uint a1 = (((uint)state[4] << 24) | ((uint)state[5] << 16) | ((uint)state[6] << 8) | (uint)state[7]) ^ expandedKey128[1];
 			uint a2 = (((uint)state[8] << 24) | ((uint)state[9] << 16) | ((uint)state[10] << 8) | (uint)state[11]) ^ expandedKey128[2];
 			uint a3 = (((uint)state[12] << 24) | ((uint)state[13] << 16) | ((uint)state[14] << 8) | (uint)state[15]) ^ expandedKey128[3];
 
-            Console.WriteLine($"k_sch: {expandedKey128[0].ToString("x8")}{expandedKey128[1].ToString("x8")}{expandedKey128[2].ToString("x8")}{expandedKey128[3].ToString("x8")}");
+            // Console.WriteLine($"k_sch: {expandedKey128[0].ToString("x8")}{expandedKey128[1].ToString("x8")}{expandedKey128[2].ToString("x8")}{expandedKey128[3].ToString("x8")}");
             // Console.WriteLine($"start: {a0.ToString("x8")}{a1.ToString("x8")}{a2.ToString("x8")}{a3.ToString("x8")}");
             /* Round 1 */
 			uint b0 = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[4];

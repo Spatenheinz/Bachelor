@@ -7,6 +7,7 @@
 uint32_t *dev_k = 0;
 uint32_t *dev_r = 0;
 
+#define BLOCKS 512
 __device__ void d_to_bytes(uint32_t val, uint8_t *bytes)
 {
     bytes[0] = (uint8_t) val;
@@ -43,7 +44,11 @@ __global__ void md5kernel(const uint8_t *initial_msg, size_t initial_len, uint8_
     for (new_len = initial_len + 1; new_len % (512/8) != 448/8; new_len++)
         ;
     msg = (uint8_t *)malloc(new_len + 8);
-    memcpy(msg, initial_msg, initial_len);
+    #pragma unroll
+    for(int i = 0; i < initial_len; i++) {
+        msg[i] = initial_msg[i];
+    }
+    // memcpy(msg, initial_msg, initial_len);
     msg[initial_len] = 0x80; // append the "1" bit; most significant bit is "first"
     #pragma unroll
     for (offset = initial_len + 1; offset < new_len; offset++)
@@ -66,38 +71,38 @@ __global__ void md5kernel(const uint8_t *initial_msg, size_t initial_len, uint8_
         c = C;
         d = D;
         // Main loop:
-        FF ( a, b, c, d, w[ 0], 7, 3614090360); /* 1 */ FF ( d, a, b, c, w[ 1], 12, 3905402710); /* 2 */
-        FF ( c, d, a, b, w[ 2], 17,  606105819); /* 3 */FF ( b, c, d, a, w[ 3], 22, 3250441966); /* 4 */
-        FF ( a, b, c, d, w[ 4], 7, 4118548399); /* 5 */ FF ( d, a, b, c, w[ 5], 12, 1200080426); /* 6 */
-        FF ( c, d, a, b, w[ 6], 17, 2821735955); /* 7 */FF ( b, c, d, a, w[ 7], 22, 4249261313); /* 8 */
-        FF ( a, b, c, d, w[ 8], 7, 1770035416); /* 9 */ FF ( d, a, b, c, w[ 9], 12, 2336552879); /* 10 */
-        FF ( c, d, a, b, w[10], 17, 4294925233); /* 11 */FF ( b, c, d, a, w[11], 22, 2304563134); /* 12 */
-        FF ( a, b, c, d, w[12], 7, 1804603682); /* 13 */FF ( d, a, b, c, w[13], 12, 4254626195); /* 14 */
-        FF ( c, d, a, b, w[14], 17, 2792965006); /* 15 */FF ( b, c, d, a, w[15], 22, 1236535329); /* 16 */
-        GG ( a, b, c, d, w[ 1], 5, 4129170786); /* 17 */GG ( d, a, b, c, w[ 6], 9, 3225465664); /* 18 */
-        GG ( c, d, a, b, w[11], 14,  643717713); /* 19 */GG ( b, c, d, a, w[ 0], 20, 3921069994); /* 20 */
-        GG ( a, b, c, d, w[ 5], 5, 3593408605); /* 21 */GG ( d, a, b, c, w[10], 9,   38016083); /* 22 */
-        GG ( c, d, a, b, w[15], 14, 3634488961); /* 23 */GG ( b, c, d, a, w[ 4], 20, 3889429448); /* 24 */
-        GG ( a, b, c, d, w[ 9], 5,  568446438); /* 25 */ GG ( d, a, b, c, w[14], 9, 3275163606); /* 26 */
-        GG ( c, d, a, b, w[ 3], 14, 4107603335); /* 27 */GG ( b, c, d, a, w[ 8], 20, 1163531501); /* 28 */
-        GG ( a, b, c, d, w[13], 5, 2850285829); /* 29 */GG ( d, a, b, c, w[ 2], 9, 4243563512); /* 30 */
-        GG ( c, d, a, b, w[ 7], 14, 1735328473); /* 31 */GG ( b, c, d, a, w[12], 20, 2368359562); /* 32 */
-        HH ( a, b, c, d, w[ 5], 4, 4294588738); /* 33 */HH ( d, a, b, c, w[ 8], 11, 2272392833); /* 34 */
-        HH ( c, d, a, b, w[11], 16, 1839030562); /* 35 */HH ( b, c, d, a, w[14], 23, 4259657740); /* 36 */
-        HH ( a, b, c, d, w[ 1], 4, 2763975236); /* 37 */HH ( d, a, b, c, w[ 4], 11, 1272893353); /* 38 */
-        HH ( c, d, a, b, w[ 7], 16, 4139469664); /* 39 */HH ( b, c, d, a, w[10], 23, 3200236656); /* 40 */
-        HH ( a, b, c, d, w[13], 4,  681279174); /* 41 */HH ( d, a, b, c, w[ 0], 11, 3936430074); /* 42 */
-        HH ( c, d, a, b, w[ 3], 16, 3572445317); /* 43 */HH ( b, c, d, a, w[ 6], 23,   76029189);/* 44 */
-        HH ( a, b, c, d, w[ 9], 4, 3654602809); /* 45 */HH ( d, a, b, c, w[12], 11, 3873151461); /* 46 */
-        HH ( c, d, a, b, w[15], 16,  530742520); /* 47 */HH ( b, c, d, a, w[ 2], 23, 3299628645); /* 48 */
-        II ( a, b, c, d, w[ 0], 6, 4096336452); /* 49 */II ( d, a, b, c, w[ 7], 10, 1126891415); /* 50 */
-        II ( c, d, a, b, w[14], 15, 2878612391); /* 51 */II ( b, c, d, a, w[ 5], 21, 4237533241); /* 52 */
-        II ( a, b, c, d, w[12], 6, 1700485571); /* 53 */II ( d, a, b, c, w[ 3], 10, 2399980690); /* 54 */
-        II ( c, d, a, b, w[10], 15, 4293915773); /* 55 */II ( b, c, d, a, w[ 1], 21, 2240044497); /* 56 */
-        II ( a, b, c, d, w[ 8], 6, 1873313359); /* 57 */II ( d, a, b, c, w[15], 10, 4264355552); /* 58 */
-        II ( c, d, a, b, w[ 6], 15, 2734768916); /* 59 */II ( b, c, d, a, w[13], 21, 1309151649); /* 60 */
-        II ( a, b, c, d, w[ 4], 6, 4149444226); /* 61 */II ( d, a, b, c, w[11], 10, 3174756917); /* 62 */
-        II ( c, d, a, b, w[ 2], 15,  718787259); /* 63 */II ( b, c, d, a, w[ 9], 21, 3951481745); /* 64 */
+        FF ( a, b, c, d, w[ 0], 7, 3614090360);  FF ( d, a, b, c, w[ 1], 12, 3905402710);
+        FF ( c, d, a, b, w[ 2], 17,  606105819); FF ( b, c, d, a, w[ 3], 22, 3250441966);
+        FF ( a, b, c, d, w[ 4], 7, 4118548399);  FF ( d, a, b, c, w[ 5], 12, 1200080426);
+        FF ( c, d, a, b, w[ 6], 17, 2821735955); FF ( b, c, d, a, w[ 7], 22, 4249261313);
+        FF ( a, b, c, d, w[ 8], 7, 1770035416);  FF ( d, a, b, c, w[ 9], 12, 2336552879);
+        FF ( c, d, a, b, w[10], 17, 4294925233); FF ( b, c, d, a, w[11], 22, 2304563134);
+        FF ( a, b, c, d, w[12], 7, 1804603682);  FF ( d, a, b, c, w[13], 12, 4254626195);
+        FF ( c, d, a, b, w[14], 17, 2792965006); FF ( b, c, d, a, w[15], 22, 1236535329);
+        GG ( a, b, c, d, w[ 1], 5, 4129170786);  GG ( d, a, b, c, w[ 6], 9, 3225465664);
+        GG ( c, d, a, b, w[11], 14,  643717713); GG ( b, c, d, a, w[ 0], 20, 3921069994);
+        GG ( a, b, c, d, w[ 5], 5, 3593408605);  GG ( d, a, b, c, w[10], 9,   38016083);
+        GG ( c, d, a, b, w[15], 14, 3634488961); GG ( b, c, d, a, w[ 4], 20, 3889429448);
+        GG ( a, b, c, d, w[ 9], 5,  568446438);  GG ( d, a, b, c, w[14], 9, 3275163606);
+        GG ( c, d, a, b, w[ 3], 14, 4107603335); GG ( b, c, d, a, w[ 8], 20, 1163531501);
+        GG ( a, b, c, d, w[13], 5, 2850285829);  GG ( d, a, b, c, w[ 2], 9, 4243563512);
+        GG ( c, d, a, b, w[ 7], 14, 1735328473); GG ( b, c, d, a, w[12], 20, 2368359562);
+        HH ( a, b, c, d, w[ 5], 4, 4294588738);  HH ( d, a, b, c, w[ 8], 11, 2272392833);
+        HH ( c, d, a, b, w[11], 16, 1839030562); HH ( b, c, d, a, w[14], 23, 4259657740);
+        HH ( a, b, c, d, w[ 1], 4, 2763975236);  HH ( d, a, b, c, w[ 4], 11, 1272893353);
+        HH ( c, d, a, b, w[ 7], 16, 4139469664); HH ( b, c, d, a, w[10], 23, 3200236656);
+        HH ( a, b, c, d, w[13], 4,  681279174);  HH ( d, a, b, c, w[ 0], 11, 3936430074);
+        HH ( c, d, a, b, w[ 3], 16, 3572445317); HH ( b, c, d, a, w[ 6], 23,   76029189);
+        HH ( a, b, c, d, w[ 9], 4, 3654602809);  HH ( d, a, b, c, w[12], 11, 3873151461);
+        HH ( c, d, a, b, w[15], 16,  530742520); HH ( b, c, d, a, w[ 2], 23, 3299628645);
+        II ( a, b, c, d, w[ 0], 6, 4096336452);  II ( d, a, b, c, w[ 7], 10, 1126891415);
+        II ( c, d, a, b, w[14], 15, 2878612391); II ( b, c, d, a, w[ 5], 21, 4237533241);
+        II ( a, b, c, d, w[12], 6, 1700485571);  II ( d, a, b, c, w[ 3], 10, 2399980690);
+        II ( c, d, a, b, w[10], 15, 4293915773); II ( b, c, d, a, w[ 1], 21, 2240044497);
+        II ( a, b, c, d, w[ 8], 6, 1873313359);  II ( d, a, b, c, w[15], 10, 4264355552);
+        II ( c, d, a, b, w[ 6], 15, 2734768916); II ( b, c, d, a, w[13], 21, 1309151649);
+        II ( a, b, c, d, w[ 4], 6, 4149444226);  II ( d, a, b, c, w[11], 10, 3174756917);
+        II ( c, d, a, b, w[ 2], 15,  718787259); II ( b, c, d, a, w[ 9], 21, 3951481745);
         // Add this chunk's hash to result so far:
         A += a;
         B += b;
@@ -131,11 +136,15 @@ __global__ void many_md5kernel(const uint8_t *initial_msg, size_t initial_len, u
     //append "0" bits until message length in bits ≡ 448 (mod 512)
     //append length mod (2^64) to message
     initial_len /= gridDim.x;
+    // printf("%d\n", initial_len);
     for (new_len = initial_len + 1; new_len % (512/8) != 448/8; new_len++)
         ;
 
     msg = (uint8_t *)malloc(new_len + 8);
-    memcpy(msg, (initial_msg+blockIdx.x*gridDim.x), initial_len);
+
+    for(int i=0; i < initial_len; i++) {
+        msg[i] = initial_msg[blockIdx.x*initial_len+i];
+    }
     msg[initial_len] = 0x80; // append the "1" bit; most significant bit is "first"
     #pragma unroll
     for (offset = initial_len + 1; offset < new_len; offset++)
@@ -158,38 +167,38 @@ __global__ void many_md5kernel(const uint8_t *initial_msg, size_t initial_len, u
         c = C;
         d = D;
         // Main loop:
-        FF ( a, b, c, d, w[ 0], 7, 3614090360); /* 1 */ FF ( d, a, b, c, w[ 1], 12, 3905402710); /* 2 */
-        FF ( c, d, a, b, w[ 2], 17,  606105819); /* 3 */FF ( b, c, d, a, w[ 3], 22, 3250441966); /* 4 */
-        FF ( a, b, c, d, w[ 4], 7, 4118548399); /* 5 */ FF ( d, a, b, c, w[ 5], 12, 1200080426); /* 6 */
-        FF ( c, d, a, b, w[ 6], 17, 2821735955); /* 7 */FF ( b, c, d, a, w[ 7], 22, 4249261313); /* 8 */
-        FF ( a, b, c, d, w[ 8], 7, 1770035416); /* 9 */ FF ( d, a, b, c, w[ 9], 12, 2336552879); /* 10 */
-        FF ( c, d, a, b, w[10], 17, 4294925233); /* 11 */FF ( b, c, d, a, w[11], 22, 2304563134); /* 12 */
-        FF ( a, b, c, d, w[12], 7, 1804603682); /* 13 */FF ( d, a, b, c, w[13], 12, 4254626195); /* 14 */
-        FF ( c, d, a, b, w[14], 17, 2792965006); /* 15 */FF ( b, c, d, a, w[15], 22, 1236535329); /* 16 */
-        GG ( a, b, c, d, w[ 1], 5, 4129170786); /* 17 */GG ( d, a, b, c, w[ 6], 9, 3225465664); /* 18 */
-        GG ( c, d, a, b, w[11], 14,  643717713); /* 19 */GG ( b, c, d, a, w[ 0], 20, 3921069994); /* 20 */
-        GG ( a, b, c, d, w[ 5], 5, 3593408605); /* 21 */GG ( d, a, b, c, w[10], 9,   38016083); /* 22 */
-        GG ( c, d, a, b, w[15], 14, 3634488961); /* 23 */GG ( b, c, d, a, w[ 4], 20, 3889429448); /* 24 */
-        GG ( a, b, c, d, w[ 9], 5,  568446438); /* 25 */ GG ( d, a, b, c, w[14], 9, 3275163606); /* 26 */
-        GG ( c, d, a, b, w[ 3], 14, 4107603335); /* 27 */GG ( b, c, d, a, w[ 8], 20, 1163531501); /* 28 */
-        GG ( a, b, c, d, w[13], 5, 2850285829); /* 29 */GG ( d, a, b, c, w[ 2], 9, 4243563512); /* 30 */
-        GG ( c, d, a, b, w[ 7], 14, 1735328473); /* 31 */GG ( b, c, d, a, w[12], 20, 2368359562); /* 32 */
-        HH ( a, b, c, d, w[ 5], 4, 4294588738); /* 33 */HH ( d, a, b, c, w[ 8], 11, 2272392833); /* 34 */
-        HH ( c, d, a, b, w[11], 16, 1839030562); /* 35 */HH ( b, c, d, a, w[14], 23, 4259657740); /* 36 */
-        HH ( a, b, c, d, w[ 1], 4, 2763975236); /* 37 */HH ( d, a, b, c, w[ 4], 11, 1272893353); /* 38 */
-        HH ( c, d, a, b, w[ 7], 16, 4139469664); /* 39 */HH ( b, c, d, a, w[10], 23, 3200236656); /* 40 */
-        HH ( a, b, c, d, w[13], 4,  681279174); /* 41 */HH ( d, a, b, c, w[ 0], 11, 3936430074); /* 42 */
-        HH ( c, d, a, b, w[ 3], 16, 3572445317); /* 43 */HH ( b, c, d, a, w[ 6], 23,   76029189);/* 44 */
-        HH ( a, b, c, d, w[ 9], 4, 3654602809); /* 45 */HH ( d, a, b, c, w[12], 11, 3873151461); /* 46 */
-        HH ( c, d, a, b, w[15], 16,  530742520); /* 47 */HH ( b, c, d, a, w[ 2], 23, 3299628645); /* 48 */
-        II ( a, b, c, d, w[ 0], 6, 4096336452); /* 49 */II ( d, a, b, c, w[ 7], 10, 1126891415); /* 50 */
-        II ( c, d, a, b, w[14], 15, 2878612391); /* 51 */II ( b, c, d, a, w[ 5], 21, 4237533241); /* 52 */
-        II ( a, b, c, d, w[12], 6, 1700485571); /* 53 */II ( d, a, b, c, w[ 3], 10, 2399980690); /* 54 */
-        II ( c, d, a, b, w[10], 15, 4293915773); /* 55 */II ( b, c, d, a, w[ 1], 21, 2240044497); /* 56 */
-        II ( a, b, c, d, w[ 8], 6, 1873313359); /* 57 */II ( d, a, b, c, w[15], 10, 4264355552); /* 58 */
-        II ( c, d, a, b, w[ 6], 15, 2734768916); /* 59 */II ( b, c, d, a, w[13], 21, 1309151649); /* 60 */
-        II ( a, b, c, d, w[ 4], 6, 4149444226); /* 61 */II ( d, a, b, c, w[11], 10, 3174756917); /* 62 */
-        II ( c, d, a, b, w[ 2], 15,  718787259); /* 63 */II ( b, c, d, a, w[ 9], 21, 3951481745); /* 64 */
+        FF ( a, b, c, d, w[ 0], 7, 3614090360);  FF ( d, a, b, c, w[ 1], 12, 3905402710);
+        FF ( c, d, a, b, w[ 2], 17,  606105819); FF ( b, c, d, a, w[ 3], 22, 3250441966);
+        FF ( a, b, c, d, w[ 4], 7, 4118548399);  FF ( d, a, b, c, w[ 5], 12, 1200080426);
+        FF ( c, d, a, b, w[ 6], 17, 2821735955); FF ( b, c, d, a, w[ 7], 22, 4249261313);
+        FF ( a, b, c, d, w[ 8], 7, 1770035416);  FF ( d, a, b, c, w[ 9], 12, 2336552879);
+        FF ( c, d, a, b, w[10], 17, 4294925233); FF ( b, c, d, a, w[11], 22, 2304563134);
+        FF ( a, b, c, d, w[12], 7, 1804603682);  FF ( d, a, b, c, w[13], 12, 4254626195);
+        FF ( c, d, a, b, w[14], 17, 2792965006); FF ( b, c, d, a, w[15], 22, 1236535329);
+        GG ( a, b, c, d, w[ 1], 5, 4129170786);  GG ( d, a, b, c, w[ 6], 9, 3225465664);
+        GG ( c, d, a, b, w[11], 14,  643717713); GG ( b, c, d, a, w[ 0], 20, 3921069994);
+        GG ( a, b, c, d, w[ 5], 5, 3593408605);  GG ( d, a, b, c, w[10], 9,   38016083);
+        GG ( c, d, a, b, w[15], 14, 3634488961); GG ( b, c, d, a, w[ 4], 20, 3889429448);
+        GG ( a, b, c, d, w[ 9], 5,  568446438);  GG ( d, a, b, c, w[14], 9, 3275163606);
+        GG ( c, d, a, b, w[ 3], 14, 4107603335); GG ( b, c, d, a, w[ 8], 20, 1163531501);
+        GG ( a, b, c, d, w[13], 5, 2850285829);  GG ( d, a, b, c, w[ 2], 9, 4243563512);
+        GG ( c, d, a, b, w[ 7], 14, 1735328473); GG ( b, c, d, a, w[12], 20, 2368359562);
+        HH ( a, b, c, d, w[ 5], 4, 4294588738);  HH ( d, a, b, c, w[ 8], 11, 2272392833);
+        HH ( c, d, a, b, w[11], 16, 1839030562); HH ( b, c, d, a, w[14], 23, 4259657740);
+        HH ( a, b, c, d, w[ 1], 4, 2763975236);  HH ( d, a, b, c, w[ 4], 11, 1272893353);
+        HH ( c, d, a, b, w[ 7], 16, 4139469664); HH ( b, c, d, a, w[10], 23, 3200236656);
+        HH ( a, b, c, d, w[13], 4,  681279174);  HH ( d, a, b, c, w[ 0], 11, 3936430074);
+        HH ( c, d, a, b, w[ 3], 16, 3572445317); HH ( b, c, d, a, w[ 6], 23,   76029189);
+        HH ( a, b, c, d, w[ 9], 4, 3654602809);  HH ( d, a, b, c, w[12], 11, 3873151461);
+        HH ( c, d, a, b, w[15], 16,  530742520); HH ( b, c, d, a, w[ 2], 23, 3299628645);
+        II ( a, b, c, d, w[ 0], 6, 4096336452);  II ( d, a, b, c, w[ 7], 10, 1126891415);
+        II ( c, d, a, b, w[14], 15, 2878612391); II ( b, c, d, a, w[ 5], 21, 4237533241);
+        II ( a, b, c, d, w[12], 6, 1700485571);  II ( d, a, b, c, w[ 3], 10, 2399980690);
+        II ( c, d, a, b, w[10], 15, 4293915773); II ( b, c, d, a, w[ 1], 21, 2240044497);
+        II ( a, b, c, d, w[ 8], 6, 1873313359);  II ( d, a, b, c, w[15], 10, 4264355552);
+        II ( c, d, a, b, w[ 6], 15, 2734768916); II ( b, c, d, a, w[13], 21, 1309151649);
+        II ( a, b, c, d, w[ 4], 6, 4149444226);  II ( d, a, b, c, w[11], 10, 3174756917);
+        II ( c, d, a, b, w[ 2], 15,  718787259); II ( b, c, d, a, w[ 9], 21, 3951481745);
         // Add this chunk's hash to result so far:
         A += a;
         B += b;
@@ -200,10 +209,10 @@ __global__ void many_md5kernel(const uint8_t *initial_msg, size_t initial_len, u
     // cleanup
     free(msg);
     //var char digest[16] := A append B append C append D //(Output is in little-endian)
-    d_to_bytes(A, digest);
-    d_to_bytes(B, digest + 4);
-    d_to_bytes(C, digest + 8);
-    d_to_bytes(D, digest + 12);
+    d_to_bytes(A, digest + (blockIdx.x*md5_size));
+    d_to_bytes(B, digest + (blockIdx.x*md5_size) + 4);
+    d_to_bytes(C, digest + (blockIdx.x*md5_size) + 8);
+    d_to_bytes(D, digest + (blockIdx.x*md5_size) + 12);
 }
 
 // Helper function for using CUDA to compute MD5 with timing
@@ -254,7 +263,7 @@ int Many_MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, in
     // Choose which GPU to run on, change this on a multi-GPU system.
     gpuErrchk(cudaSetDevice(0));
 
-    gpuErrchk(cudaMalloc((void**)&dev_digest, md5_size * sizeof(uint8_t)));
+    gpuErrchk(cudaMalloc((void**)&dev_digest, md5_size * BLOCKS * sizeof(uint8_t)));
     gpuErrchk(cudaMalloc((void**)&dev_initial_msg, initial_len * sizeof(uint8_t)));
     // Copy input vectors from host memory to GPU buffers.
     gpuErrchk(cudaMemcpy(dev_initial_msg, initial_msg, initial_len * sizeof(uint8_t), cudaMemcpyHostToDevice));
@@ -262,7 +271,7 @@ int Many_MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, in
     // Launch a kernel on the GPU with one thread for each element.
 	gettimeofday(&t_start, NULL);
     for (int i = 0; i < runs; i++) {
-        many_md5kernel<<<512, 1>>>(dev_initial_msg, initial_len, dev_digest);
+        many_md5kernel<<<BLOCKS, 1>>>(dev_initial_msg, initial_len, dev_digest);
     }
     gpuErrchk(cudaDeviceSynchronize());
         gettimeofday(&t_end, NULL);
@@ -276,9 +285,7 @@ int Many_MD5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest, in
     // cudaDeviceSynchronize waits for the kernel to finish, and returns
     // any errors encountered during the launch.
 
-    // Copy output vector from GPU buffer to host memory.
-    gpuErrchk(cudaMemcpy(digest, dev_digest, md5_size * sizeof(uint8_t), cudaMemcpyDeviceToHost));
-
+    gpuErrchk(cudaMemcpy(digest, dev_digest + ((BLOCKS-1)*md5_size), md5_size * sizeof(uint8_t), cudaMemcpyDeviceToHost));
     gpuErrchk(cudaFree(dev_digest));
     gpuErrchk(cudaFree(dev_initial_msg));
 

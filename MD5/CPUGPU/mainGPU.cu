@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
     fseek(f, 0, SEEK_END);
     long fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
+            printf("the fuck");
 
     char *msg = (char*)malloc(fsize + 1);
     fread(msg, 1, fsize, f);

@@ -10,14 +10,14 @@ namespace MD5
     public class Tester : SimulationProcess
     {
         [InputBus] public IDigest Digest;
-        [OutputBus] public Iaxis_o res_o = Scope.CreateBus<Iaxis_o>();
+        [OutputBus] public Iaxis_o axi_Digest = Scope.CreateBus<Iaxis_o>();
 
         [OutputBus] public IMessage Message = Scope.CreateBus<IMessage>();
-        [InputBus] public Iaxis_o in_o;
+        [InputBus] public Iaxis_o axi_Message;
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 10;
+        private static int testsize = 1;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -34,45 +34,46 @@ namespace MD5
             } else { MESSAGES = messages; }
         }
 
-
         public async override Task Run() {
 
             await ClockAsync();
             foreach (string message in MESSAGES) {
-                int counter = 0;
                 int buffersize = 0;
-                int offset = 0;
                 Message.MessageSize = message.Length;
                 Message.Head = true;
-                int i = message.Length;
-                while (i >= 0) {
-                    offset = MAX_BUFFER_SIZE;
-                    if (i < 56)
-                    {
-                        Message.BufferSize = buffersize = i;
+                Message.Set = false;
+                Message.Last = false;
+                // for-loop to feed the processes with a message;
+                for(int i = 0; i <= message.Length; i+=MAX_BUFFER_SIZE) {
+                    int current_blocksize = message.Length - i;
+                    // Console.WriteLine($"{i}: {current_blocksize} -- {message.Length}");
+                    // if we have less than 56 chars we are in the last block
+                    if (current_blocksize < 56) {
                         Message.Last = true;
-                        i -= offset;
                     }
-                    else
-                    {   offset = Math.Min(i, MAX_BUFFER_SIZE);
-                        Message.Set = offset < MAX_BUFFER_SIZE;
-                        Message.BufferSize = buffersize = offset;
-                        Message.Last = false;
-                        i -= offset;
+                    // if the current blocksize is less than the max buffer size,
+                    // we need to set the 1 in the padding.
+                    else if (current_blocksize < MAX_BUFFER_SIZE) {
+                        Message.Set = true;
                     }
-                    for(int j = 0 ; j < MAX_BUFFER_SIZE; j++)
+                    // set the buffer size according to the sizes
+                    Message.BufferSize = buffersize = Math.Min(current_blocksize, MAX_BUFFER_SIZE);
+                    for(int j = 0 ; j < MAX_BUFFER_SIZE; j++) {
+                        // Console.WriteLine(buffersize);
                         if (j < buffersize)
                         {
-                            Message.Message[j] = (byte)message[MAX_BUFFER_SIZE * counter + j];
+                            Message.Message[j] = (byte)message[MAX_BUFFER_SIZE * (i >> 6)  + j];
+                            // Console.WriteLine($"{Message.Message[j]}");
                         } else {
                             Message.Message[j] = 0;
                         }
-                    if (counter++ > 0) { Message.Head = false; }
+                    }
                     Message.Valid = true;
-                        await ClockAsync();
-                        Message.Valid = false;
+                    await ClockAsync();
+                    Message.Head = false;
                 }
-                res_o.Ready = true;
+                // Message.Valid = false;
+                axi_Digest.Ready = true;
                 await ClockAsync();
                 if (Digest.Valid) {
                 string str = "";

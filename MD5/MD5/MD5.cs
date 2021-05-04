@@ -7,15 +7,16 @@ namespace MD5
     [ClockedProcess]
     class MD5 : SimpleProcess {
         [InputBus] public IMessage Message;
-        [OutputBus] public Iaxis_o in_o = Scope.CreateBus<Iaxis_o>();
+        [OutputBus] public Iaxis_o axi_Message = Scope.CreateBus<Iaxis_o>();
 
         [OutputBus] public IDigest Digest = Scope.CreateBus<IDigest>();
-        [InputBus] public Iaxis_o out_o;
+        [InputBus] public Iaxis_o axi_Digest;
 
         bool was_valid = false;
         bool was_ready = false;
         protected override void OnTick() {
-            if (was_ready && Message.Valid) {
+            if (Message.Valid) {
+                // Console.WriteLine($"{A.ToString("x8")},{B.ToString("x8")},{C.ToString("x8")}{D.ToString("x8")}");
                 if (Message.Head) {
                     A = READA; B = READB; C = READC; D = READD;
                 }
@@ -27,10 +28,12 @@ namespace MD5
                     Digest.Digest[3] = reverseByte(D);
                     Digest.Valid = was_valid = true;
                 }
-            } else {
-                Digest.Valid = was_valid = was_valid && !out_o.Ready;
             }
-            in_o.Ready = was_ready = !was_valid;
+            else {
+                Digest.Valid = was_valid = was_valid && !axi_Digest.Ready;
+            }
+            axi_Message.Ready = was_ready = !was_valid;
+            // Console.WriteLine($"{axi_Message.Ready}, {was_ready}, {was_valid}, {Message.Valid}");
         }
 
         public readonly static int [] ROUND = new int[64]
