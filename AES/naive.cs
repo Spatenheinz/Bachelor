@@ -4,7 +4,7 @@ using static AES.AESConfig;
 
 namespace AES
 {
-    class naiveE : SimpleProcess {
+    class AESe : SimpleProcess {
         [InputBus]
         public IPlainText PlainText;
 
@@ -22,15 +22,15 @@ namespace AES
                 // for(int i = 0; i < BLOCK_SIZE; i++) {
                 //     IV[i] = PlainText.Data[i];
                 // }
-            } else if (PlainText.ValidData) {
+            } else if (PlainText.ValidBlock) {
                 for(int i = 0; i < BLOCK_SIZE; i++) {
-                    state[i] = PlainText.Data[i];
+                    state[i] = PlainText.block[i];
                 }
                 Encrypt128();
                 for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Cypher.Data[i] = IV[i];
+                    Cypher.block[i] = IV[i];
                 }
-                Cypher.ValidData = true;
+                Cypher.ValidBlock = true;
             }
         }
 
@@ -65,12 +65,6 @@ namespace AES
 
 
         private void Encrypt128() {
-
-            // Console.Write($"CBC : ");
-            // for(int i = 0; i < BLOCK_SIZE; i++) {
-            //     Console.Write($"{state[i].ToString("x2")}");
-            // }
-            // Console.WriteLine("");
 
             uint a0 = (((uint)state[0] << 24) | ((uint)state[1] << 16) | ((uint)state[2] << 8) | (uint)state[3]) ^ expandedKey128[0];
 			uint a1 = (((uint)state[4] << 24) | ((uint)state[5] << 16) | ((uint)state[6] << 8) | (uint)state[7]) ^ expandedKey128[1];

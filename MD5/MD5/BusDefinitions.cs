@@ -3,6 +3,7 @@ using static MD5.MD5Config;
 
 namespace MD5
 {
+    // axis_inp_i
     public interface IMessage : IBus {
         [InitialValue(false)]
         bool Valid { get; set; }
@@ -21,6 +22,7 @@ namespace MD5
         bool Set { get; set; }
     }
 
+    // axis_res_i
     public interface IDigest : IBus {
         [InitialValue(false)]
         bool Valid { get; set; }
@@ -28,30 +30,9 @@ namespace MD5
         [FixedArrayLength(DIGEST_SIZE)]
         IFixedArray<uint> Digest { get; set; }
     }
-// pipeline (optimisation 1)
-    public interface IPadded : IBus {
+
+    public interface Iaxis_o : IBus {
         [InitialValue(false)]
-        bool Valid { get; set; }
-
-        [FixedArrayLength(MAX_BUFFER_SIZE)]
-        IFixedArray<byte> buffer { get; set; }
-    }
-
-    public interface IBlock : IBus {
-        [InitialValue(false)]
-        bool Valid { get; set; }
-
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<uint> buffer { get; set; }
-    }
-
-    public interface IRound : IBus {
-        [InitialValue(false)]
-        bool Valid { get; set; }
-
-        uint A { get; set; }
-        uint B { get; set; }
-        uint C { get; set; }
-        uint D { get; set; }
+        bool Ready { get; set; }
     }
 }

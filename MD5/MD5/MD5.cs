@@ -4,18 +4,19 @@ using static MD5.MD5Config;
 
 namespace MD5
 {
+    [ClockedProcess]
     class MD5 : SimpleProcess {
-        [InputBus]
-        public IMessage Message;
+        [InputBus] public IMessage Message;
+        [OutputBus] public Iaxis_o axi_Message = Scope.CreateBus<Iaxis_o>();
 
-        [OutputBus]
-        public IDigest Digest = Scope.CreateBus<IDigest>();
+        [OutputBus] public IDigest Digest = Scope.CreateBus<IDigest>();
+        [InputBus] public Iaxis_o axi_Digest;
 
-        public int counter = 0;
-
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
-            counter++;
             if (Message.Valid) {
+                // Console.WriteLine($"{A.ToString("x8")},{B.ToString("x8")},{C.ToString("x8")}{D.ToString("x8")}");
                 if (Message.Head) {
                     A = READA; B = READB; C = READC; D = READD;
                 }
@@ -25,9 +26,14 @@ namespace MD5
                     Digest.Digest[1] = reverseByte(B);
                     Digest.Digest[2] = reverseByte(C);
                     Digest.Digest[3] = reverseByte(D);
-                    Digest.Valid = true;
+                    Digest.Valid = was_valid = true;
                 }
             }
+            else {
+                Digest.Valid = was_valid = was_valid && !axi_Digest.Ready;
+            }
+            axi_Message.Ready = was_ready = !was_valid;
+            // Console.WriteLine($"{axi_Message.Ready}, {was_ready}, {was_valid}, {Message.Valid}");
         }
 
         public readonly static int [] ROUND = new int[64]
@@ -74,7 +80,7 @@ namespace MD5
         public void calculateMD5(IFixedArray<byte> mes)
         {
             preprocess(mes);
-                fetchBlock(workingBuffer, 0);
+                fetchBlock(workingBuffer);
                 processBlock();
         }
 
@@ -106,13 +112,12 @@ namespace MD5
         #region Digest calculation
         // this will move the b block into the smaller buffer block
         // will be called 16 times.
-        private void fetchBlock(byte[] buff, int b) {
-			int tmp =b<<6;
+        private void fetchBlock(byte[] buff) {
 			for (int j=0; j<61;j+=4) {
-				blockD[j>>2]=(((uint) buff[tmp+(j+3)]) <<24 ) |
-						    (((uint) buff[tmp+(j+2)]) <<16 ) |
-						    (((uint) buff[tmp+(j+1)]) <<8 ) |
-						    (((uint) buff[tmp+(j)]) ) ;
+				blockD[j>>2]=(((uint) buff[j]) ) |
+                             (((uint) buff[j+1]) <<8 ) |
+						    (((uint) buff[j+2]) <<16 ) |
+						    (((uint) buff[j+3]) <<24 );
 			}
         }
         // the loop in the algorithm, might be interesting to unfold the loop as

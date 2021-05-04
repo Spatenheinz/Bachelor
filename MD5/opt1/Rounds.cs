@@ -1,10 +1,10 @@
-
-using System;
+// using System;
 using SME;
-using static MD5.MD5Config;
+// using static opt1.MD5Config;
 
-namespace MD5.opt1
+namespace opt1
 {
+    [ClockedProcess]
     class RoundF : SimpleProcess {
         [InputBus]
         public IBlock block;
@@ -75,6 +75,7 @@ namespace MD5.opt1
         #endregion
     }
 
+    [ClockedProcess]
     class RoundG : SimpleProcess {
         [InputBus]
         public IBlock block;
@@ -144,6 +145,7 @@ namespace MD5.opt1
         #endregion
     }
 
+    [ClockedProcess]
     class RoundH : SimpleProcess {
         [InputBus]
         public IBlock block;
@@ -213,6 +215,7 @@ namespace MD5.opt1
         #endregion
     }
 
+    [ClockedProcess]
     class RoundI : SimpleProcess {
         [InputBus]
         public IBlock block;
@@ -281,6 +284,7 @@ namespace MD5.opt1
         }
         #endregion
     }
+    [ClockedProcess]
     class Combiner : SimpleProcess {
         [InputBus]
         public IRound IV;

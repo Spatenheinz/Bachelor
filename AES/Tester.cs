@@ -85,7 +85,7 @@ namespace AES
 
             await ClockAsync();
             foreach (string message in MESSAGES) {
-                PlainText.ValidData = false;
+                PlainText.ValidBlock = false;
                 PlainText.ValidKey = true;
                 byte[] tmpData = StringToByteArray(message);
                 for(int i = 0; i < key.Length; i++) {
@@ -95,13 +95,14 @@ namespace AES
 
                 PlainText.ValidKey = false;
                 for(int i = 0; i < tmpData.Length; i++) {
-                    PlainText.Data[i] = tmpData[i];
+                    PlainText.block[i] = tmpData[i];
                 }
-                PlainText.ValidData = true;
+                PlainText.ValidBlock = true;
 
                 await ClockAsync();
-                string res = ByteArrayToString(Cypher.Data);
+                string res = ByteArrayToString(Cypher.block);
                 string target = targetCypher(tmpData, key, IV);
+                // Console.WriteLine(res);
                 // Debug.Assert(res == target, $"String {message} - {res} doesnt match the MS library {target}");
 
                 // CypherDecrypt.ValidKey = true;
@@ -110,12 +111,12 @@ namespace AES
                 // }
                 // await ClockAsync();
                 // CypherDecrypt.ValidKey = false;
-                // CypherDecrypt.ValidData = true;
+                // CypherDecrypt.ValidBlock = true;
                 // for(int i = 0; i < tmpData.Length; i++) {
-                //     CypherDecrypt.Data[i] = Cypher.Data[i];
+                //     CypherDecrypt.block[i] = Cypher.block[i];
                 // }
                 // await ClockAsync();
-                // string resD = ByteArrayToString(PlainDecrypt.Data);
+                // string resD = ByteArrayToString(PlainDecrypt.block);
             }
         }
     }

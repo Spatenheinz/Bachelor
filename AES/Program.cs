@@ -8,7 +8,7 @@ namespace AES
         static void Main(string[] args)
         {
             using (var sim = new Simulation()) {
-                var aes = new naiveE();
+                var aes = new AESe();
                 // var aesD = new naiveD();
                 // Nice to be able to test buffer sizes
                 var tester = new Tester();

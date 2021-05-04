@@ -11,9 +11,9 @@ namespace AES
         IFixedArray<byte> Key { get; set; }
 
         [InitialValue(false)]
-        bool ValidData { get; set; }
+        bool ValidBlock { get; set; }
         [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<byte> Data { get; set; }
+        IFixedArray<byte> block { get; set; }
 
     }
     public interface ICypher : IBus {
@@ -24,9 +24,9 @@ namespace AES
         IFixedArray<byte> Key { get; set; }
 
         [InitialValue(false)]
-        bool ValidData { get; set; }
+        bool ValidBlock { get; set; }
         [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<byte> Data { get; set; }
+        IFixedArray<byte> block { get; set; }
 
     }
 }

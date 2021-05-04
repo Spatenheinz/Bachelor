@@ -1,17 +1,16 @@
 ﻿using SME;
-using MD5.opt1;
+using System;
 
-namespace MD5
+namespace opt1
 {
     class Program
     {
         static void Main(string[] args)
         {
             using (var sim = new Simulation()) {
-                // var md5 = new MD5();
                 // Nice to be able to test buffer sizes
                 // Console.WriteLine(str);
-                var tester = new Tester();
+                var tester = new Tester("");
                 // opt1
                 var formatter = new MessageFormat();
                 formatter.Message = tester.Message;
@@ -33,19 +32,13 @@ namespace MD5
                 combinator.I = roundI.Out;
                 combinator.IV = tester.optDigest;
                 tester.Digest2 = combinator.Out;
-                //
-
-                // md5.Message = tester.Message;
-                // tester.Digest = md5.Digest;
-                    // sim.AddTopLevelInputs(md5.Message)
-                    //     .AddTopLevelOutputs(md5.Digest)
-                        sim.AddTopLevelInputs(tester.optDigest, tester.Message)
+                sim.AddTopLevelInputs(tester.optDigest, tester.Message)
                        .AddTopLevelOutputs(combinator.Out)
+                        .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
                         .BuildCSVFile()
                         .BuildGraph()
                         .BuildVHDL()
                         .Run();
-                // System.Console.WriteLine(md5.counter);
             }
         }
     }
