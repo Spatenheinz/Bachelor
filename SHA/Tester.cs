@@ -48,5 +48,19 @@ namespace SHA
             return new string(Enumerable.Repeat(chars, length)
                               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
+        public async override Task Run() {
+            await ClockAsync();
+            foreach (string message in MESSAGES) {
+                int buffersize = 0;
+                Message.MessageSize = message.Length;
+                Message.Head = true;
+                Message.Set = false;
+                Message.Last = false;
+                for (int i = 0; i <= message.Length; i+=MAX_BUFFER_SIZE) {
+                    int current_blocksize = message.Lenght - i;
+                } // Mangler lidt ;)
+            }
+        }
     }
 }

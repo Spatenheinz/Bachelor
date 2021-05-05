@@ -102,7 +102,6 @@ namespace SHA
             preprocess(mes);
             // Do stuff med arr.
             uint[] w = new uint[64]; // could zero out but not necessary?
-            uint num_bloks = (uint) (arr.Length % 512);
             for (int i = 0; i < arr.Length; i += 512) {
                 for (int j = 0; j < 16; j++) {
                     uint curr = 0;
