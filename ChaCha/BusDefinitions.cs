@@ -8,6 +8,7 @@ namespace ChaCha {
         bool Valid { get; set; }
         [InitialValue(true)]
         bool Head { get; set; }
+        byte Size { get; set; }
 
         [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<uint> Key { get; set; }
@@ -25,7 +26,7 @@ namespace ChaCha {
         [InitialValue(false)]
         bool Valid { get; set; }
         [FixedArrayLength(config.BLOCK_SIZE)]
-        IFixedArray<uint> Values { get; set; }
+        IFixedArray<byte> Values { get; set; }
     }
 
 }

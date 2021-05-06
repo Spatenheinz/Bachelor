@@ -6,7 +6,6 @@ using System.Text;
 using static ChaCha.config;
 namespace ChaCha {
     public class Tester : SimulationProcess {
-        private const bool V = true;
         [InputBus]
         public IStream HashStream;
         [OutputBus]
@@ -35,8 +34,8 @@ namespace ChaCha {
         public async override Task Run() {
 
             await ClockAsync();
-            State.Valid = V;
-            State.Head = V;
+            State.Valid = true;
+            State.Head = true;
             for(int i = 0; i < BUFFER_SIZE; i++) {
                 State.Key[i] = testkey[i];
             }
@@ -44,10 +43,15 @@ namespace ChaCha {
             State.Nonce1 = 0x4a000000;
             State.Nonce2 = 0x00000000;
             for(int i = 0; i < plaintext.Length; i += BLOCK_SIZE) {
+                byte size = 0;
                 for(int j = 0; j < BLOCK_SIZE; j++) {
-                Console.WriteLine(i+j);
-                    State.Text[j] = plaintext[i+j];
+                    // Console.WriteLine(i+j);
+                    if(i + j < plaintext.Length) {
+                        State.Text[j] = plaintext[i+j];
+                        size++;
+                    }
                 }
+                State.Size = size;
                 await ClockAsync();
                 if (HashStream.Valid) {
                     for(int j = 0; j < BLOCK_SIZE; j++) {
