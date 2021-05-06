@@ -16,7 +16,7 @@ namespace ChaCha {
 
         private uint[] InterState = new uint[BLOCK_SIZE];
         private uint[] tmp = new uint[BLOCK_SIZE];
-        private byte[] res = new byte[64];
+        private byte[] res = new byte[TEXT_SIZE];
         private uint LeftRotate(uint x, int k) {
             return ((x << k) | (x >> (32 - k)));
         }
@@ -26,7 +26,7 @@ namespace ChaCha {
                 ((i & 0x00ff0000) >> 8) |
                 ((i & 0x0000ff00) << 8);
         }
-        private static void toByteArray(uint[] arr) {
+        private void toByteArray(uint[] arr) {
             for(int i=0; i < 61; i+=4){
                 res[i] = (byte)((arr[i>>2] >> 24) & 0xff);
                 res[i+1] = (byte)((arr[i>>2] >> 16) & 0xff);
@@ -57,11 +57,11 @@ namespace ChaCha {
             QR(ref tmp[3], ref tmp[4], ref tmp[ 9], ref tmp[14]); // diagonal 4
             }
 
-
-            for(int i = 0; i < BLOCK_SIZE; i++) {
-                // Output.Values[i] = reverseByte(InterState[i]+tmp[i]);
-                // if (i < )
-                // Output.Values[i] = Input.Text[i] ^ reverseByte(InterState[i]+tmp[i]);
+            for(int i = 0; i < BLOCK_SIZE; i++)
+                tmp[i] = reverseByte(InterState[i]+tmp[i]);
+            toByteArray(tmp);
+            for(int i = 0; i < TEXT_SIZE; i++) {
+                Output.Values[i] = (byte)(Input.Text[i] ^ res[i]);
             }
         }
         protected override void OnTick() {

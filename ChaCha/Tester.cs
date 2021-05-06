@@ -42,33 +42,31 @@ namespace ChaCha {
             State.Nonce0 = 0x00000000;
             State.Nonce1 = 0x4a000000;
             State.Nonce2 = 0x00000000;
-            for(int i = 0; i < plaintext.Length; i += BLOCK_SIZE) {
+            for(int i = 0; i < plaintext.Length; i += TEXT_SIZE) {
                 byte size = 0;
-                for(int j = 0; j < BLOCK_SIZE; j++) {
-                    // Console.WriteLine(i+j);
+                for(int j = 0; j < TEXT_SIZE; j++) {
                     if(i + j < plaintext.Length) {
                         State.Text[j] = plaintext[i+j];
                         size++;
+                    } else {
+                        State.Text[j] = 0;
                     }
                 }
                 State.Size = size;
                 await ClockAsync();
+                State.Head = false;
                 if (HashStream.Valid) {
-                    for(int j = 0; j < BLOCK_SIZE; j++) {
-                    result += HashStream.Values[j].ToString("x8");
+                    for(int j = 0; j < TEXT_SIZE; j++) {
+                        if(i+j < plaintext.Length){
+                        result += HashStream.Values[j].ToString("x2");
+                        result += " ";
+
+                        if(j%15== 0 && j!= 0) {
+                            result += "\n";
+                        }
+                        }
                     }
                 }
-            // while (CurrentPosition < 3){
-                // State.Position = CurrentPosition++;
-                // await ClockAsync();
-                // if (HashStream.Valid) {
-                //     byte[] tmp = toByteArray(HashStream.Values);
-                //     for(int i = 0; i < 16<<2; i++) {
-                //         int offset = (int)(i + (CurrentPosition-2)*(16<<2));
-                //         if(offset >= plaintext.Length){ break; }
-                //         result += (tmp[i] ^ plaintext[offset]).ToString("X2");
-                //     }
-                // }
             }
             Console.WriteLine(result);
         }
