@@ -23,4 +23,6 @@
 !*.h
 !*.cu.h
 !data.txt
+!data2.txt
 !Makefile
+!global.json

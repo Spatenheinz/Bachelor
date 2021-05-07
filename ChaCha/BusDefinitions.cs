@@ -8,12 +8,13 @@ namespace ChaCha {
         bool Valid { get; set; }
         [InitialValue(true)]
         bool Head { get; set; }
+        byte Size { get; set; }
 
         [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<uint> Key { get; set; }
 
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<uint> Text { get; set; }
+        [FixedArrayLength(TEXT_SIZE)]
+        IFixedArray<byte> Text { get; set; }
 
         uint Nonce0   { get; set; }
         uint Nonce1   { get; set; }
@@ -24,8 +25,8 @@ namespace ChaCha {
     public interface IStream : IBus {
         [InitialValue(false)]
         bool Valid { get; set; }
-        [FixedArrayLength(config.BLOCK_SIZE)]
-        IFixedArray<uint> Values { get; set; }
+        [FixedArrayLength(TEXT_SIZE)]
+        IFixedArray<byte> Values { get; set; }
     }
 
 }

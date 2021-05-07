@@ -16,6 +16,7 @@ namespace ChaCha {
 
         private uint[] InterState = new uint[BLOCK_SIZE];
         private uint[] tmp = new uint[BLOCK_SIZE];
+        private byte[] res = new byte[TEXT_SIZE];
         private uint LeftRotate(uint x, int k) {
             return ((x << k) | (x >> (32 - k)));
         }
@@ -24,6 +25,14 @@ namespace ChaCha {
                 (i >> 24) |
                 ((i & 0x00ff0000) >> 8) |
                 ((i & 0x0000ff00) << 8);
+        }
+        private void toByteArray(uint[] arr) {
+            for(int i=0; i < 61; i+=4){
+                res[i] = (byte)((arr[i>>2] >> 24) & 0xff);
+                res[i+1] = (byte)((arr[i>>2] >> 16) & 0xff);
+                res[i+2] = (byte)((arr[i>>2] >> 8) & 0xff);
+                res[i+3] = (byte)((arr[i>>2]) & 0xff);
+            }
         }
         private void QR(ref uint a, ref uint b, ref uint c, ref uint d) {
             a += b; d ^= a; d = LeftRotate(d, 16);
@@ -48,30 +57,28 @@ namespace ChaCha {
             QR(ref tmp[3], ref tmp[4], ref tmp[ 9], ref tmp[14]); // diagonal 4
             }
 
-            Console.WriteLine("b");
-            for(int i = 0; i < BLOCK_SIZE; i++) {
-                // Output.Values[i] = reverseByte(InterState[i]+tmp[i]);
-                Output.Values[i] = Input.Text[i] ^ reverseByte(InterState[i]+tmp[i]);
+            for(int i = 0; i < BLOCK_SIZE; i++)
+                tmp[i] = reverseByte(InterState[i]+tmp[i]);
+            toByteArray(tmp);
+            for(int i = 0; i < TEXT_SIZE; i++) {
+                Output.Values[i] = (byte)(Input.Text[i] ^ res[i]);
             }
         }
         protected override void OnTick() {
             if (Input.Valid) {
+                if (Input.Head) {
                     InterState[0] = CONST1; InterState[1] = CONST2; InterState[2] = CONST3; InterState[3] = CONST4;
                     for (int i = 4; i < 12; i++) {
                         InterState[i] = Input.Key[i-4];
                     }
-                    if (Input.Head) {
-                       InterState[12] = 1;
-                    } else {
-                        InterState[12]++;
-                    }
-                    // InterState[12] = Input.Position;
+                    InterState[12] = 0;
                     InterState[13] = Input.Nonce0;
                     InterState[14] = Input.Nonce1;
                     InterState[15] = Input.Nonce2;
-                    chacha();
-                    Output.Valid = true;
-            Console.WriteLine("aaa");
+                }
+                InterState[12]++;
+                chacha();
+                Output.Valid = true;
             }
         }
 
