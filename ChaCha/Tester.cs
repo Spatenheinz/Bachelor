@@ -8,8 +8,14 @@ namespace ChaCha {
     public class Tester : SimulationProcess {
         [InputBus]
         public IStream HashStream;
+        // [OutputBus]
+        // public axi_r axi_Stream = Scope.CreateBus<axi_r>();
         [OutputBus]
         public IState State = Scope.CreateBus<IState>();
+        // [OutputBus]
+        // public IText Text = Scope.CreateBus<IText>();
+        // [InputBus]
+        // public axi_r axi_State;
 
         public static uint[] StringToArray(string hex) {
             return Enumerable.Range(0, hex.Length)
@@ -52,9 +58,10 @@ namespace ChaCha {
                         State.Text[j] = 0;
                     }
                 }
-                State.Size = size;
+                // State.Size = size;
                 await ClockAsync();
                 State.Head = false;
+                // axi_Stream.ready = false;
                 if (HashStream.Valid) {
                     for(int j = 0; j < TEXT_SIZE; j++) {
                         if(i+j < plaintext.Length){

@@ -4,6 +4,7 @@ using static AES.AESConfig;
 
 namespace AES
 {
+    [ClockedProcess]
     class AESe : SimpleProcess {
         [InputBus]
         public IPlainText PlainText;

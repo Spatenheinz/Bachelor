@@ -5,10 +5,16 @@ using static ChaCha.config;
 namespace ChaCha {
     public class ChaCha20 : SimpleProcess {
         [InputBus]
-        public IState Input;
+        public IState seed;
+        // [InputBus]
+        // public IText text;
+        // [OutputBus]
+        // public axi_r axi_I = Scope.CreateBus<axi_r>();
 
         [OutputBus]
         public IStream Output = Scope.CreateBus<IStream>();
+        // [InputBus] public axi_r axi_O;
+
         private readonly uint CONST1 = 0x61707865;
         private readonly uint CONST2 = 0x3320646e;
         private readonly uint CONST3 = 0x79622d32;
@@ -61,25 +67,32 @@ namespace ChaCha {
                 tmp[i] = reverseByte(InterState[i]+tmp[i]);
             toByteArray(tmp);
             for(int i = 0; i < TEXT_SIZE; i++) {
-                Output.Values[i] = (byte)(Input.Text[i] ^ res[i]);
+                // Output.Values[i] = (byte)(text.Text[i] ^ res[i]);
+                Output.Values[i] = (byte)(seed.Text[i] ^ res[i]);
             }
         }
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
-            if (Input.Valid) {
-                if (Input.Head) {
+            if (seed.Valid) {
+                if (seed.Head) {
                     InterState[0] = CONST1; InterState[1] = CONST2; InterState[2] = CONST3; InterState[3] = CONST4;
                     for (int i = 4; i < 12; i++) {
-                        InterState[i] = Input.Key[i-4];
+                        InterState[i] = seed.Key[i-4];
                     }
                     InterState[12] = 0;
-                    InterState[13] = Input.Nonce0;
-                    InterState[14] = Input.Nonce1;
-                    InterState[15] = Input.Nonce2;
+                    InterState[13] = seed.Nonce0;
+                    InterState[14] = seed.Nonce1;
+                    InterState[15] = seed.Nonce2;
                 }
                 InterState[12]++;
                 chacha();
-                Output.Valid = true;
+                Output.Valid = was_valid = true;
             }
+            // else {
+            //     Output.Valid = was_valid = was_valid && !axi_O.ready;
+            // }
+            // axi_I.ready = was_ready = !was_valid;
         }
 
     }

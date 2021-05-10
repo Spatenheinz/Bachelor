@@ -10,9 +10,10 @@ namespace ChaCha
             using (var sim = new Simulation()) {
                 var chacha = new ChaCha20();
                 var tester = new Tester();
-                chacha.Input = tester.State;
+                chacha.seed = tester.State;
+                // chacha.text = tester.Text;
                 tester.HashStream = chacha.Output;
-                    sim.AddTopLevelInputs(chacha.Input)
+                    sim.AddTopLevelInputs(chacha.seed)
                         .AddTopLevelOutputs(chacha.Output)
                         .BuildCSVFile()
                         .BuildGraph()

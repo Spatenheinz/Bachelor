@@ -1,37 +1,56 @@
-// using System;
+using System;
 using SME;
-// using static opt1.MD5Config;
+using static opt1.Statics;
 
 namespace opt1
 {
     [ClockedProcess]
     class RoundF : SimpleProcess {
-        [InputBus]
-        public IBlock block;
+        [InputBus] public IRound I;
+        [OutputBus] public axi_r axi_i = Scope.CreateBus<axi_r>();
 
-        [InputBus]
-        public IRound IV;
+        [InputBus] public IIV IV;
+        [OutputBus] public axi_r axi_iv = Scope.CreateBus<axi_r>();
 
-        [OutputBus]
-        public IRound Out = Scope.CreateBus<IRound>();
+        [InputBus] public axi_r axi_out;
+        [OutputBus] public IRound Out = Scope.CreateBus<IRound>();
+        // [InputBus] public axi_r axi_iv_out;
+        // [OutputBus] public IIV IV_Out = Scope.CreateBus<IIV>();
+        bool iv_was_valid = false;
+        bool iv_was_ready = false;
+        bool was_valid = false;
+        bool was_ready = false;
+        // public RoundF () {
 
+        // }
         protected override void OnTick() {
-            if (block.Valid && IV.Valid) {
-                A = IV.A;
-                B = IV.B;
-                C = IV.C;
-                D = IV.D;
-            // Console.WriteLine($"called F {cc++}: {A}, {B}, {C}, {D}");
+            if (was_ready && I.Valid && IV.Valid) {
+            
+            // if (was_ready && iv_was_ready I.Valid && IV.Valid) {
+                for(int i = 0; i < BLOCK_SIZE; i++) {
+                    Console.Write(I.buffer[i]);
+                }
+                Console.WriteLine();
+                A = IV.A; B = IV.B; C = IV.C; D = IV.D;
+            Console.WriteLine($"before F: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 processBlock();
-            // Console.WriteLine($"called F after: {A}, {B}, {C}, {D}");
-                Out.Valid = true;
+                forwardBlock();
+            Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+                // forwardIV();
+                Out.Valid = was_valid = true;
+                iv_was_valid = true;
+                // axi_iv.Ready = true;
+            } else {
+                Out.Valid = was_valid = was_valid && !axi_out.Ready;
+                // IV_Out.Valid = iv_was_valid = iv_was_valid && !axi_iv_out.Ready;
             }
+            // Console.WriteLine($"{was_ready}, {iv_was_ready}, {I.Valid}, {IV.Valid}");
+            axi_i.Ready = was_ready = !was_valid;
+            Console.WriteLine($"wtf {was_ready}, {was_valid}, {I.Valid}, {IV.Valid}");
+            // axi_iv.Ready = iv_was_ready = !iv_was_valid;
         }
 
-        private uint A;
-        private uint B;
-        private uint C;
-        private uint D;
+        private uint A; private uint B;private uint C; private uint D;
 
         // This is the K array which store sthe sines of integers part
         public readonly static uint [] TAB = new uint[16]
@@ -40,8 +59,16 @@ namespace opt1
             , 0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be
             , 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821
             };
-        // the loop in the algorithm, might be interesting to unfold the loop as
-        // RFC explains it and see which is faster
+
+        private void forwardBlock() {
+            Out.Last = I.Last;
+            for(int i = 0; i < BLOCK_SIZE; i++) {
+                Out.buffer[i] = I.buffer[i];
+            }
+        }
+        // private void forwardIV() {
+        //     IV_Out.A = A; IV_Out.B = B; IV_Out.C = C; IV_Out.D = D;
+        // }
         private void processBlock(){
             // round 1
             FF(ref A, B, C, D, 0, 7, 0);    FF(ref D, A, B, C, 1, 12, 1);
@@ -56,14 +83,10 @@ namespace opt1
             FF(ref A, B, C, D, 12, 7, 12);  FF(ref D, A, B, C, 13, 12, 13);
             FF(ref C, D, A, B, 14, 17, 14); FF(ref B, C, D, A, 15, 22, 15);
 
-            Out.A = A;
-            Out.B = B;
-            Out.C = C;
-            Out.D = D;
+            Out.A = A; Out.B = B; Out.C = C; Out.D = D;
         }
-        #region bitwise operators
         private void FF(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            aa = bb + (LeftRotate(aa + F(bb, cc, dd) + block.buffer[k] + TAB[i], s));
+            aa = bb + (LeftRotate(aa + F(bb, cc, dd) + I.buffer[k] + TAB[i], s));
         }
 
         private uint F(uint x, uint y, uint z) {
@@ -72,47 +95,47 @@ namespace opt1
         private uint LeftRotate(uint x, int k) {
             return ((x << k) | (x >> (32 - k)));
         }
-        #endregion
     }
 
     [ClockedProcess]
     class RoundG : SimpleProcess {
-        [InputBus]
-        public IBlock block;
+        [InputBus] public IRound F;
+        [OutputBus] public axi_r axi_F = Scope.CreateBus<axi_r>();
 
-        [InputBus]
-        public IRound F;
+        [InputBus] public axi_r axi_out;
+        [OutputBus] public IRound Out = Scope.CreateBus<IRound>();
 
-        [OutputBus]
-        public IRound Out = Scope.CreateBus<IRound>();
-
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
-            if (block.Valid  && F.Valid) {
-                A = F.A;
-                B = F.B;
-                C = F.C;
-                D = F.D;
-            // Console.WriteLine($"called G: {A}, {B}, {C}, {D}");
+
+            // Console.WriteLine($"G {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}"); processBlock();
+            if (was_ready && F.Valid) {
+                A = F.A; B = F.B; C = F.C; D = F.D;
                 processBlock();
-            // Console.WriteLine($"called G after: {A}, {B}, {C}, {D}");
-                Out.Valid = true;
+                forwardBlock();
+                Out.Valid = was_valid = true;
+                Console.WriteLine($"called G after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            }  else {
+                Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
+            axi_F.Ready = was_ready = !was_valid;
         }
 
-        private uint A;
-        private uint B;
-        private uint C;
-        private uint D;
+        private uint A; private uint B; private uint C; private uint D;
 
-        // This is the K array which store sthe sines of integers part
         public readonly static uint [] TAB = new uint[16]
 			{ 0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa
             , 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8
             , 0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed
 			, 0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a
             };
-        // the loop in the algorithm, might be interesting to unfold the loop as
-        // RFC explains it and see which is faster
+        private void forwardBlock() {
+            Out.Last = F.Last;
+            for(int i = 0; i < BLOCK_SIZE; i++) {
+                Out.buffer[i] = F.buffer[i];
+            }
+        }
         private void processBlock(){
             GG(ref A, B, C, D, 1, 5, 0);   GG(ref D, A, B, C, 6, 9, 1);
             GG(ref C, D, A, B, 11, 14, 2); GG(ref B, C, D, A, 0, 20, 3);
@@ -126,15 +149,11 @@ namespace opt1
             GG(ref A, B, C, D, 13, 5, 12);  GG(ref D, A, B, C, 2, 9, 13);
             GG(ref C, D, A, B, 7, 14, 14);  GG(ref B, C, D, A, 12, 20, 15);
 
-            Out.A = A;
-            Out.B = B;
-            Out.C = C;
-            Out.D = D;
+            Out.A = A; Out.B = B; Out.C = C; Out.D = D;
         }
 
-        #region bitwise operators
         private void GG(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            aa = bb + (LeftRotate(aa + G(bb, cc, dd) + block.buffer[k] + TAB[i], s));
+            aa = bb + (LeftRotate(aa + G(bb, cc, dd) + F.buffer[k] + TAB[i], s));
         }
         private uint G(uint x, uint y, uint z) {
             return (x & z) | (y & (~z));
@@ -142,37 +161,32 @@ namespace opt1
         private uint LeftRotate(uint x, int k) {
             return ((x << k) | (x >> (32 - k)));
         }
-        #endregion
     }
 
     [ClockedProcess]
     class RoundH : SimpleProcess {
-        [InputBus]
-        public IBlock block;
+        [InputBus] public IRound G;
+        [OutputBus] public axi_r axi_G = Scope.CreateBus<axi_r>();
 
-        [InputBus]
-        public IRound G;
+        [InputBus] public axi_r axi_out;
+        [OutputBus] public IRound Out = Scope.CreateBus<IRound>();
 
-        [OutputBus]
-        public IRound Out = Scope.CreateBus<IRound>();
-
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
-            if (block.Valid && G.Valid) {
-                A = G.A;
-                B = G.B;
-                C = G.C;
-                D = G.D;
-            // Console.WriteLine($"called H: {A}, {B}, {C}, {D}");
+            if (was_ready && G.Valid) {
+                A = G.A; B = G.B; C = G.C; D = G.D;
                 processBlock();
-            // Console.WriteLine($"called H after: {A}, {B}, {C}, {D}");
-                Out.Valid = true;
+            Console.WriteLine($"called H after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+                forwardBlock();
+                Out.Valid = was_valid = true;
+            }  else {
+                Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
+            axi_G.Ready = was_ready = !was_valid;
         }
 
-        private uint A;
-        private uint B;
-        private uint C;
-        private uint D;
+        private uint A; private uint B; private uint C; private uint D;
 
         // This is the K array which store sthe sines of integers part
         public readonly static uint [] TAB = new uint[16]
@@ -181,8 +195,12 @@ namespace opt1
             , 0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05
 			, 0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665
             };
-        // the loop in the algorithm, might be interesting to unfold the loop as
-        // RFC explains it and see which is faster
+        private void forwardBlock() {
+            Out.Last = G.Last;
+            for(int i = 0; i < BLOCK_SIZE; i++) {
+                Out.buffer[i] = G.buffer[i];
+            }
+        }
         private void processBlock(){
             HH(ref A, B, C, D, 5, 4, 0);   HH(ref D, A, B, C, 8, 11, 1);
             HH(ref C, D, A, B, 11, 16, 2); HH(ref B, C, D, A, 14, 23, 3);
@@ -196,15 +214,11 @@ namespace opt1
             HH(ref A, B, C, D, 9, 4, 12);   HH(ref D, A, B, C, 12, 11, 13);
             HH(ref C, D, A, B, 15, 16, 14); HH(ref B, C, D, A, 2, 23, 15);
 
-            Out.A = A;
-            Out.B = B;
-            Out.C = C;
-            Out.D = D;
+            Out.A = A; Out.B = B; Out.C = C; Out.D = D;
         }
 
-        #region bitwise operators
         private void HH(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            aa = bb + (LeftRotate(aa + H(bb, cc, dd) + block.buffer[k] + TAB[i], s));
+            aa = bb + (LeftRotate(aa + H(bb, cc, dd) + G.buffer[k] + TAB[i], s));
         }
         private uint H(uint x, uint y, uint z) {
             return x ^ y ^ z;
@@ -212,37 +226,37 @@ namespace opt1
         private uint LeftRotate(uint x, int k) {
             return ((x << k) | (x >> (32 - k)));
         }
-        #endregion
     }
 
     [ClockedProcess]
     class RoundI : SimpleProcess {
-        [InputBus]
-        public IBlock block;
+        [InputBus] public IRound H;
+        [OutputBus] public axi_r axi_H = Scope.CreateBus<axi_r>();
 
-        [InputBus]
-        public IRound H;
+        [InputBus] public axi_r axi_out;
+        [OutputBus] public IIV Out = Scope.CreateBus<IIV>();
+        // [InputBus] public axi_r axi_out_block;
+        // [OutputBus] public IBlock OutBlock = Scope.CreateBus<IBlock>();
 
-        [OutputBus]
-        public IRound Out = Scope.CreateBus<IRound>();
-
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
-            if (block.Valid && H.Valid) {
-                A = H.A;
-                B = H.B;
-                C = H.C;
-                D = H.D;
-            // Console.WriteLine($"called I: {A}, {B}, {C}, {D}");
+            if (was_ready && H.Valid) {
+                A = H.A; B = H.B; C = H.C; D = H.D;
                 processBlock();
-            // Console.WriteLine($"called I after: {A}, {B}, {C}, {D}");
-                Out.Valid = true;
+            Console.WriteLine($"called I after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called H after: {A}, {B}, {C}, {D}");
+            // Console.WriteLine($"called H {cc++}: {A}, {B}, {C}, {D}");
+                Out.Valid = was_valid = true;
+                Out.Final = H.Last;
+            }  else {
+                Out.Final = H.Last;
+                Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
+            axi_H.Ready = was_ready = !was_valid;
         }
 
-        private uint A;
-        private uint B;
-        private uint C;
-        private uint D;
+        private uint A; private uint B; private uint C; private uint D;
 
         // This is the K array which store sthe sines of integers part
         public readonly static uint [] TAB = new uint[16]
@@ -266,15 +280,11 @@ namespace opt1
             II(ref A, B, C, D, 4, 6, 12);   II(ref D, A, B, C, 11, 10, 13);
             II(ref C, D, A, B, 2, 15, 14);  II(ref B, C, D, A, 9, 21, 15);
 
-            Out.A = A;
-            Out.B = B;
-            Out.C = C;
-            Out.D = D;
+            Out.A = A; Out.B = B; Out.C = C; Out.D = D;
         }
 
-        #region bitwise operators
         private void II(ref uint aa, uint bb, uint cc, uint dd, int k, int s, int i) {
-            aa = bb + (LeftRotate(aa + Ia(bb, cc, dd) + block.buffer[k] + TAB[i], s));
+            aa = bb + (LeftRotate(aa + Ia(bb, cc, dd) + H.buffer[k] + TAB[i], s));
         }
         private uint Ia(uint x, uint y, uint z) {
             return y ^ (x | (~z));
@@ -282,29 +292,67 @@ namespace opt1
         private uint LeftRotate(uint x, int k) {
             return ((x << k) | (x >> (32 - k)));
         }
-        #endregion
     }
+
     [ClockedProcess]
     class Combiner : SimpleProcess {
-        [InputBus]
-        public IRound IV;
+        // [InputBus] public IIV IV;
+        // [OutputBus] public axi_r axi_iv = Scope.CreateBus<axi_r>();
+        [InputBus] public IIV I;
+        [OutputBus] public axi_r axi_I = Scope.CreateBus<axi_r>();
 
-        [InputBus]
-        public IRound I;
+        [InputBus] public axi_r axi_out;
+        [OutputBus] public IIV Out = Scope.CreateBus<IIV>();
 
-        [OutputBus]
-        public IRound Out = Scope.CreateBus<IRound>();
-
+        bool was_valid = true;
+        bool was_ready = false;
+        bool initial = true;
+        uint A = 0x67452301;
+        uint B = 0xefcdab89;
+        uint C = 0x98badcfe;
+        uint D = 0x10325476;
         protected override void OnTick() {
-            if (IV.Valid && I.Valid) {
-                Out.A = IV.A + I.A;
-                Out.B = IV.B + I.B;
-                Out.C = IV.C + I.C;
-                Out.D = IV.D + I.D;
-                Out.Valid = true;
-            // Console.WriteLine($"called cob IV: {IV.A}, {IV.B}, {IV.C}, {IV.D}");
-            // Console.WriteLine($"called cob I: {I.A}, {I.B}, {I.C}, {I.D}");
+            if (initial) {
+                Out.A = A = 0x67452301;
+                Out.B = B = 0xefcdab89;
+                Out.C = C = 0x98badcfe;
+                Out.D = D = 0x10325476;
+                initial = false;
             }
+            if (was_ready && I.Valid) {
+                Console.WriteLine($"combiner {was_valid}, {!axi_out.Ready}");
+                Out.A = A + I.A;
+                Out.B = B + I.B;
+                Out.C = C + I.C;
+                Out.D = D + I.D;
+            Console.WriteLine($"called combiner after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
+            Out.Valid = was_valid = true;
+                Out.Final = I.Final;
+            } else {
+                Out.Valid = was_valid = was_valid && !axi_out.Ready;
+            }
+            // else if (was_ready && I.Valid && IV.Valid) {
+            // // Console.WriteLine($"called cob IV: {IV.A}, {IV.B}, {IV.C}, {IV.D}");
+            // // Console.WriteLine($"called cob I: {I.A}, {I.B}, {I.C}, {I.D}");
+            //     A = I.A + IV.A; B = I.B + IV.B; C = I.C + IV.C; D = I.D + IV.D;
+            // // Console.WriteLine($"called I after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
+            // // Console.WriteLine($"called cob I: {I.A}, {I.B}, {I.C}, {I.D}");
+            // if (flag.Valid) {
+            //     Final.A = A; Final.B = B; Final.C = C; Final.D = D;
+            //     Final.Valid = was_valid = true;
+            //     Out.A = 0x67452301; Out.B = 0xefcdab89; Out.C = 0x98badcfe; Out.D = 0x10325476;
+            //     Out.Valid = iv_was_valid = true; // Console.WriteLine("FINAL");
+            // } else {
+            //     Out.A = A; Out.B = B; Out.C = C; Out.D = D;
+            //     Out.Valid = iv_was_valid = true; // Console.WriteLine("FINAL");
+            // }
+            // } else {
+            //     // Out.Valid = iv_was_valid = iv_was_valid && !axi_out.Ready;
+            //     Final.Valid = was_valid = was_valid && !axi_final.Ready;
+            // }
+            Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
+            // axi_.Ready = iv_was_ready = !iv_was_valid;
+            axi_I.Ready = was_ready = !was_valid;
         }
     }
 }

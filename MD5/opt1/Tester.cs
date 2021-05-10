@@ -2,7 +2,7 @@ using System;
 using SME;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using static opt1.MD5Config;
+using static opt1.Statics;
 using System.Linq;
 
 namespace opt1
@@ -10,16 +10,15 @@ namespace opt1
     public class Tester : SimulationProcess
     {
 
-        [InputBus]
-        public IRound Digest2;
+        [InputBus] public IIV Digest;
+        [OutputBus] public axi_r axi_digest;
 
-        [OutputBus]
-        public IRound optDigest = Scope.CreateBus<IRound>();
+        [InputBus] public axi_r axi_mes;
         [OutputBus] public IMessage Message = Scope.CreateBus<IMessage>();
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 10;
+        private static int testsize = 1;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -30,80 +29,85 @@ namespace opt1
                 throw new ArgumentNullException(nameof(messages));
             if (messages.Length == 0) {
                 for (int i = 0; i < testsize; i++) {
-                    randomStrings[i] = RandomString((i+1) * 2000);
+                    randomStrings[i] = RandomString((i+1) * 192);
                 }
                 MESSAGES = randomStrings;
             } else { MESSAGES = messages; }
         }
 
 
+        bool was_valid = false;
+        bool was_ready = false;
         public async override Task Run() {
 
             await ClockAsync();
             foreach (string message in MESSAGES) {
-                optDigest.A = 0x67452301;
-                optDigest.B = 0xefcdab89;
-                optDigest.C = 0x98badcfe;
-                optDigest.D = 0x10325476;
-                int counter = 0;
                 int buffersize = 0;
-                int offset = 0;
                 Message.MessageSize = message.Length;
                 Message.Head = true;
-                int i = message.Length;
-                while (i >= 0) {
-                optDigest.Valid = true;
-                    offset = MAX_BUFFER_SIZE;
-                    if (i < 56)
-                    {
-                        Message.BufferSize = buffersize = i;
+                Message.Set = false;
+                Message.Last = false;
+                // for-loop to feed the processes with a message;
+                for(int i = 0; i <= message.Length; i+=MAX_BUFFER_SIZE) {
+                    Console.WriteLine(i);
+                    Console.WriteLine(message.Length);
+                    int current_blocksize = message.Length - i;
+                    // if we have less than 56 chars we are in the last block
+                    if (current_blocksize < 56) {
                         Message.Last = true;
-                        i -= offset;
                     }
-                    else
-                    {   offset = Math.Min(i, MAX_BUFFER_SIZE);
-                        Message.Set = offset < MAX_BUFFER_SIZE;
-                        Message.BufferSize = buffersize = offset;
-                        Message.Last = false;
-                        i -= offset;
+                    // if the current blocksize is less than the max buffer size,
+                    // we need to set the 1 in the padding.
+                    else if (current_blocksize < MAX_BUFFER_SIZE) {
+                        Message.Set = true;
                     }
-                    for(int j = 0 ; j < MAX_BUFFER_SIZE; j++)
+                    // set the buffer size according to the sizes
+                    Message.BufferSize = buffersize = Math.Min(current_blocksize, MAX_BUFFER_SIZE);
+                    string str = "";
+                    for(int j = 0 ; j < MAX_BUFFER_SIZE; j++) {
                         if (j < buffersize)
                         {
-                            Message.Message[j] = (byte)message[MAX_BUFFER_SIZE * counter + j];
+                            str += Message.Message[j] = (byte)message[MAX_BUFFER_SIZE * (i >> 6)  + j];
                         } else {
                             Message.Message[j] = 0;
                         }
-                    if (counter++ > 0) { Message.Head = false; }
-                    Message.Valid = true;
-                        await ClockAsync();
-                        Digest2.Valid = false;
-                        Message.Valid = false;
-                    optDigest.A = Digest2.A;
-                    optDigest.B = Digest2.B;
-                    optDigest.C = Digest2.C;
-                    optDigest.D = Digest2.D;
-                    Digest2.Valid = false;
-                    Message.Valid = false;
+                    }
+                    Console.WriteLine(str);
+                    Message.Valid = was_valid = true;
+                    await ClockAsync();
+                    Message.Head = false;
+                    // Message.Valid = was_valid = false;
                 }
-                // res_o.Ready = true;
-                await ClockAsync();
-                // if (Digest.Valid) {
-                // string str = "";
-                string str2 = "";
-                str2 += reverseByte(optDigest.A).ToString("X8");
-                str2 += reverseByte(optDigest.B).ToString("X8");
-                str2 += reverseByte(optDigest.C).ToString("X8");
-                str2 += reverseByte(optDigest.D).ToString("X8");
-                // for(int j = 0; j < 4; j++) {
-                //     str += Digest.Digest[j].ToString("X8");
+                    // Message.Valid = was_valid = false;
+                // ready and result is valid
+                //
+                //
+                // while(!Digest.Final) {
+                for (int i = 0; i < 20; i++) {
+                    await ClockAsync();
+                }
+                    // await ClockAsync();
+                    // await ClockAsync();
+                    // await ClockAsync();
+                    // await ClockAsync();
+                    // await ClockAsync();
+                    // await ClockAsync();
+                    // await ClockAsync();
                 // }
-                // Debug.Assert(str == targetHash(message), $"String {message} with Hash nr. {0} - {str} doesnt match the MS library {targetHash(message)}");
+                    // Digest.Valid = false;
+                    // Message.Valid = false;
+                // res_o.Ready = true;
+                // await ClockAsync();
+                string str2 = "";
+                str2 += reverseByte(Digest.A).ToString("X8");
+                str2 += reverseByte(Digest.B).ToString("X8");
+                str2 += reverseByte(Digest.C).ToString("X8");
+                str2 += reverseByte(Digest.D).ToString("X8");
                 Debug.Assert(str2 == targetHash(message), $"String2 {message} with Hash nr. {0} - {str2} doesnt match the MS library {targetHash(message)}");
                 // }
             }
             // res_o.Ready = false;
-            // Debug.Assert(Digest.Valid && optDigest.Valid, "failed to produce any output");
+            // Debug.Assert(Digest.Valid && Digest.Valid, "failed to produce any output");
             // await ClockAsync();
         }
         private uint reverseByte(uint i) {

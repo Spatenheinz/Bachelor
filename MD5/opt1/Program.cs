@@ -10,34 +10,43 @@ namespace opt1
             using (var sim = new Simulation()) {
                 // Nice to be able to test buffer sizes
                 // Console.WriteLine(str);
-                var tester = new Tester("");
+                var tester = new Tester("7KJYSSCIDDT2BI5OJXHNVEMWPRMZ981CXU5HMYP00N7U7GZTZN4TGNW27WIAGMIEMQEQNXBVHQXIH1ZI22AVDI5K8CK0POUNE2IQCIGBMJL00NUF6AINLXBEU3RKNLF35JEPTJFTV9J36FUVRE3PFHBR0E5J05YBES4QJFVX4Z1MNHHPJ62IR0XYHWYPN62Z");
                 // opt1
                 var formatter = new MessageFormat();
                 formatter.Message = tester.Message;
+                tester.axi_mes = formatter.axi_mes;
                 var converter = new FormatConverter();
                 converter.paddedBuffer = formatter.paddedBuffer;
+                formatter.axi_pad = converter.axi_pad;
                 var roundF    = new RoundF();
-                roundF.block = converter.block;
-                roundF.IV    = tester.optDigest;
+                roundF.I = converter.Out;
+                converter.axi_out = roundF.axi_i;
+                // roundF.IV    = tester.State;
                 var roundG    = new RoundG();
                 roundG.F     = roundF.Out;
-                roundG.block = converter.block;
+                roundF.axi_out = roundG.axi_F;
                 var roundH    = new RoundH();
                 roundH.G     = roundG.Out;
-                roundH.block = converter.block;
+                roundG.axi_out = roundH.axi_G;
                 var roundI    = new RoundI();
                 roundI.H     = roundH.Out;
-                roundI.block = converter.block;
+                roundH.axi_out = roundI.axi_H;
                 var combinator = new Combiner();
                 combinator.I = roundI.Out;
-                combinator.IV = tester.optDigest;
-                tester.Digest2 = combinator.Out;
-                sim.AddTopLevelInputs(tester.optDigest, tester.Message)
+                roundI.axi_out = combinator.axi_I;
+                // combinator.flag = roundI.flag;
+                // combinator.IV = roundF.IV_Out;
+                // roundF.axi_iv_out = combinator.axi_iv;
+                roundF.IV = tester.Digest = combinator.Out;
+                combinator.axi_out = tester.axi_digest = roundF.axi_iv;
+                // tester.Digest = combinator.Final;
+                // combinator.axi_final = tester.axi_digest;
+                sim.AddTopLevelInputs(tester.Message)
                        .AddTopLevelOutputs(combinator.Out)
                         .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
-                        .BuildCSVFile()
-                        .BuildGraph()
-                        .BuildVHDL()
+                        // .BuildCSVFile()
+                        // .BuildGraph()
+                        // .BuildVHDL()
                         .Run();
             }
         }
