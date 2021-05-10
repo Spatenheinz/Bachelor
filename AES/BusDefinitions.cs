@@ -15,7 +15,7 @@ namespace AES
         [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<byte> Key { get; set; }
     }
-    public interface ICypher : IBus {
+    public interface ICipher : IBus {
         // [InitialValue(false)]
         // bool ValidKey { get; set; }
 
@@ -27,5 +27,9 @@ namespace AES
         [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<byte> block { get; set; }
 
+    }
+    public interface axi_r : IBus {
+        [InitialValue(false)]
+        bool ready { get; set; }
     }
 }

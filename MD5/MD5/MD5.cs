@@ -33,7 +33,7 @@ namespace MD5
                 Digest.Valid = was_valid = was_valid && !axi_Digest.Ready;
             }
             axi_Message.Ready = was_ready = !was_valid;
-            // Console.WriteLine($"{axi_Message.Ready}, {was_ready}, {was_valid}, {Message.Valid}");
+            Console.WriteLine($"{was_ready}, {was_valid}");
         }
 
         public readonly static int [] ROUND = new int[64]
@@ -81,10 +81,10 @@ namespace MD5
         {
             preprocess(mes);
                 fetchBlock(workingBuffer);
-                for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Console.Write(blockD[i]);
-                }
-                Console.WriteLine();
+                // for(int i = 0; i < BLOCK_SIZE; i++) {
+                //     Console.Write(blockD[i]);
+                // }
+                // Console.WriteLine();
                 processBlock();
         }
 
@@ -129,7 +129,7 @@ namespace MD5
         private void processBlock(){
             uint AA = A, BB = B, CC = C, DD = D;
             // round 1
-            Console.WriteLine($"before F : {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"before F : {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
             FF(ref A, B, C, D, 0, 7, 0);    FF(ref D, A, B, C, 1, 12, 1);
             FF(ref C, D, A, B, 2, 17, 2);   FF(ref B, C, D, A, 3, 22, 3);
 
@@ -141,7 +141,7 @@ namespace MD5
 
             FF(ref A, B, C, D, 12, 7, 12);  FF(ref D, A, B, C, 13, 12, 13);
             FF(ref C, D, A, B, 14, 17, 14); FF(ref B, C, D, A, 15, 22, 15);
-            Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
             //round 2
             GG(ref A, B, C, D, 1, 5, 16);   GG(ref D, A, B, C, 6, 9, 17);
             GG(ref C, D, A, B, 11, 14, 18); GG(ref B, C, D, A, 0, 20, 19);
@@ -154,7 +154,7 @@ namespace MD5
 
             GG(ref A, B, C, D, 13, 5, 28);  GG(ref D, A, B, C, 2, 9, 29);
             GG(ref C, D, A, B, 7, 14, 30);  GG(ref B, C, D, A, 12, 20, 31);
-            Console.WriteLine($"called G after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called G after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
             //round 3
             HH(ref A, B, C, D, 5, 4, 32);   HH(ref D, A, B, C, 8, 11, 33);
             HH(ref C, D, A, B, 11, 16, 34); HH(ref B, C, D, A, 14, 23, 35);
@@ -167,7 +167,7 @@ namespace MD5
 
             HH(ref A, B, C, D, 9, 4, 44);   HH(ref D, A, B, C, 12, 11, 45);
             HH(ref C, D, A, B, 15, 16, 46); HH(ref B, C, D, A, 2, 23, 47);
-            Console.WriteLine($"called H after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called H after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
             //round 4
             II(ref A, B, C, D, 0, 6, 48);   II(ref D, A, B, C, 7, 10, 49);
             II(ref C, D, A, B, 14, 15, 50); II(ref B, C, D, A, 5, 21, 51);
@@ -180,7 +180,7 @@ namespace MD5
 
             II(ref A, B, C, D, 4, 6, 60);   II(ref D, A, B, C, 11, 10, 61);
             II(ref C, D, A, B, 2, 15, 62);  II(ref B, C, D, A, 9, 21, 63);
-            Console.WriteLine($"called I after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called I after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
 
             A += AA;
             B += BB;

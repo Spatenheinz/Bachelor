@@ -27,8 +27,10 @@ namespace SHA
             if (messages == null)
                 throw new ArgumentNullException(nameof(messages));
             if (messages.Length == 0) {
-                for (int i = 0; i < testsize; i++) { randomStrings[i] = RandomString((i+1) * 2000); }
-                MESSAGES = new string[1] {"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq12345678"};//randomStrings;
+                for (int i = 0; i < testsize; i++) {
+                    randomStrings[i] = RandomString((i+1) * 2000);
+                }
+                MESSAGES = randomStrings;
             }
             else {
                 MESSAGES = messages;
@@ -59,7 +61,7 @@ namespace SHA
                 Message.Last = false;
                 for (int i = 0; i <= message.Length; i+=MAX_BUFFER_SIZE) {
                     int current_blocksize = message.Length - i;
-                    Console.WriteLine($"Message: {message}, current blocksize: {current_blocksize}");
+                    // Console.WriteLine($"Message: {message}, current blocksize: {current_blocksize}");
                     // if we have less than 56 chars we are in the last block
                     if (current_blocksize < 56) {
                         Message.Last = true;

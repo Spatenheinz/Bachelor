@@ -1,4 +1,5 @@
 ﻿using SME;
+using System;
 
 namespace ChaCha
 {
@@ -11,10 +12,12 @@ namespace ChaCha
                 var chacha = new ChaCha20();
                 var tester = new Tester();
                 chacha.seed = tester.State;
-                // chacha.text = tester.Text;
+                chacha.axi_O = tester.axi_Stream;
                 tester.HashStream = chacha.Output;
-                    sim.AddTopLevelInputs(chacha.seed)
-                        .AddTopLevelOutputs(chacha.Output)
+                tester.axi_State = chacha.axi_seed;
+                    sim.AddTopLevelInputs(chacha.seed, chacha.axi_O)
+                        .AddTopLevelOutputs(chacha.Output, chacha.axi_seed)
+                        .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
                         .BuildCSVFile()
                         .BuildGraph()
                         .BuildVHDL()

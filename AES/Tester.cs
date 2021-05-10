@@ -11,10 +11,13 @@ namespace AES
     public class Tester : SimulationProcess
     {
         [InputBus]
-        public ICypher Cypher;
-
+        public ICipher Cipher;
+        [OutputBus]
+        public axi_r axi_Cipher = Scope.CreateBus<axi_r>();
         [OutputBus]
         public IPlainText PlainText = Scope.CreateBus<IPlainText>();
+        [InputBus]
+        public axi_r axi_Text;
 
         private readonly string[] MESSAGES;
 
@@ -98,9 +101,10 @@ namespace AES
                 PlainText.ValidBlock = false;
                 await ClockAsync();
                 for(int j = 0; j < BLOCK_SIZE; j++) {
-                res += Cypher.block[j].ToString("X2");
+                res += Cipher.block[j].ToString("X2");
                 }
             }
+            axi_Cipher.ready = true;
             string target = targetCypher(StringToByteArray(message), key, IV);
             Debug.Assert(res == target, $"String {message} - {res} doesnt match the MS library {target}");
 

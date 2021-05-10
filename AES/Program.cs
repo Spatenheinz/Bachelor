@@ -13,7 +13,9 @@ namespace AES
                 // Nice to be able to test buffer sizes
                 var tester = new Tester();
                 aes.PlainText = tester.PlainText;
-                tester.Cypher = aes.Cypher;
+                aes.axi_Cipher = tester.axi_Cipher;
+                tester.Cipher = aes.Cipher;
+                tester.axi_Text = aes.axi_Text;
                 // aesD.Cypher = tester.CypherDecrypt;
                 // tester.PlainDecrypt = aesD.PlainText;
                     // sim.AddTopLevelInputs(aes.PlainText, aesD.Cypher)
@@ -22,8 +24,8 @@ namespace AES
                     //     .BuildGraph()
                     //     .BuildVHDL()
                     //     .Run();
-                    sim.AddTopLevelInputs(aes.PlainText)
-                        .AddTopLevelOutputs(aes.Cypher)
+                    sim.AddTopLevelInputs(aes.PlainText, aes.axi_Cipher)
+                        .AddTopLevelOutputs(aes.Cipher, aes.axi_Text)
                         .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
                         .BuildCSVFile()
                         .BuildGraph()

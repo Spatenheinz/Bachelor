@@ -83,6 +83,7 @@ namespace opt1
                 //
                 //
                 // while(!Digest.Final) {
+                axi_digest.Ready = true;
                 for (int i = 0; i < 20; i++) {
                     await ClockAsync();
                 }

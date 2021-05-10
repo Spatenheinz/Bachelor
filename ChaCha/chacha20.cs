@@ -3,17 +3,12 @@ using SME;
 using static ChaCha.config;
 
 namespace ChaCha {
+    [ClockedProcess]
     public class ChaCha20 : SimpleProcess {
-        [InputBus]
-        public IState seed;
-        // [InputBus]
-        // public IText text;
-        // [OutputBus]
-        // public axi_r axi_I = Scope.CreateBus<axi_r>();
-
-        [OutputBus]
-        public IStream Output = Scope.CreateBus<IStream>();
-        // [InputBus] public axi_r axi_O;
+        [InputBus] public IState seed;
+        [OutputBus] public axi_r axi_seed = Scope.CreateBus<axi_r>();
+        [OutputBus] public IStream Output = Scope.CreateBus<IStream>();
+        [InputBus] public axi_r axi_O;
 
         private readonly uint CONST1 = 0x61707865;
         private readonly uint CONST2 = 0x3320646e;
@@ -74,25 +69,24 @@ namespace ChaCha {
         bool was_valid = false;
         bool was_ready = false;
         protected override void OnTick() {
-            if (seed.Valid) {
-                if (seed.Head) {
-                    InterState[0] = CONST1; InterState[1] = CONST2; InterState[2] = CONST3; InterState[3] = CONST4;
-                    for (int i = 4; i < 12; i++) {
-                        InterState[i] = seed.Key[i-4];
-                    }
-                    InterState[12] = 0;
-                    InterState[13] = seed.Nonce0;
-                    InterState[14] = seed.Nonce1;
-                    InterState[15] = seed.Nonce2;
+            if (seed.ValidSeed) {
+                InterState[0] = CONST1; InterState[1] = CONST2; InterState[2] = CONST3; InterState[3] = CONST4;
+                for (int i = 4; i < 12; i++) {
+                    InterState[i] = seed.Key[i-4];
                 }
+                InterState[12] = 0;
+                InterState[13] = seed.Nonce0;
+                InterState[14] = seed.Nonce1;
+                InterState[15] = seed.Nonce2;
+            } else if (seed.ValidT) {
                 InterState[12]++;
                 chacha();
                 Output.Valid = was_valid = true;
+            } else {
+                Output.Valid = was_valid = was_valid && !axi_O.ready;
             }
-            // else {
-            //     Output.Valid = was_valid = was_valid && !axi_O.ready;
-            // }
-            // axi_I.ready = was_ready = !was_valid;
+            axi_seed.ready = was_ready = !was_valid;
+            Console.WriteLine($"{was_ready}, {was_valid}");
         }
 
     }

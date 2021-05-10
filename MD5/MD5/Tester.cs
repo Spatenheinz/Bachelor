@@ -45,8 +45,8 @@ namespace MD5
                 Message.Last = false;
                 // for-loop to feed the processes with a message;
                 for(int i = 0; i <= message.Length; i+=MAX_BUFFER_SIZE) {
-                    Console.WriteLine(i);
-                    Console.WriteLine(message.Length);
+                    // Console.WriteLine(i);
+                    // Console.WriteLine(message.Length);
                     int current_blocksize = message.Length - i;
                     // Console.WriteLine($"{i}: {current_blocksize} -- {message.Length}");
                     // if we have less than 56 chars we are in the last block
@@ -70,7 +70,6 @@ namespace MD5
                             Message.Message[j] = 0;
                         }
                     }
-                    Console.WriteLine(str);
                     Message.Valid = true;
                     await ClockAsync();
                     Message.Head = false;
@@ -84,7 +83,6 @@ namespace MD5
                     str += Digest.Digest[j].ToString("X8");
                 }
                 Debug.Assert(str == targetHash(message), $"String {message} with Hash nr. {0} - {str} doesnt match the MS library {targetHash(message)}");
-                Console.WriteLine(str);
                 }
             }
         }
