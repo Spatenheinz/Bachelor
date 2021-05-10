@@ -1,4 +1,5 @@
 * Implementation
 #+INCLUDE: "MD5.org"
+#+INCLUDE: "SHA256.org"
 #+INCLUDE: "AES.org"
 #+INCLUDE: "ChaCha.org"

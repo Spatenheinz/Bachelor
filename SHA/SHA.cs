@@ -17,18 +17,18 @@ namespace SHA
         protected override void OnTick() {
             if (Message.Valid) {
                 if (Message.Head) {
-                    a = h0; b = h1; c = h2; d = h3; e = h4; f = h5; g = h6; h = h7;
+                    a = READH0; b = READH1; c = READH2; d = READH3; e = READH4; f = READH5; g = READH6; h = READH7;
                 }
                 calculateSHA(Message.Message);
                 if (Message.Last) {
-                    Digest.Digest[0] = h0;
-                    Digest.Digest[1] = h1;
-                    Digest.Digest[2] = h2;
-                    Digest.Digest[3] = h3;
-                    Digest.Digest[4] = h4;
-                    Digest.Digest[5] = h5;
-                    Digest.Digest[6] = h6;
-                    Digest.Digest[7] = h7;
+                    Digest.Digest[0] = H0;
+                    Digest.Digest[1] = H1;
+                    Digest.Digest[2] = H2;
+                    Digest.Digest[3] = H3;
+                    Digest.Digest[4] = H4;
+                    Digest.Digest[5] = H5;
+                    Digest.Digest[6] = H6;
+                    Digest.Digest[7] = H7;
                     Digest.Valid = was_valid = true;
                 }
             }
@@ -38,14 +38,22 @@ namespace SHA
             axi_Message.Ready = was_ready = !was_valid;
         }
 
-        private static uint h0 = 0x6a09e667;
-        private static uint h1 = 0xbb67ae85;
-        private static uint h2 = 0x3c6ef372;
-        private static uint h3 = 0xa54ff53a;
-        private static uint h4 = 0x510e527f;
-        private static uint h5 = 0x9b05688c;
-        private static uint h6 = 0x1f83d9ab;
-        private static uint h7 = 0x5be0cd19;
+        private readonly uint READH0 = 0x6a09e667;
+        private readonly uint READH1 = 0xbb67ae85;
+        private readonly uint READH2 = 0x3c6ef372;
+        private readonly uint READH3 = 0xa54ff53a;
+        private readonly uint READH4 = 0x510e527f;
+        private readonly uint READH5 = 0x9b05688c;
+        private readonly uint READH6 = 0x1f83d9ab;
+        private readonly uint READH7 = 0x5be0cd19;
+        private uint H0 = 0x6a09e667;
+        private uint H1 = 0xbb67ae85;
+        private uint H2 = 0x3c6ef372;
+        private uint H3 = 0xa54ff53a;
+        private uint H4 = 0x510e527f;
+        private uint H5 = 0x9b05688c;
+        private uint H6 = 0x1f83d9ab;
+        private uint H7 = 0x5be0cd19;
 
 
         public readonly static uint [] k = new uint[64]
@@ -78,10 +86,21 @@ namespace SHA
         public void calculateSHA(IFixedArray<byte> mes)
         {
             preprocess(mes);
+            // string str = "";
+            // for (int j = 0; j<MAX_BUFFER_SIZE; j++) {
+            //     str += workingBuffer[j].ToString("X2");
+            // }
+            // Console.WriteLine("workingBuffer: " + str);
             fetchBlock(workingBuffer);
+            // str = "";
+            // for (int j = 0; j<64; j++) {
+            //     str += workingBuffer[j].ToString("X2");
+            // }
+            // Console.WriteLine("blockD: " + str);
             processBlock();
         }
 
+        // Padding er forkert? Den fejler når beskeden bliver over 64chars=512bits lang. Hvorfor?
         public void preprocess(IFixedArray<byte> mes)
         {
             // the amount of padding 448 mod 512, only applies to the last block
@@ -94,14 +113,20 @@ namespace SHA
                 if (!Message.Set) { workingBuffer[Message.BufferSize] = 0x80; }
                 ulong fullSize = (ulong)(Message.MessageSize << 3);
                 // Big-Endian
-                workingBuffer[MAX_BUFFER_SIZE - 8] = (byte)(fullSize >>  0 & 0x00000000000000ff);
-                workingBuffer[MAX_BUFFER_SIZE - 7] = (byte)(fullSize >>  8 & 0x00000000000000ff);
-                workingBuffer[MAX_BUFFER_SIZE - 6] = (byte)(fullSize >> 16 & 0x00000000000000ff);
-                workingBuffer[MAX_BUFFER_SIZE - 5] = (byte)(fullSize >> 24 & 0x00000000000000ff);
-                workingBuffer[MAX_BUFFER_SIZE - 4] = (byte)(fullSize >> 32 & 0x00000000000000ff);
-                workingBuffer[MAX_BUFFER_SIZE - 3] = (byte)(fullSize >> 40 & 0x00000000000000ff);
-                workingBuffer[MAX_BUFFER_SIZE - 2] = (byte)(fullSize >> 48 & 0x00000000000000ff);
-                workingBuffer[MAX_BUFFER_SIZE - 1] = (byte)(fullSize >> 56 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 1] = (byte)(fullSize >>  0 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 2] = (byte)(fullSize >>  8 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 3] = (byte)(fullSize >> 16 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 4] = (byte)(fullSize >> 24 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 5] = (byte)(fullSize >> 32 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 6] = (byte)(fullSize >> 40 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 7] = (byte)(fullSize >> 48 & 0x00000000000000ff);
+                workingBuffer[MAX_BUFFER_SIZE - 8] = (byte)(fullSize >> 56 & 0x00000000000000ff);
+                // string str = "";
+                // for (int j = 0; j<MAX_BUFFER_SIZE; j++) {
+                //     str += workingBuffer[j].ToString("X2");
+                // }
+                // Console.WriteLine("Padding?: " + str);
+
             }
             else if (Message.Set) {
                 workingBuffer[Message.BufferSize] = 0x80;
@@ -112,10 +137,11 @@ namespace SHA
         // will be called 16 times.
         private void fetchBlock(byte[] buff) {
             for (int j=0; j<61;j+=4) {
-                blockD[j>>2]=(((uint) buff[j])) |
-                    (((uint) buff[j+1]) << 8 )  |
-                    (((uint) buff[j+2]) << 16)  |
-                    (((uint) buff[j+3]) << 24);
+                blockD[j>>2]=(((uint) buff[j+3])) |
+                    (((uint) buff[j+2]) <<  8)    |
+                    (((uint) buff[j+1]) << 16)    |
+                    (((uint) buff[j] << 24));
+                // Console.WriteLine($"blockD[j>>2]: {blockD[j>>2].ToString("X8")}");
             }
         }
 
@@ -128,9 +154,10 @@ namespace SHA
                 s0 = rightrotate(blockD[j-15],  7) ^ rightrotate(blockD[j-15], 18) ^ (blockD[j-15] >>  3);
                 s1 = rightrotate(blockD[j- 2], 17) ^ rightrotate(blockD[j- 2], 19) ^ (blockD[j- 2] >> 10);
                 blockD[j] = blockD[j-16] + s0 + blockD[j-7] + s1;
+                // Console.WriteLine($"s0:{s0.ToString("X8")} s1:{s1.ToString("X8")}");
             }
 
-            a = h0; b = h1; c = h2; d = h3; e = h4; f = h5; g = h6; h = h7;
+            a = H0; b = H1; c = H2; d = H3; e = H4; f = H5; g = H6; h = H7;
 
             for (int j = 0; j < 64; j++) {
                 s1 = rightrotate(e, 6) ^ rightrotate(e, 11) ^ rightrotate(e, 25);
@@ -148,16 +175,18 @@ namespace SHA
                 c = b;
                 b = a;
                 a = temp1 + temp2;
+                // Console.WriteLine($"a:{a.ToString("X8")} b:{b.ToString("X8")} c:{c.ToString("X8")} d:{d.ToString("X8")} e:{e.ToString("X8")} f:{f.ToString("X8")} g:{g.ToString("X8")} h:{h.ToString("X8")}");
             }
 
-            h0 = h0 + a;
-            h1 = h1 + b;
-            h2 = h2 + c;
-            h3 = h3 + d;
-            h4 = h4 + e;
-            h5 = h5 + f;
-            h6 = h6 + g;
-            h7 = h7 + h;
+            // Console.WriteLine($"H0 = {READH0.ToString("X8")} + {a.ToString("X8")} = {(READH0+a).ToString("X8")}");
+            H0 = H0 + a;
+            H1 = H1 + b;
+            H2 = H2 + c;
+            H3 = H3 + d;
+            H4 = H4 + e;
+            H5 = H5 + f;
+            H6 = H6 + g;
+            H7 = H7 + h;
         }
         #endregion
 

@@ -1,0 +1,18 @@
+** SHA256
+SHA256 is a one way Secure Hash Algorithm. Which is where it gets its name from.
+It is part of the SHA2 familiy and was designed and published by the NSA.
+SHA256 is also build upon the Merkle-Damgård construction, like MD5.
+
+The 256 part refers to the output size of 256-bit.
+SHA256 can take in input of any size (depending on the implementation) but works
+on chunks of 512-bits and then outputs a digest or hash of 256-bits.
+Other versions from the SHA2 familiy exsits, like SHA512 and the truncated
+versions like SHA224 and SHA384. If need should arise it would be simple to extend
+the implementation of SHA256 to these other versions since it would mostly
+consist of changing preset constants.
+
+*** naive
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: AESnaive
+:END:
