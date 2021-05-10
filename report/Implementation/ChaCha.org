@@ -1,0 +1,14 @@
+* ChaCha
+
+** naive
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: ChaChaNaive
+:END:
+Just like the AES ChaCha will work in two phases. The initial phase will be to setup the the seed. After the initial setup, the only modification to the intial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. every iteration will perform chacha described in \ref{ChaChaAlg}. Just like for any of the other algorithms we have gone for a full solution, meanign the FPGA solution should be as independent as possible. This also means that our chacha20 version will not merely produce the stream but will produce the cipher itself.
+** First optimization
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: ChaCha1
+:END:
+As it should hopefully be clear from the high level description the computation of the rounds are quite simple compared to AES, which both needs computation in the key-expansion, and in the T-box version of AES a lot of table lookups. Furthermore ChaCha encourages concurrency and parallelism, as each "block" can be computed completely independently of each other. To start with we will however look at how the

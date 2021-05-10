@@ -1,3 +1,4 @@
 * Implementation
 #+INCLUDE: "MD5.org"
 #+INCLUDE: "AES.org"
+#+INCLUDE: "ChaCha.org"
