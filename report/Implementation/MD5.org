@@ -5,8 +5,8 @@
 :UNNUMBERED: nil
 :CUSTOM_ID: MD5naive
 :END:
-As explained in section \ref{SME}, SME consists of busses and processes. We can define the MD5 algorithm naively by following figure \ref{fig:Merkle} and using two busses and one simple process. Overall there are two approaches,
-Firstly, we could let the arrows in the diagram denote the busses, such that we would have a bus denoting the message-block and one denoting the digest. However, this approach requires an extra bus, thus the alternative. Since we use a c# implementation of SME, we can store the Digest locally inside the simpleProcess. Thus we will only require a bus with the message, corresponding to the downward-facing arrows and one for the Hash (the rightmost arrow).
+As explained in section \ref{SME}, SME consists of busses and processes. We can define the MD5 algorithm naively using 4 busses and one simple process. Overall there are two approaches,
+Firstly, one could have 2 inputbusses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach requires an extra bus which doesnt provide anything and which only job would be to make unnecessary data transactions as the IV will always be the same and hereby also create more boiler for the code that would call this function. Thus the alternative. Since we use the c# implementation of SME, we can easily store the Digest locally inside the process as a field. Thus we will only require a bus with the message, corresponding to the downward-facing arrows and one for the Hash (the rightmost arrow).
 we can define the Message bus as such:
 #+BEGIN_SRC csharp
     public interface IMessage : IBus {
@@ -23,13 +23,18 @@ we can define the Message bus as such:
         [InitialValue(false)] bool Set { get; set; }
     }
 #+END_SRC
-One can see there are multiple things to keep track of. First and foremost, all SME busses should have a flag for whether or not a bus has data inside of it. Secondly, A byte-array is used to store the message block itself. ~BufferSize~ will be updated for every iteration or tick, and denotes how many values in the buffer are set, essentially flag for when the message should be padded. MessageSize will be set in the initial tick and denote the length of the entire message used for the Merkle-Damgård strengthening.
+One can see there are multiple things to keep track of. First and foremost, all busses we will be working with should have a flag for whether or not a bus has data inside of it, since we try to adhere to the AXI protocol, which specifies some standards for a ready/valid handshake between the processes. Secondly, A byte-array is used to store the message block itself. ~BufferSize~ will be updated for every iteration or tick, and denotes how many values in the buffer are set, essentially flag for when the message should be padded. MessageSize will be set in the initial tick and denote the length of the entire message used for the Merkle-Damgård strengthening.
 The last 3 flags are used to handle some "edge-cases".
 Head Denotes that the initialization vector should be reconstructed.
 Last is used to denote when a block is the last in the message. The block cannot be filled with more than 447 bits.
 Set is used in the cases where the initial 1 should be set but where the block is not the last in the message, for instance when the length of the message is 448.
 
-The Digest on the other hand is simple. It only consists of a Valid flag and the Hash as an array of 4 32-bit words.
+The Digest or the output bus on the other hand is simple. It only consists of a Valid flag and the Hash as an array of 4 32-bit words.
+the last bus of which there is 2 instances is the ready bus which simply carries a bool which signals if the receiving process is ready to receive data.
+
+The MD5 process itself is completely contained in the single process and works as described in \ref{MD5alg}. The only modification we have to make to ensure this works is to let
+
+*TODO
 
 Except for the handling of the padding in relation to SME, the simple process works as explained in section \ref{MD5alg}
 

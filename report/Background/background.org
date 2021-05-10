@@ -5,7 +5,7 @@
 #+INCLUDE: "SME.org"
 ** A crypto library
 Cryptographic functions are used by developers across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
-So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"\cite{IBM4758}. Another point is modern Hardware security modules (HSM) which also does this.
+So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"\cite{IBM4758}. Another point is modern Hardware Security Modules (HSM) which also does this.
 However, the problem with the existing solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in research, and academics.
 So we set out to create an open-source crypto library.
 
@@ -22,7 +22,7 @@ If a hash function can be implemented with a limited input space, is pseudo-rand
 
 **** Merkle-Damgård construction
 One approach that is widely used in cryptographic hashing is the Merkle-Damgård construction. One of the reasons this approach is desirable when developing a cryptographic hashing algorithm is because the hash function will be collision-resistant given the compression function itself is collision-resistant.
-From figure \ref{fig:Merkle} one can see the construction of the hashing function. One can see that the message will be padded to have a certain length since any compression function must work on static size. The compression function ~f~ will initially take two arguments, the initialization vector, and the first block. f will then produce a result of the same size as the initialization vector. This result will then be fed into the next iteration of ~f~ along with the second block of the message. This is repeated until the entire padded message has been processed. From here a potential finalization function can be used to improve the hash. Lastly, the hashed value will be produced.
+From Figure \ref{fig:Merkle} one can see the construction of the hashing function. One can see that the message will be padded to have a certain length since any compression function must work on static size. The compression function ~f~ will initially take two arguments, the initialization vector, and the first block. f will then produce a result of the same size as the initialization vector. This result will then be fed into the next iteration of ~f~ along with the second block of the message. This is repeated until the entire padded message has been processed. From here a potential finalization function can be used to improve the hash. Lastly, the hashed value will be produced.
 
 #+CAPTION: Merkle-Damgård construction
 #+LABEL: fig:Merkle
@@ -36,9 +36,21 @@ TODO: WRITE SOMETHING ABOUT CYPHERS
 :CUSTOM_ID: MD5alg
 :END:
 #+INCLUDE: MD5.org
+** SHA-256
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: SHAalg
+:END:
+*TODO
 ** AES
 :PROPERTIES:
 :UNNUMBERED: nil
 :CUSTOM_ID: AESalg
 :END:
 #+INCLUDE: AES.org
+** ChaCha20
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: ChaChaalg
+:END:
+#+INCLUDE: ChaCha.org
