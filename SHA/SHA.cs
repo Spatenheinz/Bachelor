@@ -46,14 +46,14 @@ namespace SHA
         private readonly uint READH5 = 0x9b05688c;
         private readonly uint READH6 = 0x1f83d9ab;
         private readonly uint READH7 = 0x5be0cd19;
-        private uint H0;
-        private uint H1;
-        private uint H2;
-        private uint H3;
-        private uint H4;
-        private uint H5;
-        private uint H6;
-        private uint H7;
+        private uint H0 = 0x6a09e667;
+        private uint H1 = 0xbb67ae85;
+        private uint H2 = 0x3c6ef372;
+        private uint H3 = 0xa54ff53a;
+        private uint H4 = 0x510e527f;
+        private uint H5 = 0x9b05688c;
+        private uint H6 = 0x1f83d9ab;
+        private uint H7 = 0x5be0cd19;
 
 
         public readonly static uint [] k = new uint[64]
@@ -86,7 +86,17 @@ namespace SHA
         public void calculateSHA(IFixedArray<byte> mes)
         {
             preprocess(mes);
+            // string str = "";
+            // for (int j = 0; j<MAX_BUFFER_SIZE; j++) {
+            //     str += workingBuffer[j].ToString("X2");
+            // }
+            // Console.WriteLine("workingBuffer: " + str);
             fetchBlock(workingBuffer);
+            // str = "";
+            // for (int j = 0; j<64; j++) {
+            //     str += workingBuffer[j].ToString("X2");
+            // }
+            // Console.WriteLine("blockD: " + str);
             processBlock();
         }
 
@@ -147,7 +157,7 @@ namespace SHA
                 // Console.WriteLine($"s0:{s0.ToString("X8")} s1:{s1.ToString("X8")}");
             }
 
-            a = READH0; b = READH1; c = READH2; d = READH3; e = READH4; f = READH5; g = READH6; h = READH7;
+            a = H0; b = H1; c = H2; d = H3; e = H4; f = H5; g = H6; h = H7;
 
             for (int j = 0; j < 64; j++) {
                 s1 = rightrotate(e, 6) ^ rightrotate(e, 11) ^ rightrotate(e, 25);
@@ -169,14 +179,14 @@ namespace SHA
             }
 
             // Console.WriteLine($"H0 = {READH0.ToString("X8")} + {a.ToString("X8")} = {(READH0+a).ToString("X8")}");
-            H0 = READH0 + a;
-            H1 = READH1 + b;
-            H2 = READH2 + c;
-            H3 = READH3 + d;
-            H4 = READH4 + e;
-            H5 = READH5 + f;
-            H6 = READH6 + g;
-            H7 = READH7 + h;
+            H0 = H0 + a;
+            H1 = H1 + b;
+            H2 = H2 + c;
+            H3 = H3 + d;
+            H4 = H4 + e;
+            H5 = H5 + f;
+            H6 = H6 + g;
+            H7 = H7 + h;
         }
         #endregion
 
