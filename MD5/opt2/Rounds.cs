@@ -18,6 +18,7 @@ namespace opt2
         [OutputBus]
         public IRound IV_Out = Scope.CreateBus<IRound>();
         protected override void OnTick() {
+            Console.WriteLine($"{block.Valid}");
             if (block.Valid) {
                 if (block.Head) {
                 IV_Out.A = A = 0x067452301;
@@ -25,8 +26,8 @@ namespace opt2
                 IV_Out.C = C = 0x98badcfe;
                 IV_Out.D = D = 0x10325476;
                 processBlock();
-                IV_Out.Valid = Out.Valid = true;
             Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+                IV_Out.Valid = Out.Valid = true;
                 } else if (IV.Valid) {
                 IV_Out.A = A = IV.A;
                 IV_Out.B = B = IV.B;
@@ -304,30 +305,44 @@ namespace opt2
     [ClockedProcess]
     class Combiner : SimpleProcess {
         [InputBus]
-        public IRound IV;
-
-        [InputBus]
         public IRound I;
 
         [OutputBus]
         public IRound Out = Scope.CreateBus<IRound>();
         [OutputBus]
         public IRound F = Scope.CreateBus<IRound>();
-        // [InputBus] axi_r axi_Digest;
+        [InputBus] public axi_r axi_Digest;
 
-        uint A, B, C, D;
+        bool was_valid = true;
+        bool was_ready = false;
+        bool initial = true;
+        uint A = 0x67452301;
+        uint B = 0xefcdab89;
+        uint C = 0x98badcfe;
+        uint D = 0x10325476;
         protected override void OnTick() {
-            Console.WriteLine($"{IV.Valid},{I.Valid}");
-            if (IV.Valid && I.Valid) {
-                Out.A = A =reverseByte(IV.A + I.A);
-                Out.B = B =reverseByte(IV.B + I.B);
-                Out.C = C =reverseByte(IV.C + I.C);
-                Out.D = D =reverseByte(IV.D + I.D);
-                Out.Valid = true;
-            Console.WriteLine($"called last after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
-            // Console.WriteLine($"called cob IV: {IV.A}, {IV.B}, {IV.C}, {IV.D}");
-            // Console.WriteLine($"called cob I: {I.A}, {I.B}, {I.C}, {I.D}");
+            if (initial) {
+                Out.A = A = 0x67452301;
+                Out.B = B = 0xefcdab89;
+                Out.C = C = 0x98badcfe;
+                Out.D = D = 0x10325476;
+                initial = false;
             }
+            if (was_ready && I.Valid) {
+                Console.WriteLine($"combiner {was_valid}, {!axi_Digest.Ready}");
+                Out.A = A + I.A;
+                Out.B = B + I.B;
+                Out.C = C + I.C;
+                Out.D = D + I.D;
+            Console.WriteLine($"called combiner after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
+            Out.Valid = was_valid = true;
+                // Out.Final = I.Final;
+            } else {
+                Out.Valid = was_valid = was_valid && !axi_Digest.Ready;
+            }
+            Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
+            // axi_.Ready = iv_was_ready = !iv_was_valid;
+            // axi_I.Ready = was_ready = !was_valid;
         }
         private uint reverseByte(uint i) {
             return ((i & 0x000000ff) << 24) |

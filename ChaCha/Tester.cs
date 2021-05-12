@@ -30,9 +30,9 @@ namespace ChaCha {
         //     // start.Arguments = "ls";
         //     start.Arguments = "echo \'" + val + "\' | openssl enc -chacha20 -nosalt -pass pass:test -p -in /dev/stdin -o /dev/stdout";
         //     start.RedirectStandardOutput = true;
-        //     // Process p = new Process();
-        //     // p.StartInfo.FileName = "echo \'" + val + " \'";
-        //     // p.StartInfo.RedirectStandardInput
+        //     Process p = new Process();
+        //     p.StartInfo.FileName = "echo \'" + val + " \'";
+        //     p.StartInfo.RedirectStandardInput
         //     using (var process = Process.Start(start)) {
         //         using (StreamReader reader = process.StandardOutput) {
         //             string result = reader.ReadToEnd();
@@ -46,7 +46,6 @@ namespace ChaCha {
         private string result;
 
         public async override Task Run() {
-            // targetCypher("The quick brown fox jumped over");
             await ClockAsync();
             State.ValidSeed = true;
             for(int i = 0; i < BUFFER_SIZE; i++) {
@@ -58,36 +57,31 @@ namespace ChaCha {
             await ClockAsync();
             State.ValidSeed = false;
 
-            // string res = "";
             for(int i = 0; i < plaintext.Length; i += TEXT_SIZE) {
-                // byte size = 0;
                 for(int j = 0; j < TEXT_SIZE; j++) {
                     if(i + j < plaintext.Length) {
                         State.Text[j] = plaintext[i+j];
-                        // size++;
                     } else {
                         State.Text[j] = 0;
                     }
                 }
-                // State.Size = size;
                 State.ValidT = true;
                 await ClockAsync();
                 State.ValidT = false;
                 await ClockAsync();
                 axi_Stream.ready = true;
                 // axi_Stream.ready = false;
-                // if (HashStream.Valid) {
+                if (HashStream.Valid) {
                     for(int j = 0; j < TEXT_SIZE; j++) {
                         if(i+j < plaintext.Length){
                         result += HashStream.Values[j].ToString("x2");
                         result += " ";
-
                         if(j%15== 0 && j!= 0) {
                             result += "\n";
                         }
                         }
                     }
-                // }
+                }
             }
             Console.WriteLine(result);
         }

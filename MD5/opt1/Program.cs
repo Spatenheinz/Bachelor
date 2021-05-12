@@ -10,11 +10,12 @@ namespace opt1
             using (var sim = new Simulation()) {
                 // Nice to be able to test buffer sizes
                 // Console.WriteLine(str);
-                var tester = new Tester("7KJYSSCIDDT2BI5OJXHNVEMWPRMZ981CXU5HMYP00N7U7GZTZN4TGNW27WIAGMIEMQEQNXBVHQXIH1ZI22AVDI5K8CK0POUNE2IQCIGBMJL00NUF6AINLXBEU3RKNLF35JEPTJFTV9J36FUVRE3PFHBR0E5J05YBES4QJFVX4Z1MNHHPJ62IR0XYHWYPN62Z");
+                var tester = new Tester("");
+                // var tester = new Tester("7KJYSSCIDDT2BI5OJXHNVEMWPRMZ981CXU5HMYP00N7U7GZTZN4TGNW27WIAGMIEMQEQNXBVHQXIH1ZI22AVDI5K8CK0POUNE2IQCIGBMJL00NUF6AINLXBEU3RKNLF35JEPTJFTV9J36FUVRE3PFHBR0E5J05YBES4QJFVX4Z1MNHHPJ62IR0XYHWYPN62Z");
                 // opt1
                 var formatter = new MessageFormat();
                 formatter.Message = tester.Message;
-                tester.axi_mes = formatter.axi_mes;
+                tester.axi_Message = formatter.axi_mes;
                 var converter = new FormatConverter();
                 converter.paddedBuffer = formatter.paddedBuffer;
                 formatter.axi_pad = converter.axi_pad;
@@ -37,8 +38,10 @@ namespace opt1
                 // combinator.flag = roundI.flag;
                 // combinator.IV = roundF.IV_Out;
                 // roundF.axi_iv_out = combinator.axi_iv;
-                roundF.IV = tester.Digest = combinator.Out;
-                combinator.axi_out = tester.axi_digest = roundF.axi_iv;
+                roundF.IV = combinator.Out;
+                tester.Digest = combinator.Final;
+                combinator.axi_out = roundF.axi_iv;
+                combinator.axi_final = tester.axi_Digest;
                 // tester.Digest = combinator.Final;
                 // combinator.axi_final = tester.axi_digest;
                 sim.AddTopLevelInputs(tester.Message)

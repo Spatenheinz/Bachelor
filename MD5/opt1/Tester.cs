@@ -11,9 +11,9 @@ namespace opt1
     {
 
         [InputBus] public IIV Digest;
-        [OutputBus] public axi_r axi_digest;
+        [OutputBus] public axi_r axi_Digest = Scope.CreateBus<axi_r>();
 
-        [InputBus] public axi_r axi_mes;
+        [InputBus] public axi_r axi_Message;
         [OutputBus] public IMessage Message = Scope.CreateBus<IMessage>();
 
         private readonly string[] MESSAGES;
@@ -38,79 +38,148 @@ namespace opt1
 
         bool was_valid = false;
         bool was_ready = false;
+        int i = 0, j = 0, ii = 0, jj = 0;
         public async override Task Run() {
-
+        string [] results = new string [MESSAGES.Length];
             await ClockAsync();
-            foreach (string message in MESSAGES) {
-                int buffersize = 0;
-                Message.MessageSize = message.Length;
-                Message.Head = true;
-                Message.Set = false;
-                Message.Last = false;
-                // for-loop to feed the processes with a message;
-                for(int i = 0; i <= message.Length; i+=MAX_BUFFER_SIZE) {
-                    Console.WriteLine(i);
-                    Console.WriteLine(message.Length);
-                    int current_blocksize = message.Length - i;
+            // string str2 = "";
+            while (i < MESSAGES.Length) {
+                // message = MESSAGES[i];
+                if (was_valid && axi_Message.Ready) {
+                    was_valid = false;
+                }
+                if (was_ready && Digest.Valid) {
+                results[i] += Digest.A.ToString("X8");
+                results[i] += Digest.B.ToString("X8");
+                results[i] += Digest.C.ToString("X8");
+                results[i] += Digest.D.ToString("X8");
+                i++; ii=0;
+                Console.WriteLine("done!!!!!!!");
+                was_ready = false;
+                }
+                if (i < MESSAGES.Length) {
+                    if (ii <= MESSAGES[i].Length) {
+                        Console.WriteLine($"ii {ii}");
+                    int buffersize = 0;
+                    int current_blocksize = MESSAGES[i].Length - ii;
                     // if we have less than 56 chars we are in the last block
                     if (current_blocksize < 56) {
+                        Console.WriteLine("This has to stop");
                         Message.Last = true;
                     }
                     // if the current blocksize is less than the max buffer size,
                     // we need to set the 1 in the padding.
                     else if (current_blocksize < MAX_BUFFER_SIZE) {
                         Message.Set = true;
+                    } else {
+                        Message.Last = false;
+                        Message.Set = false;
                     }
                     // set the buffer size according to the sizes
+                    if (ii > 0) {
+                        Message.Head = false;
+                    } else{
+                        Message.Head = true;
+                    }
+                    Message.MessageSize = MESSAGES[i].Length;
                     Message.BufferSize = buffersize = Math.Min(current_blocksize, MAX_BUFFER_SIZE);
-                    string str = "";
-                    for(int j = 0 ; j < MAX_BUFFER_SIZE; j++) {
-                        if (j < buffersize)
+                    Console.WriteLine($"buffersize {buffersize}");
+                    for(int jj = 0 ; jj < MAX_BUFFER_SIZE; jj++) {
+                        if (jj < buffersize)
                         {
-                            str += Message.Message[j] = (byte)message[MAX_BUFFER_SIZE * (i >> 6)  + j];
+                            Message.Message[jj] = (byte)MESSAGES[i][ii + jj];
                         } else {
-                            Message.Message[j] = 0;
+                            Message.Message[jj] = 0;
                         }
                     }
-                    Console.WriteLine(str);
+                    ii+=buffersize;
                     Message.Valid = was_valid = true;
-                    await ClockAsync();
-                    Message.Head = false;
-                    // Message.Valid = was_valid = false;
+                    }
                 }
-                    // Message.Valid = was_valid = false;
-                // ready and result is valid
-                //
-                //
-                // while(!Digest.Final) {
-                axi_digest.Ready = true;
-                for (int i = 0; i < 20; i++) {
+                else {
+                    Message.Valid = was_valid = false;
+                }
+                if (j < MESSAGES.Length) {
+                    axi_Digest.Ready = was_ready = true;
+                }
+                else {
+                    axi_Digest.Ready = was_ready = false;
+                }
+                    Console.WriteLine($"sim: {was_ready}, {was_valid}");
                     await ClockAsync();
                 }
-                    // await ClockAsync();
-                    // await ClockAsync();
-                    // await ClockAsync();
-                    // await ClockAsync();
-                    // await ClockAsync();
-                    // await ClockAsync();
-                    // await ClockAsync();
+                for (int k = 0; k < MESSAGES.Length; k++) {
+                    Debug.Assert(results[k] == targetHash(MESSAGES[k]), $"String2 {MESSAGES[k]} with Hash nr. {k} - {results[k]} doesnt match the MS library {targetHash(MESSAGES[k])}");
+                }
+        }
+            // foreach (string message in MESSAGES) {
+            //     int buffersize = 0;
+            //     Message.MessageSize = message.Length;
+            //     Message.Head = true;
+            //     Message.Set = false;
+            //     Message.Last = false;
+            //     // for-loop to feed the processes with a message;
+            //     for(int i = 0; i <= message.Length; i+=MAX_BUFFER_SIZE) {
+            //         Console.WriteLine(i);
+            //         Console.WriteLine(message.Length);
+            //         int current_blocksize = message.Length - i;
+            //         // if we have less than 56 chars we are in the last block
+            //         if (current_blocksize < 56) {
+            //             Message.Last = true;
+            //         }
+            //         // if the current blocksize is less than the max buffer size,
+            //         // we need to set the 1 in the padding.
+            //         else if (current_blocksize < MAX_BUFFER_SIZE) {
+            //             Message.Set = true;
+            //         }
+            //         // set the buffer size according to the sizes
+            //         Message.BufferSize = buffersize = Math.Min(current_blocksize, MAX_BUFFER_SIZE);
+            //         string str = "";
+            //         for(int j = 0 ; j < MAX_BUFFER_SIZE; j++) {
+            //             if (j < buffersize)
+            //             {
+            //                 str += Message.Message[j] = (byte)message[MAX_BUFFER_SIZE * (i >> 6)  + j];
+            //             } else {
+            //                 Message.Message[j] = 0;
+            //             }
+            //         }
+            //         Console.WriteLine(str);
+            //         Message.Valid = was_valid = true;
+            //         await ClockAsync();
+            //         Message.Head = false;
+            //         // Message.Valid = was_valid = false;
+            //     }
+            //         // Message.Valid = was_valid = false;
+            //     // ready and result is valid
+            //     //
+            //     //
+            //     // while(!Digest.Final) {
+            //     axi_Digest.Ready = true;
+            //     for (int i = 0; i < 20; i++) {
+            //         await ClockAsync();
+            //     }
+            //         // await ClockAsync();
+            //         // await ClockAsync();
+            //         // await ClockAsync();
+            //         // await ClockAsync();
+            //         // await ClockAsync();
+            //         // await ClockAsync();
+            //         // await ClockAsync();
+            //     // }
+            //         // Digest.Valid = false;
+            //         // Message.Valid = false;
+            //     // res_o.Ready = true;
+            //     // await ClockAsync();
+            //     string str2 = "";
+            //     str2 += reverseByte(Digest.A).ToString("X8");
+            //     str2 += reverseByte(Digest.B).ToString("X8");
+            //     str2 += reverseByte(Digest.C).ToString("X8");
+            //     str2 += reverseByte(Digest.D).ToString("X8");
                 // }
-                    // Digest.Valid = false;
-                    // Message.Valid = false;
-                // res_o.Ready = true;
-                // await ClockAsync();
-                string str2 = "";
-                str2 += reverseByte(Digest.A).ToString("X8");
-                str2 += reverseByte(Digest.B).ToString("X8");
-                str2 += reverseByte(Digest.C).ToString("X8");
-                str2 += reverseByte(Digest.D).ToString("X8");
-                Debug.Assert(str2 == targetHash(message), $"String2 {message} with Hash nr. {0} - {str2} doesnt match the MS library {targetHash(message)}");
-                // }
-            }
+            // }
             // res_o.Ready = false;
             // Debug.Assert(Digest.Valid && Digest.Valid, "failed to produce any output");
             // await ClockAsync();
-        }
         private uint reverseByte(uint i) {
             return ((i & 0x000000ff) << 24) |
                 (i >> 24) |

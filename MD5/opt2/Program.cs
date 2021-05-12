@@ -10,7 +10,7 @@ namespace opt2
             using (var sim = new Simulation()) {
                 // Nice to be able to test buffer sizes
                 // Console.WriteLine(str);
-                var tester = new Tester("");
+                var tester = new Tester();
                 // opt1
                 var formatter = new MessageFormat();
                 formatter.Message = tester.Message;
@@ -30,10 +30,13 @@ namespace opt2
                 var combinator = new Combiner();
                 combinator.I = roundI.Out;
                 roundF.IV    = combinator.F;
-                combinator.IV = roundF.IV_Out;
+                // combinator.IV = roundF.IV_Out;
                 tester.Digest = combinator.Out;
-                sim.AddTopLevelInputs(tester.Message)
-                       .AddTopLevelOutputs(combinator.Out)
+
+                combinator.axi_Digest = tester.axi_Digest;
+                tester.axi_Message = formatter.axi_Message;
+                sim.AddTopLevelInputs(formatter.Message, combinator.axi_Digest)
+                       .AddTopLevelOutputs(combinator.Out, formatter.axi_Message)
                         .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
                         .BuildCSVFile()
                         .BuildGraph()

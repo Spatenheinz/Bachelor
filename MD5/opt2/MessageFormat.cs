@@ -16,11 +16,13 @@ namespace opt2
         bool was_valid = false;
         bool was_ready = false;
         protected override void OnTick() {
-            if (Message.Valid) {
+            if (was_ready && Message.Valid) {
                 preprocess(Message.Message);
-                paddedBuffer.Valid = true;
+                paddedBuffer.Valid = was_valid = true;
                 paddedBuffer.Head = Message.Head;
+            Console.WriteLine($"foramtter: {was_valid}, {was_ready}");
             }
+            Console.WriteLine($"foramtter: {was_valid}, {was_ready}");
             axi_Message.Ready = was_ready = !was_valid;
         }
 
@@ -62,6 +64,7 @@ namespace opt2
                 fetchBlock(paddedBuffer.buffer);
                 block.Valid = true;
                 block.Head = paddedBuffer.Head;
+                Console.WriteLine("ok");
             }
         }
 

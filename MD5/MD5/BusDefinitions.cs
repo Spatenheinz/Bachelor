@@ -14,7 +14,7 @@ namespace MD5
         int BufferSize { get; set; }
         int MessageSize { get; set; }
 
-        [InitialValue(true)]
+        [InitialValue(false)]
         bool Last { get; set; }
         [InitialValue(true)]
         bool Head { get; set; }

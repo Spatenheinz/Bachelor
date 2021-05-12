@@ -27,10 +27,10 @@ namespace opt1
             if (was_ready && I.Valid && IV.Valid) {
             
             // if (was_ready && iv_was_ready I.Valid && IV.Valid) {
-                for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Console.Write(I.buffer[i]);
-                }
-                Console.WriteLine();
+                // for(int i = 0; i < BLOCK_SIZE; i++) {
+                //     Console.Write(I.buffer[i]);
+                // }
+                // Console.WriteLine();
                 A = IV.A; B = IV.B; C = IV.C; D = IV.D;
             Console.WriteLine($"before F: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 processBlock();
@@ -304,7 +304,9 @@ namespace opt1
         [InputBus] public axi_r axi_out;
         [OutputBus] public IIV Out = Scope.CreateBus<IIV>();
 
-        bool was_valid = true;
+        [InputBus] public axi_r axi_final;
+        [OutputBus] public IIV Final = Scope.CreateBus<IIV>();
+        bool was_valid = false;
         bool was_ready = false;
         bool initial = true;
         uint A = 0x67452301;
@@ -318,38 +320,29 @@ namespace opt1
                 Out.C = C = 0x98badcfe;
                 Out.D = D = 0x10325476;
                 initial = false;
+            Out.Valid = was_valid = true;
             }
             if (was_ready && I.Valid) {
                 Console.WriteLine($"combiner {was_valid}, {!axi_out.Ready}");
+                if (I.Final) {
+                Final.A = A + I.A;
+                Final.B = B + I.B;
+                Final.C = C + I.C;
+                Final.D = D + I.D;
+                Final.Valid = was_valid = false;
+                initial = true;
+                } else {
                 Out.A = A + I.A;
                 Out.B = B + I.B;
                 Out.C = C + I.C;
                 Out.D = D + I.D;
             Console.WriteLine($"called combiner after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
             Out.Valid = was_valid = true;
-                Out.Final = I.Final;
+                // Out.Final = I.Final;
+                }
             } else {
                 Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
-            // else if (was_ready && I.Valid && IV.Valid) {
-            // // Console.WriteLine($"called cob IV: {IV.A}, {IV.B}, {IV.C}, {IV.D}");
-            // // Console.WriteLine($"called cob I: {I.A}, {I.B}, {I.C}, {I.D}");
-            //     A = I.A + IV.A; B = I.B + IV.B; C = I.C + IV.C; D = I.D + IV.D;
-            // // Console.WriteLine($"called I after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
-            // // Console.WriteLine($"called cob I: {I.A}, {I.B}, {I.C}, {I.D}");
-            // if (flag.Valid) {
-            //     Final.A = A; Final.B = B; Final.C = C; Final.D = D;
-            //     Final.Valid = was_valid = true;
-            //     Out.A = 0x67452301; Out.B = 0xefcdab89; Out.C = 0x98badcfe; Out.D = 0x10325476;
-            //     Out.Valid = iv_was_valid = true; // Console.WriteLine("FINAL");
-            // } else {
-            //     Out.A = A; Out.B = B; Out.C = C; Out.D = D;
-            //     Out.Valid = iv_was_valid = true; // Console.WriteLine("FINAL");
-            // }
-            // } else {
-            //     // Out.Valid = iv_was_valid = iv_was_valid && !axi_out.Ready;
-            //     Final.Valid = was_valid = was_valid && !axi_final.Ready;
-            // }
             Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
             // axi_.Ready = iv_was_ready = !iv_was_valid;
             axi_I.Ready = was_ready = !was_valid;
