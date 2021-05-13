@@ -1,4 +1,4 @@
-% Created 2021-05-13 Thu 15:44
+% Created 2021-05-13 Thu 22:46
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
@@ -24,20 +24,19 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-\label{sec:org19dae89}
+\label{sec:org490f9f1}
 
 \section{Background}
-\label{sec:orga037939}
+\label{sec:orgf183e60}
 
 \subsection{Field Programmable Gate Arrays}
-\label{sec:org081eee0}
-TODO: write something more in-depth.
-Fields Programmable Gate Arrays (FPGA's) is an integrated circuit which can be reconfigured in the ``field''. It stands as the opposite Application Specific Integrated Circuit, which will have the single purpose, whereas FPGA's can be reprogrammed to have different purposes. It means an FPGA can be configured to work as a CPU, a GPU or something else entirely. This is done in hardware description language and typically run through a program to sythesize the design on the FPGA.
+\label{sec:org5676d38}
+Fields Programmable Gate Arrays (FPGA's) is an integrated circuit which can be reconfigured in the ``field''. It stands as the opposite Application Specific Integrated Circuit, which will have the single purpose, whereas FPGA's can be reprogrammed to have different purposes. It means an FPGA can be configured to work as a CPU, a GPU or something else entirely. This is done in hardware description language such as Verilog or VHDL and typically run through a program to sythesize the design on the FPGA.
 FPGA's consist of a set of Configurable Logic Gates (CLBs) and interconnects between these. CLBs is the reason FPGA's is reprogrammable. They differs from classic logic gates such as Nand, etc. used CPU in that they are constructed by look up tables, which can be reprogrammed, instead of gates which are fixed. Since these lookup tables can be build for specific purposes FPGAs can be a programmed to do one thing and do it really well. This lack of generality is often good for both performance and power consumption, compared to a CPU which needs to be able to do general prosessing, and thus in general has a lot of waste.
 
 \subsection{Synchronous Message Exchange}
 \label{SME}
-Synchronous Message Exchange (SME) is a programming model to enable FPGA development using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs from said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}. Using the following concepts from the CSP model\cite{CSP}, SME can be derived:
+Synchronous Message Exchange (SME) is a programming model to enable FPGA development for software programmers using high-level languages. SME is based on Communicating Sequential Processes (CSP) and at its core constructs from said process calculi, making use of the elements which has proven useful in hardware design\cite{sme}. Using the following concepts from the CSP model\cite{CSP}, SME can be derived:
 
 \begin{itemize}
 \item A program consists of a set of named processes.
@@ -45,24 +44,27 @@ Synchronous Message Exchange (SME) is a programming model to enable FPGA develop
 \item Concurrent processes can communicate using message passing.
 \end{itemize}
 
-SME has a similar notion of processes. There exist two types of SME processes, \texttt{simple process} and a \texttt{simulation process}. Of these, the simple process corresponds to a process in CSP as described above. Each simple process in SME will only share communication channels and constants with the other processes. Simple processes will consist of a set of input and output busses, a \texttt{onTick} function which will run on every clock tick and a set of optional variables and functions. Since the model revolves around mapping to hardware every construct inside a simple process should have a static size. Meaning no dynamic lists, while-loops etc. Simulation processes on the otherhand will not be a part of the actual hardware design, hereby making dynamic constructs legal.
+SME has a similar notion of processes. There exist two types of SME processes, \texttt{simple process} and a \texttt{simulation process}. Of these, the simple process corresponds to a process in CSP as described above. Each simple process in SME will only share communication channels and constants with the other processes. Simple processes will consist of a set of input and output busses, an \texttt{onTick} function which will run on every clock tick, and a set of optional variables and functions. Since the model revolves around mapping to hardware every construct inside a simple process should have a static size. Meaning no dynamic lists, while-loops etc. Simulation processes on the otherhand will not be a part of the actual hardware design, hereby making dynamic constructs legal. Furthermore simple processes has an optional property \texttt{Clocked Process} which means \ldots{} TODO.
 For the communications channels, SME extends the concepts from CSP by using buses. Instead of using explicit naming for sources and destinations, each process will consist of a set of input and output busses that it can read and write to, respectively. Furthermore, these buses use broadcasting as means of synchronization instead of the blocking non-buffered approach.  The broadcasting happens every clock-cycle on the internal clock.
-A bus is essentially just a collection of fields that can be read and written to depending on the process' access, merely a data transfer object. Thus a simple (and pointless) process that adds two numbers might have two input busses X\{valid,x\} and Y\{valid,y\}. inside the \texttt{onTick} function, which will be run every tick of the internal clock of SME, could then add the two values x and y if their valid fields was set to true and write the result to a bus RES\{valid, res\}. It is worth noting that a process should not necessarily have one and possibly multiple ``valid''-flags which shows if there is any data on the bus, but this is common in cases where the processes communicate using the ready/valid handshake for instance the one specified by the AXI protocols\footnote{AXI ref}, which is the process communications protocol we wil be using. It is easy to see how an SME model can be transformed into a dependency graph with processes being nodes and buses the edges.From the dependency graph it is possible to create an AST which can be translated into VHDL code\cite{SME}, thus creating the bridge from the high level model to the low-level hardware implementation. This in turn can be fed into a tool such as Xilinx vivado to synthesize the implementation to actual hardware. For the cryptographic library covered in this report we will be using a C\# implementation of SME by the models creators\cite{SME}.
+A bus is essentially just a collection of fields that can be read and written to depending on the process' access, merely a data transfer object. Thus a simple (and pointless) process that adds two numbers might have two input busses X\{valid,x\} and Y\{valid,y\}. inside the \texttt{onTick} function, which will be run every tick of the internal clock of SME, could then add the two values x and y if their valid fields was set to true and write the result to a bus RES\{valid, res\}. It is worth noting that a process should not necessarily have one and possibly multiple ``valid''-flags which shows if there is any data on the bus, but this is common in cases where the processes communicate using the ready/valid handshake for instance the one specified by the AXI protocols\footnote{AXI ref}, which is the process communications protocol we wil be using. It is easy to see how an SME model can be transformed into a dependency graph with processes being nodes and buses the edges.From the dependency graph it is possible to create an AST which can be translated into VHDL code\cite{SME}, thus creating the bridge from the high level model to the low-level hardware implementation. This in turn can be fed into a tool such as Xilinx vivado to synthesize the implementation to actual hardware. For the cryptographic library covered in this report we will be using the C\# implementation of SME by the models creators\cite{SME}.
 \subsection{A crypto library}
-\label{sec:org1815be4}
+\label{sec:orgf938a39}
 Cryptographic functions are used by developers across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
 So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own ``IBM 4758 Secure Coprocessor''\cite{IBM4758}. Another point is modern Hardware Security Modules (HSM) which also does this.
 However, the problem with the existing solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in research, and academics.
 So we set out to create an open-source crypto library.
 
-The crypto library consists of an implementation of various cryptographic functions, such as AES and SHA256. It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
+The crypto library consists of 4 cryptographic functions, two of which are hash functions, MD5 and SHA-256, and two of which are ciphers, AES and Chacha.
+
+It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
 These implementations should also be optimized in terms of speed so that they are competitive with the existing software solutions.
 Creating a crypto library for FPGA's \ldots{}
+
 \subsubsection{Hashing}
-\label{sec:org70c6b53}
+\label{sec:org929535c}
 Hashing is a mathematical concept referring to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptographic hash functions are a subset of all hash functions.
 The reason for this is that for a hash function to be a cryptographic hash function it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementation of hash functions. Lastly and most importantly, computers can't do true randomness.
-If a hash function can be implemented with a limited input space, is pseudo-random, and upholds certain properties listed below, it can be categorized as a ``Cryptographic Hash Function''. One such example is the outdated MD5 algorithm.
+If a hash function can be implemented with a limited input space, is pseudo-random, and upholds certain properties listed below, it can be categorized as a ``Cryptographic Hash Function''.
 \begin{itemize}
 \item It should be deterministic, as it is important that the same hash is computed given some input.
 \item It is unreasonably hard to predict the hashed value. One reason for this is the requirement to exercise the avalanche effect, meaning the tiniest change in the input message would resolve in big changes in the hash.
@@ -71,9 +73,9 @@ If a hash function can be implemented with a limited input space, is pseudo-rand
 
 \begin{enumerate}
 \item Merkle-Damgård construction
-\label{sec:org663afbc}
-One approach that is widely used in cryptographic hashing is the Merkle-Damgård construction. One of the reasons this approach is desirable when developing a cryptographic hashing algorithm is because the hash function will be collision-resistant given the compression function itself is collision-resistant.
-From Figure \ref{fig:Merkle} one can see the construction of the hashing function. One can see that the message will be padded to have a certain length since any compression function must work on static size. The compression function \texttt{f} will initially take two arguments, the initialization vector, and the first block. f will then produce a result of the same size as the initialization vector. This result will then be fed into the next iteration of \texttt{f} along with the second block of the message. This is repeated until the entire padded message has been processed. From here a potential finalization function can be used to improve the hash. Lastly, the hashed value will be produced.
+\label{sec:orga57a3b8}
+As stated previously this library include implementations of MD5 and SHA-256. These are very similar in design and follows a widely construction method for cryptographic hashing, the Merkle-Damgård construction. One of the reasons this approach is desirable when developing a cryptographic hashing algorithm is because the hash function will be collision-resistant given the compression function itself is collision-resistant\footnote{ref to the article}.
+From Figure \ref{fig:Merkle} one can see the construction of the hashing function. One can see that the message will be padded to have a certain length since any compression function must work on static size. The compression function \texttt{f} will initially take two arguments, the initialization vector (IV), and the first message block. \texttt{f} will then produce a result of the same size as the initialization vector. This result will then be fed into the next iteration of \texttt{f} along with the second block of the message. This is repeated until the entire padded message has been processed. From here a potential finalization function can be used to improve the hash and a hashed value is produced.
 
 \begin{figure}[htbp]
 \centering
@@ -81,9 +83,17 @@ From Figure \ref{fig:Merkle} one can see the construction of the hashing functio
 \caption{\label{fig:Merkle}Merkle-Damgård construction}
 \end{figure}
 \end{enumerate}
-\subsubsection{Cypher}
-\label{sec:org6b927f3}
-TODO: WRITE SOMETHING ABOUT CYPHERS
+\subsubsection{Cipher}
+\label{sec:org8f07b40}
+Ciphers are algorithms used for symmetric encryption and decryption of data. This means that rather than generating a fixed sized output like most (if not all) hash functions a cipher should always output as many bits as its input. There are generally two types of ciphers: block ciphers and stream ciphers. They a similar in that they always have to be a bijective mapping from key/plaintext to ciphertext, such that no two plaintexts can map to the same ciphertext. Furthermore Claude Shannon defined\footnote{ref til confusion difussion} that secures ciphers should have confusion and diffusion. Confusion meaning a bit of the ciphertext should depend of key in multiple ways, such that no connection between those two are easily observable. Diffusion meaning a single change of bit in the plaintext should change the majority of bits in the ciphertext. Fortheir internal workings the two types of ciphers are however vastly different.
+\begin{enumerate}
+\item Block ciphers
+\label{sec:org340d579}
+Block ciphers are defined to work on a fixed sized block of bits, which often, and in the case of AES, is 128 bits. Obviously this requires some considerations, firstly data that is not a multiple of the block size will require some sort of padding, as the method of choice is not defined by any standard we have not taken uneven sized plaintexts into account. Furthermore there are defined multiple Modes of operations to handle data with more than one block. Of these the most simple is Electronic Code Book (ECB), which simply will encrypt each block of the data independently. It is worth noting that this is not the most secure mode since identical data blocks will produce identical cipher blocks. Another more secure method is Cipher Block Chaining (CBC) which will xor the cipher text of the previous block with the plaintext of the current block before encrypting the block. This approach is a embarrisingly sequential method. More parallel and robust modes also exist, such as Counter Mode (CTR) and Galois Counter Mode (GCM). These work by taking a nonce as input to the cipher instead of the plaintext. The result will then be XORed with the plaintext. Each block after the initial will then take the nonce increased by some fixed size pr. block.
+\item Stream ciphers
+\label{sec:org924b284}
+A stream cipher as the name suggests works using stream and is thus independent of size. Stream ciphers generate a pseudorandom keystream, which will be combined with the plaintext. Most often this combination will be by XOR, such that bit 0th of the plaintext will be XORed with the 0th bit of the keystream.
+\end{enumerate}
 
 \subsection{MD5}
 \label{MD5alg}
@@ -97,7 +107,7 @@ Each partition of the message will then be fed into the compression \texttt{f} f
 \caption{\label{fig:MD5}Two iterations of the MD5 rounds.}
 \end{figure}
 
-Figure \ref{fig:MD5} shows the expanded compression function \texttt{f}. \texttt{f} will modify a 128-bit initialization vector (A, B, C, D), with the initial value:\\
+Figure \ref{fig:MD5}\footnote{this is a horrible picture and we should prob make a better one} shows the expanded compression function \texttt{f}. \texttt{f} will modify a 128-bit initialization vector (A, B, C, D), with the initial value:\\
 \texttt{[} \texttt{A: 0x67542301}, \texttt{B: 0xefcdab89}, \texttt{C: 0x98badcfe}, \texttt{D: 0x10325476} \texttt{]}\\
 \texttt{f} will use the following 4 functions, defined as such to, in ``bitwise parallel'' produce independent and unbiased bits in each of the rounds.
 \begin{equation}
@@ -136,16 +146,38 @@ It is worth noting that MD5 is not a very good hashing algorithm for cryptograph
 *TODO
 \subsection{AES}
 \label{AESalg}
-The Advanced Encryption Standard (AES) is a symmetric block cipher which is specified as the standard for encryption by the National Institute of Standards and Technology (NIST). As AES is the standard for encryption it is used msotly everywhere and is critical to include in a cryptographic library. The algorithm behind AES is called Rijndahl and was chosen since it had a good balance of security, performance of a vast variety of devices\cite{AESofficial}. Rijndahl is an Substitution-permutation (SP) network which manipulates a block and keysize of any multiple of 32 in the range 128-256 bits. In the exact specification of AES the blocksize is fixed to 128 bits where the key potentially can be 128, 192 or 256 bits. The 128 bits is arranged in a 4 x 4 column-major order matrix. As stated AES is a SP-network, meaning it is constructed as a series of rounds of substitutions and permutations. More precisely the algorithm is listed as follows:
+The Advanced Encryption Standard (AES) is a symmetric block cipher and specified as the standard for encryption by the National Institute of Standards and Technology (NIST). As AES is the standard for encryption it is used mostly everywhere and is critical to include in a cryptographic library. The algorithm behind AES is called Rijndahl and was chosen since it had a good balance of security, performance on a vast variety of devices\cite{AESofficial}. Rijndahl is an Substitution-permutation (SP) network which manipulates a block and keysize of any multiple of 32 in the range 128-256 bits. In the exact specification of AES the blocksize is fixed to 128 bits where the key potentially can be 128, 192 or 256 bits. The 128 bits is arranged in a 4 x 4 column-major order matrix. As stated AES is a SP-network, meaning it is constructed as a series of rounds of substitutions and permutations. More precisely the algorithm is listed as follows:
 \begin{enumerate}
-\item KeyExpansion: The key, whether it be 128, 192 or 256 bits is expanded using a keyschedule\footnote{should we include the schedule} which will expand a key into the number of rounds + 1 keys.
+\item KeyExpansion: The key, whether it be 128, 192 or 256 bits is expanded using a keyschedule which will expand a key into the number of rounds + 1 keys. The schedule look as follows:
+\begin{equation}
+W_i \begin{cases}
+    K_i & \text{if} i < N\\
+    W_{i-N} \oplus \text{SubWords($W_{i-1}\lll 8$))} \oplus \text{rcon}_{i/N} & \text{if $i \geq N$ and $i \equiv 0$ (mod $N$)}\\
+    W_{i-N} \oplus \text{SubWords($W_{i-1}$)} & \text{if $i \geq N$, $N > 6$, and $i \equiv 4$ (mod $N$)}\\
+    W_{i-N} \oplus W_{i-1} & \text{otherwise}
+\end{cases}
+\end{equation}
+where \(i = 0 ... 4 \cdot \text{rounds} - 1\), \(K_i\) is the i\textsuperscript{th} 32 bit word of the original key. \(W\) is a 32 bit word of the expanded key. \(N\) is the number of words in the original key and subword and rcon beeing defined as follows:
+\begin{equation}
+ \text{SubWord}([b_0 b_1 b_2 b_3]) = [S(b_0) S(b_1) S(b_2) S(b_3)] \text{}
+\end{equation}
+With \(S\) being the Substitution box explained later for the \texttt{SubBytes} function.
+\begin{center}
+\begin{tabular}{lrrrrrrrrr}
+i & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9\\
+\hline
+rcon\footnote{all values with a trailing 0 bytes} & 01 & 02 & 04 & 08 & 10 & 20 & 80 & 1b & 36\\
+\end{tabular}
+
+\end{center}
+
 \item The initial round-key is xored with the plaintext.
-\item SP - round: the rounds of the SP is performed, by first doing a substitution which officially is called SubBytes\cite{Rijndahl}, followed by the permutation which consists of 2 functions \texttt{ShiftRows} \texttt{MixColumns}, which will ensure the 4x4 matrix is permuted. Lastly the round-key is xored with the result. This is done 9, 11 or 13 times depending on whether the key-size is 128, 192 or 256 bits respectively.
+\item SP - round: the rounds of the SP is performed, by first doing a substitution which officially is called SubBytes\cite{Rijndahl}, followed by the permutation which consists of 2 functions \texttt{ShiftRows} and \texttt{MixColumns}, which will ensure the 4x4 matrix is permuted and diffused. Lastly the round-key is xored with the result. This is done 9, 11 or 13 times depending on whether the key-size is 128, 192 or 256 bits respectively.
 \item The last round will work like the other except it will only permute the rows and not the columns.
 \end{enumerate}
 
-Subbytes is non-linear byte substitution and is usually implemented as a lookup table\footnote{should we include the table?}. It is calculated in 2 steps first by taking the multiplicative inverse in the galois field GF(2\textsuperscript{8}) followed ny an affine transformation over GF(2):
-\(b_i = b_i \oplus b_{(i+4) \% 8} \oplus b_{(i+5) \% 8} \oplus b_{(i+6) \% 8} \oplus b_{(i+7) \% 8} \oplus c_i\) with b\textsubscript{i} denoting the ith bit of the byte and c\textsubscript{i} denoting the ith bit of 0x63. Since these and mostly every calculation in AES operates on galois fields we can be certain the cipher also will be 128 bits.
+Subbytes is non-linear byte substitution and is usually implemented as a lookup table. It is calculated in 2 steps first by taking the multiplicative inverse in the galois field GF(2\textsuperscript{8}) followed ny an affine transformation over GF(2):
+\[b_i = b_i \oplus b_{(i+4) \% 8} \oplus b_{(i+5) \% 8} \oplus b_{(i+6) \% 8} \oplus b_{(i+7) \% 8} \oplus c_i \] with b\textsubscript{i} denoting the i\textsuperscript{th} bit of the byte and c\textsubscript{i} denoting the i\textsuperscript{th} bit of 0x63. Since these and mostly every calculation in AES operates on galois fields we can be certain the cipher also will be 128 bits. The lookup table can be seen in appendix \ref{AESlookup}\footnote{TODO insert substitution box}
 
 ShiftRows will transform the 4x4 input matrix by rotating the rows 0 to 3 bytes to the left, meaning the first row \{b\textsubscript{0}, b\textsubscript{4}, b\textsubscript{8}, b\textsubscript{12}\} will not be rotated, the second row will be rotated one bit to the left, i.e. \{b\textsubscript{5}, b\textsubscript{9}, b\textsubscript{13}, b\textsubscript{1}\} after the rotation. Likewise the 3rd row is shifted 2 and the last row is shifted 3 to the left (or 1 to the right). The transformation can be seen in figure \ref{fig:ShiftRows}
 
@@ -177,11 +209,44 @@ MixColumns takes each column as a polynomial over the GF(2\textsuperscript{8}) a
  s_{3,c} \\
 \end{bmatrix}
 \]
-where c denotes the column multiplication is as described above and addittion is xor. By now the input text should be pretty diffused.
+where c denotes the column. Multiplication is as described above and addition is XOR.
 
 For decryption the equivalent inverse functions can be used, as Rijndahl is truely invertible, meaning an implementation in a reversible programming language would result in correct encryption or decryption based on whether the function was called or uncalled.
 
-The original paper for Rijndahl\cite{Rijndahl} describes how these different steps can be implemented as using lookup tables. This implementation can be realised on any 32-bit system with 4096 bits of memory, as we would need 4 lookup tables of 256 32-bit entries. That is one table for each column with all the 256 values in GF(2\textsuperscript{8}). This approach are generally considered faster as it reduces each round to 16 lookups and 16 xors compared to the normal approach where memory needs to be moved around. As the decryption is truely invertible there exist likewise a lookup table approach for decryption.
+The original paper for Rijndahl\cite{Rijndahl} describes how these different steps can be implemented using lookup tables. This implementation can be realised on any 32-bit system with 4096 bits of memory, as we would need 4 lookup tables of 256 32-bit entries. That is one table for each column with all the 256 values in GF(2\textsuperscript{8}). The tables can simply be computed:
+\begin{equation}
+T_0[a] = \begin{bmatrix}
+          S[a] \cdot 02_{16}\\
+          S[a]\\
+          S[a]\\
+          S[a] \cdot 03_{16}
+\end{bmatrix}
+T_1[a] = \begin{bmatrix}
+          S[a] \cdot 03_{16}\\
+          S[a] \cdot 02_{16}\\
+          S[a]\\
+          S[a]
+\end{bmatrix}
+T_2[a] = \begin{bmatrix}
+          S[a]\\
+          S[a] \cdot 03_{16}\\
+          S[a] \cdot 02_{16}\\
+          S[a]
+\end{bmatrix}
+T_3[a] = \begin{bmatrix}
+          S[a]\\
+          S[a]\\
+          S[a] \cdot 03_{16}\\
+          S[a] \cdot 02_{16}\\
+\end{bmatrix}
+\end{equation}
+these will then get used in a round transformation as
+\begin{equation}
+e_j = T_0 [a_{0,3}] \oplus T_1 [a_{1,2}] \oplus T_2 [a_{2,1}] \oplus T_3 [a_{3,0}] \oplus k_j
+\end{equation}
+where \(a_{x,y}\) denotes the byte in row \(x\) and column \(y\) and j is the round transformation.
+
+This approach are generally considered faster as it reduces each round to 16 lookups and 16 xors compared to the normal approach where memory needs to be moved around. This is approach however is more prone to cache timing attacks and since the introduction of AES instruction set in 2008\cite{intel}\footnote{TODO insert reference} this method is no longer the fastest on CPUs.
 \subsection{ChaCha20}
 \label{ChaChaalg}
 ChaCha20 is a stream cipher, which intend is to be a fast and efficient standby cipher in case AES is compromised. unlike block cyphers, such as AES, which works on a fixed sized block of text steam ciphers work on a per byte level. This is usually done by combining the plaintext with a pseudorandom stream of digits using XOR. As the objective of the cipher is to generate a random stream one first needs a seed. The seed of ChaCha is 16 32 bit words, layed out as such:
@@ -225,9 +290,9 @@ As said chacha20 will perform 20 round consisting of 4 quarter rounds. For the a
 Lastly when the 20 rounds has been computed, the intial seed and the modifed version is index-wise added giving a resulting block of 16 words of stream and this stream can then be XORed with the plaintext to get the cypher.
 
 \section{Implementation}
-\label{sec:orgb7f8454}
+\label{sec:org824ca46}
 \subsection{MD5}
-\label{sec:orge427df0}
+\label{sec:orgfedc0d9}
 
 \subsubsection{naive}
 \label{MD5naive}
@@ -261,10 +326,10 @@ Set is used in the cases where the initial 1 should be set but where the block i
 
 Since we also need to recive the digest from the process we also need an output bus. This bus is however fairly simple. It only consists of a Valid flag and the Hash as an array of 4 32-bit words.
 
-Lastly we want 2 additional busses to make our design comply with the axi protocol. This bus will be the most basic of all busses and contain only a single flag, to show if the process is ready to receive data. It will thus be wired such that the MD5 process will have an ingoing bus to know when it is safe to send the digest to the simulation and an outgoing ready bus to let the simulation know when to send the message values.
+Lastly we want 2 additional busses to make our design comply with the AXI protocol. This bus will be the most basic of all busses and contain only a single flag, to show if the process is ready to receive data. It will thus be wired such that the MD5 process will have an ingoing bus to know when it is safe to send the digest to the simulation and an outgoing ready bus to let the simulation know when to send the message values. \footnote{should we have a section in the background for AXI?} We will be using the AXI protocol for all implementations.
 
 \subsubsection{First optimization approach}
-\label{sec:org1642614}
+\label{sec:orgc65f302}
 To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. Figure \ref{fig:MD5opt1} shows how the hash function as a whole up can be split up into 5 smaller processes and build a pipeline from this. One process for message formatting, and one for each of the 4 rounds. In our actual implementation we further added 2 processes:
 \begin{itemize}
 \item A message-converter process between the message formatting and \texttt{round 1 (f)} to convert the message from bytes to unsigned integers.
@@ -278,7 +343,7 @@ To make the algorithm more efficient, the length of the circuit produced in the 
 \end{figure}
 One problem we however have faced with this general approach is that MD5 is embarisingly sequential in the sense that \texttt{round 1 (f)} of the compression of the second message block 2, will depend of the result of \texttt{combiner} of the first message block's compression. This will create a stall. Thus for long messages the speed-up from the naive version should not be too considerable. However for very small messages (<448 bits) the throughput should be noticable faster as the propogation time should be decreased considerably. Hereby we expect to see a possibility to increase the clock frequency, which would tradeoff energy use for throughput.
 \subsection{SHA256}
-\label{sec:org1618b18}
+\label{sec:org3401039}
 SHA256 is a one way Secure Hash Algorithm. Which is where it gets its name from.
 It is part of the SHA2 familiy and was designed and published by the NSA.
 SHA256 is also build upon the Merkle-Damgård construction, like MD5.
@@ -294,11 +359,13 @@ consist of changing preset constants.
 \subsubsection{naive}
 \label{AESnaive}
 \subsection{AES}
-\label{sec:org812f731}
+\label{sec:org82bf64b}
 
 \subsubsection{naive}
 \label{AESnaive}
-Just like for the other algorithms AES can naively be implemented as a single simple process. That is we could implement the SME implentation of AES as a single process that can do both encryption and decryption and then have some checks in the \texttt{OnTick} function. This however poses some unwanted effects. First we add unecessary complication to the process as it would have to multiple things at once. Furthermore and more importantly a combined encrypter/decrypter reduces the utilizations of the library. Since AES is a block cypher and rarely only need to encrypt a block of 128 bits a sequence of blocks needs to be encrypted. This naive approach is not necessarily bad for some of the modes of operations such as Electronic Codebook (ECB) (which never really should be used anyway), Cipher Block chaining (CBC) (which eliminates parallelism) etc. as these will need a decryption algorithm. However is the programmer using this library choosing to operate under a Counter mode (CTR) or Galois-counter mode (GCM) the decryption algorithm itself would be unecessary as these modes uses the encryption function to both encrypt and decrypt. Thus in a hypotetical scenario where the design includes both encryption and decryption might take up 40 pct. of an FPGA and a design with only encryption would take up 20 pct. it is clear to see how many ressources is wasted. Thus we have decided that for the basecase implementation that encryption and decryption should be seperate processes. We will only go over the implementation of encryption as the process for decryption is the exact inverse computationally as described in section \ref{AESalg} and the structure thus follows symmetrically. For the design a single bus with 4 fields as seen below suffices. It consists of two Valid flags which works in a similar matter to the one described for MD5. Furthermore there is two byte arrays with the size of \texttt{BLOCK\_SIZE} = 128 as this implementation is a 128 bit key AES. We have one array for storing the data and one for storing the key. Once again we dont want to make the process itself flexible with multiple AES versions as reduces the resource utilization. If 128 key encryption suffices the overhead from including the 4 extra rounds for 256 is wasteful. Notice furthmore, the bus i named IPlainText but could just as well have been called IData or something similar as the same bus can be used for both the plaintext and the cypher as the algorithm is symmetrical.
+Just like for the other algorithms AES can naively be implemented as a single simple process. That is we could implement the SME implentation of AES as a single process that can do both encryption and decryption and then have some checks in the \texttt{OnTick} function. This however poses some unwanted effects. First we add unecessary complication to the process as it would have to multiple things at once. Furthermore and more importantly a combined encrypter/decrypter reduces the utilizations of the library. Since AES is a block cypher and rarely only need to encrypt a block of 128 bits a sequence of blocks needs to be encrypted. This naive approach is not necessarily bad for some of the modes of operations such as Electronic Codebook (ECB) (which never really should be used anyway), Cipher Block chaining (CBC) (which eliminates parallelism) etc. as these will need a decryption algorithm. However is the programmer using this library choosing to operate under a Counter mode (CTR) or Galois-counter mode (GCM) the decryption algorithm itself would be unecessary as these modes uses the encryption function to both encrypt and decrypt. Thus in a hypotetical scenario where the design includes both encryption and decryption might take up 40 pct. of an FPGA and a design with only encryption would take up 20 pct. it is clear to see how many ressources are wasted. Thus we have decided that for the basecase implementation that encryption and decryption should be seperate processes. We will only go over the implementation of encryption as the process for decryption is the exact inverse computationally as described in section \ref{AESalg} and the structure thus follows symmetrically. For the design a single bus with 4 fields as seen below suffices. It consists of two Valid flags which works in a similar matter to the one described for MD5. Furthermore there is two byte arrays with the size of \texttt{BLOCK\_SIZE} = 128 as this implementation is a 128 bit key AES. We have one array for storing the data and one for storing the key. Once again we dont want to make the process itself flexible with multiple AES versions as it will reduce the resource utilization on an FPGA. The reason for this is the optionality of additional rounds for a 256 bit key version would map these extra computations to hardware which will make the circuit more complex and harder for vivado to route the design and will have a harder time meeting the timing constraints. In section \ref{results} we will take a short look at this. If 128 key encryption suffices the overhead from including the 4 extra rounds for 256 is wasteful.
+
+Notice furthermore, the bus is named IPlainText but could just as well have been called IData or something similar as the same bus can be used for both the plaintext and the cypher as the algorithm is symmetrical. For the output bus we however dont really have to output the key, assuming the result is send back to the device who called the function.
 \begin{verbatim}
     public interface IPlainText : IBus {
         [InitialValue(false)]
@@ -314,48 +381,61 @@ Just like for the other algorithms AES can naively be implemented as a single si
 
     }
 \end{verbatim}
-For the actual process we follow the T-box approach described earlier, as we want the throughput of our FPGA to be as efficient as possible and comparable to fast CPU implementations, which of many has built in instructions that makes AES faster to compute such as, \texttt{GF2P8AFFINEINVQB}, \texttt{GF2P8AFFINEQB} and \texttt{GF2P8MULB}.
+For the actual AES process we follow the T-box approach\footnote{it might be interesting to see how well this compares to "original" version} described earlier, as we want the throughput of our FPGA to be as efficient as possible despite lacking AES specific instructions such as, \texttt{GF2P8AFFINEINVQB}, \texttt{GF2P8AFFINEQB} and \texttt{GF2P8MULB}.
 \subsubsection{optimisation 1}
 \label{AESopt}
-Just like for the other algorithms its is a quite slow approach to use only a single process and we can try to pipeline the different aspects of the algorithm as smaller processes, that is if we need the design to perform the encryption on multiple blocks. We notice that AES likewise uses rounds and each round can be divided into its own process. However we can note that each round does not have a lot of computation as we use the T-box implementation. The key-expansion might therefore be the most computationally heavy part and could be split into smaller parts, it is however worth noting that no matter the number of blocks to encrypt the key-expansion only needs to be calculated once, which also holds if we have multiple designs running in parallel on an FPGA.
+Just like for the other algorithms its is a quite slow approach to use only a single process and we can try to pipeline the different aspects of the algorithm as smaller processes, that is if we need the design to perform the encryption on multiple blocks. We notice that AES likewise uses rounds and each round can be divided into its own process. However we can note that each round does not have a lot of computation as we use the T-box implementation. The key-expansion might therefore be the most computationally heavy part and could be split into smaller parts, it is however worth noting that no matter the number of blocks to encrypt the key-expansion only needs to be calculated once, which also holds if we have multiple designs running in parallel on an FPGA. Another thing to consider here is that the Tboxes oveall requires 4kbits of data, which might be better put into the block RAM of the FPGA.\footnote{if we have multiple processes and we AFAIK need to define them in each of the processes in the C# implementation, will it create all the look up tables for each process, or can we define it a single time. Is it better to use BRAM for data as small as ~4kbits or is LUT (distributed) RAM better in such a situation?}
 \subsection{ChaCha}
-\label{sec:org7ca66a2}
+\label{sec:org524433f}
 
 \subsubsection{naive}
 \label{ChaChaNaive}
-Just like the AES ChaCha will work in two phases. The initial phase will be to setup the the seed. After the initial setup, the only modification to the intial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. every iteration will perform chacha described in \ref{ChaChaAlg}. Just like for any of the other algorithms we have gone for a full solution, meanign the FPGA solution should be as independent as possible. This also means that our chacha20 version will not merely produce the stream but will produce the cipher itself.
+Just like AES ChaCha will work in two phases. The initial phase will be to setup the seed. After the initial setup, the only modification to the intial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. every iteration will perform chacha described in \ref{ChaChaAlg}. Just like for any of the other algorithms we have opted for a full solution, meaning the FPGA solution should be as independent as possible. Such that our chacha20 version will not merely produce the keystream but will produce the cipher itself. Thus the input bus should look like:
+\begin{verbatim}
+    public interface IState : IBus {
+        [InitialValue(false)] bool ValidSeed { get; set; }
+        [InitialValue(false)] bool ValidT { get; set; }
+        uint Nonce0   { get; set; }
+        uint Nonce1   { get; set; }
+        uint Nonce2   { get; set; }
+        [FixedArrayLength(BLOCK_SIZE)] IFixedArray<uint> Key { get; set; }
+        [FixedArrayLength(TEXT_SIZE)] IFixedArray<byte> Text { get; set; }
+    }
+\end{verbatim}
+Where \texttt{BLOCK\_SIZE = 16} and \texttt{TEXT\_SIZE} is 64. This design however have posed some challenges. When synthesizing this design, we found the timing to be abyssmal, despite the computations being fairly, simple. The reason for this might be that there simply is too much data in the busses. the input bus itself covers 1152 bits, and the output bus carries 544 bits to output the cipher. Corollary we have also made a version which does not perform the XOR of the text and keystream.
+
 \subsubsection{First optimization}
 \label{ChaCha1}
-As it should hopefully be clear from the high level description the computation of the rounds are quite simple compared to AES, which both needs computation in the key-expansion, and in the T-box version of AES a lot of table lookups. Furthermore ChaCha encourages concurrency and parallelism, as each ``block'' can be computed completely independently of each other. To start with we will however look at how the
+As it should hopefully be clear from the high level description the computation of the rounds are quite simple compared to AES, which both needs computation in the key-expansion, and in the T-box version of AES a lot of table lookups. Furthermore ChaCha encourages concurrency and parallelism, as each ``block'' can be computed completely independently of each other in a similar fashion to AES. Thus a pipelined version is easy to implement compared to the has functions. In our initial version we split the process into 10 processes, each of which will perform 2 of the rounds, one column-wise round and one diagonal-wise. The reason we start with 10 processes is that we dont want each of the rounds to do too much work while we on the other hand dont want the processes to be som small that the handshake become the overhead.\footnote{is this possible?}
 
 \section{Results of implementation}
-\label{sec:org281b80b}
+\label{sec:org5bf1889}
 All of the different implementations have been tested against the C\# standard library eqivalent algorithms and ensures that the results produced is correct. The only exception for this is Chacha as it is a quite uncommon cipher. All implementations synthesized using Xilinx Vivado, on a Zynq zedboard, which is a low-end FPGA. For comparisons we have chosen to include different implementations, in C, C\#, Cuda, and the openssl implemention. Unfortunately we have not been able to get our hands on the board in time and we thus stand with some limitations on the benchmarking results. Firstly, the reported frequency is the results from vivado, which might be a little different had it been an actual test.  Secondly, we settled for a raspberry pi 4B for the comparisons. The reason being this having a low-end processor similar to the one on the Zedboard, a Broadcom BCM2711, Quad core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5GHz.
 \subsection{MD5}
-\label{sec:org0245a01}
+\label{sec:org3ae9b3f}
 MD5 naive: 2.38 Mhz
 throughput: 512*2.38Mhz=1.218GBit=152,3MB/s
 \subsection{SHA}
-\label{sec:orgd1d4804}
+\label{sec:orgb9a07c3}
 SHA naive: 2.10 Mhz
 throughput: 512*2.1Mhz=1.075GBit=134,4MB/s
 
 \subsection{AES}
-\label{sec:org9a84ce9}
+\label{sec:org8d405e7}
 AES naive: 25 Mhz
 throughput: 128*25Mhz=3.2GBit=400MB/s
 
 \subsection{CHACHA}
-\label{sec:org7edb6f4}
+\label{sec:org7e8493b}
 ChaCha naive: ? Mhz
 throughput: ?
 fails nets before timing, too much data for a small board.
 
 \section{Discussion}
-\label{sec:org5b4590b}
+\label{sec:org63aa24e}
 
 \section{Conclusion}
-\label{sec:orgb701c70}
+\label{sec:org56d194a}
 
 \bibliographystyle{unsrt}
 \bibliography{ref}

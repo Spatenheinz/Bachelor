@@ -6,7 +6,7 @@ Each partition of the message will then be fed into the compression ~f~ function
 #+LABEL: fig:MD5
 [[./Background/MD5rounds.png]]
 
-Figure \ref{fig:MD5} shows the expanded compression function ~f~. ~f~ will modify a 128-bit initialization vector (A, B, C, D), with the initial value:\\
+Figure \ref{fig:MD5}\footnote{this is a horrible picture and we should prob make a better one} shows the expanded compression function ~f~. ~f~ will modify a 128-bit initialization vector (A, B, C, D), with the initial value:\\
 ~[~ ~A: 0x67542301~, ~B: 0xefcdab89~, ~C: 0x98badcfe~, ~D: 0x10325476~ ~]~\\
 ~f~ will use the following 4 functions, defined as such to, in "bitwise parallel" produce independent and unbiased bits in each of the rounds.
 \begin{equation}

@@ -5,10 +5,23 @@
 :UNNUMBERED: nil
 :CUSTOM_ID: ChaChaNaive
 :END:
-Just like the AES ChaCha will work in two phases. The initial phase will be to setup the the seed. After the initial setup, the only modification to the intial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. every iteration will perform chacha described in \ref{ChaChaAlg}. Just like for any of the other algorithms we have gone for a full solution, meanign the FPGA solution should be as independent as possible. This also means that our chacha20 version will not merely produce the stream but will produce the cipher itself.
+Just like AES ChaCha will work in two phases. The initial phase will be to setup the seed. After the initial setup, the only modification to the intial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. every iteration will perform chacha described in \ref{ChaChaAlg}. Just like for any of the other algorithms we have opted for a full solution, meaning the FPGA solution should be as independent as possible. Such that our chacha20 version will not merely produce the keystream but will produce the cipher itself. Thus the input bus should look like:
+#+BEGIN_SRC csharp
+public interface IState : IBus {
+    [InitialValue(false)] bool ValidSeed { get; set; }
+    [InitialValue(false)] bool ValidT { get; set; }
+    uint Nonce0   { get; set; }
+    uint Nonce1   { get; set; }
+    uint Nonce2   { get; set; }
+    [FixedArrayLength(BLOCK_SIZE)] IFixedArray<uint> Key { get; set; }
+    [FixedArrayLength(TEXT_SIZE)] IFixedArray<byte> Text { get; set; }
+}
+#+END_SRC
+Where ~BLOCK_SIZE = 16~ and ~TEXT_SIZE = 64~. This design however have posed some challenges. When synthesizing this design, we found the timing to be abyssmal, despite the computations being fairly, simple. The reason for this might be that there simply is too much data in the busses. the input bus itself covers 1152 bits, and the output bus carries 544 bits to output the cipher. Corollary we have also made a version which does not perform the XOR of the text and keystream.
+
 ** First optimization
 :PROPERTIES:
 :UNNUMBERED: nil
 :CUSTOM_ID: ChaCha1
 :END:
-As it should hopefully be clear from the high level description the computation of the rounds are quite simple compared to AES, which both needs computation in the key-expansion, and in the T-box version of AES a lot of table lookups. Furthermore ChaCha encourages concurrency and parallelism, as each "block" can be computed completely independently of each other. To start with we will however look at how the
+As it should hopefully be clear from the high level description the computation of the rounds are quite simple compared to AES, which both needs computation in the key-expansion, and in the T-box version of AES a lot of table lookups. Furthermore ChaCha encourages concurrency and parallelism, as each "block" can be computed completely independently of each other in a similar fashion to AES. Thus a pipelined version is easy to implement compared to the has functions. In our initial version we split the process into 10 processes, each of which will perform 2 of the rounds, one column-wise round and one diagonal-wise. The reason we start with 10 processes is that we dont want each of the rounds to do too much work while we on the other hand dont want the processes to be som small that the handshake become the overhead.\footnote{is this possible?}

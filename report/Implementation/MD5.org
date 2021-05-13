@@ -13,19 +13,19 @@ The compression function itself is completely contained in the single  clocked p
 For the bus-interface between the simulation process and the MD5 process we considered two overall approaches,
 Firstly, one could have 2 inputbusses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach unecessary as the initialisation vector is fixed for every hash. Thus the alternative. Since we use the c# implementation of SME, we can easily store the Digest locally inside the process as a field. We will only require a single data bus with the message. we can define the Message bus as such:
 #+BEGIN_SRC csharp
-    public interface IMessage : IBus {
-        [InitialValue(false)] bool Valid { get; set; }
+public interface IMessage : IBus {
+    [InitialValue(false)] bool Valid { get; set; }
 
-        [FixedArrayLength(MAX_BUFFER_SIZE)]
-        IFixedArray<byte> Message { get; set; }
+    [FixedArrayLength(MAX_BUFFER_SIZE)]
+    IFixedArray<byte> Message { get; set; }
 
-        int BufferSize { get; set; }
-        int MessageSize { get; set; }
+    int BufferSize { get; set; }
+    int MessageSize { get; set; }
 
-        [InitialValue(true)] bool Last { get; set; }
-        [InitialValue(true)] bool Head { get; set; }
-        [InitialValue(false)] bool Set { get; set; }
-    }
+    [InitialValue(true)] bool Last { get; set; }
+    [InitialValue(true)] bool Head { get; set; }
+    [InitialValue(false)] bool Set { get; set; }
+}
 #+END_SRC
 One can see there are multiple things to keep track of. First and foremost, all busses we will be working with should have a flag for whether or not a bus has data inside of it, since we try to adhere to the AXI protocol, which specifies some standards for a ready/valid handshake between the processes. Secondly, A byte-array is used to store the message block itself. ~BufferSize~ will be updated for every iteration or tick, and denotes how many values in the buffer are set, essentially flag for when the message should be padded. MessageSize will be set in the initial tick and denote the length of the entire message used for the Merkle-Damgård strengthening.
 The last 3 flags are used to handle some "edge-cases".
@@ -35,7 +35,7 @@ Set is used in the cases where the initial 1 should be set but where the block i
 
 Since we also need to recive the digest from the process we also need an output bus. This bus is however fairly simple. It only consists of a Valid flag and the Hash as an array of 4 32-bit words.
 
-Lastly we want 2 additional busses to make our design comply with the axi protocol. This bus will be the most basic of all busses and contain only a single flag, to show if the process is ready to receive data. It will thus be wired such that the MD5 process will have an ingoing bus to know when it is safe to send the digest to the simulation and an outgoing ready bus to let the simulation know when to send the message values.
+Lastly we want 2 additional busses to make our design comply with the AXI protocol. This bus will be the most basic of all busses and contain only a single flag, to show if the process is ready to receive data. It will thus be wired such that the MD5 process will have an ingoing bus to know when it is safe to send the digest to the simulation and an outgoing ready bus to let the simulation know when to send the message values. \footnote{should we have a section in the background for AXI?} We will be using the AXI protocol for all implementations.
 
 *** First optimization approach
 To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. Figure \ref{fig:MD5opt1} shows how the hash function as a whole up can be split up into 5 smaller processes and build a pipeline from this. One process for message formatting, and one for each of the 4 rounds. In our actual implementation we further added 2 processes:
