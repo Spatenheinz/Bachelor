@@ -1,1 +1,17 @@
-* Benchmarks
+* Results of implementation
+All of the different implementations have been tested against the C# standard library eqivalent algorithms and ensures that the results produced is correct. The only exception for this is Chacha as it is a quite uncommon cipher. All implementations synthesized using Xilinx Vivado, on a Zynq zedboard, which is a low-end FPGA. For comparisons we have chosen to include different implementations, in C, C#, Cuda, and the openssl implemention. Unfortunately we have not been able to get our hands on the board in time and we thus stand with some limitations on the benchmarking results. Firstly, the reported frequency is the results from vivado, which might be a little different had it been an actual test.  Secondly, we settled for a raspberry pi 4B for the comparisons. The reason being this having a low-end processor similar to the one on the Zedboard, a Broadcom BCM2711, Quad core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5GHz.
+** MD5
+MD5 naive: 2.38 Mhz
+throughput: 512*2.38Mhz=1.218GBit=152,3MB/s
+** SHA
+SHA naive: 2.10 Mhz
+throughput: 512*2.1Mhz=1.075GBit=134,4MB/s
+
+** AES
+AES naive: 25 Mhz
+throughput: 128*25Mhz=3.2GBit=400MB/s
+
+** CHACHA
+ChaCha naive: ? Mhz
+throughput: ?
+fails nets before timing, too much data for a small board.
