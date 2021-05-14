@@ -6,9 +6,21 @@ namespace AES
     public interface IPlainText : IBus {
         [InitialValue(false)]
         bool ValidKey { get; set; }
+        [InitialValue(false)]
+        bool ValidBlock { get; set; }
+
+        [FixedArrayLength(BLOCK_SIZE)]
+        IFixedArray<byte> block { get; set; }
 
         [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<byte> Key { get; set; }
+    }
+    public interface ICipher : IBus {
+        // [InitialValue(false)]
+        // bool ValidKey { get; set; }
+
+        // [FixedArrayLength(BLOCK_SIZE)]
+        // IFixedArray<byte> Key { get; set; }
 
         [InitialValue(false)]
         bool ValidBlock { get; set; }
@@ -16,17 +28,8 @@ namespace AES
         IFixedArray<byte> block { get; set; }
 
     }
-    public interface ICypher : IBus {
+    public interface axi_r : IBus {
         [InitialValue(false)]
-        bool ValidKey { get; set; }
-
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<byte> Key { get; set; }
-
-        [InitialValue(false)]
-        bool ValidBlock { get; set; }
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<byte> block { get; set; }
-
+        bool ready { get; set; }
     }
 }

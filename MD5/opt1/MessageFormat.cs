@@ -1,20 +1,30 @@
+using System;
 using SME;
-using static opt1.MD5Config;
+using static opt1.Statics;
 
 namespace opt1
 {
     [ClockedProcess]
     class MessageFormat : SimpleProcess {
-        [InputBus]
-        public IMessage Message;
+        [InputBus] public IMessage Message;
+        [OutputBus] public axi_r axi_mes = Scope.CreateBus<axi_r>();
 
-        [OutputBus]
-        public IPadded paddedBuffer = Scope.CreateBus<IPadded>();
+        [OutputBus] public IPadded paddedBuffer = Scope.CreateBus<IPadded>();
+        [InputBus] public axi_r axi_pad;
 
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
-            if (Message.Valid) {
+            // if the process is ready and the data-transfer is valid
+            if (was_ready && Message.Valid) {
                 preprocess(Message.Message);
+                paddedBuffer.Valid = was_valid = true;
+            } else {
+                // if we are not valid or the
+                paddedBuffer.Valid = was_valid = was_valid && !axi_pad.Ready;
             }
+                Console.WriteLine($"hey {was_ready}, {Message.Valid}");
+            axi_mes.Ready = was_ready = !was_valid;
         }
 
         public void preprocess(IFixedArray<byte> mes)
@@ -26,6 +36,7 @@ namespace opt1
 
             if (Message.Last)
             {
+                paddedBuffer.Last = true;
                 if (!Message.Set) { paddedBuffer.buffer[Message.BufferSize] = 0x80; }
                 ulong fullSize = (ulong)(Message.MessageSize << 3);
                 paddedBuffer.buffer[MAX_BUFFER_SIZE - 8] = (byte)(fullSize >> 0 & 0x00000000000000ff);
@@ -40,26 +51,34 @@ namespace opt1
             else if (Message.Set) {
                 paddedBuffer.buffer[Message.BufferSize] = 0x80;
             }
-            paddedBuffer.Valid = true;
         }
     }
+    [ClockedProcess]
     class FormatConverter : SimpleProcess {
-        [InputBus]
-        public IPadded paddedBuffer;
+        [InputBus] public IPadded paddedBuffer;
+        [OutputBus] public axi_r axi_pad = Scope.CreateBus<axi_r>();
 
-        [OutputBus]
-        public IBlock block = Scope.CreateBus<IBlock>();
+        [OutputBus] public IRound Out = Scope.CreateBus<IRound>();
+        [InputBus] public axi_r axi_out;
 
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
-            if (paddedBuffer.Valid) {
+            if (was_ready && paddedBuffer.Valid) {
                 fetchBlock(paddedBuffer.buffer);
-                block.Valid = true;
+                Out.Last = paddedBuffer.Last;
+                Out.Valid = was_valid = true;
+            } else {
+                Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
+            Console.WriteLine($"ok, {was_valid}, {was_ready}");
+
+            axi_out.Ready = was_ready = !was_valid;
         }
 
         private void fetchBlock(IFixedArray<byte> buff) {
 			for (int j=0; j<61;j+=4) {
-				block.buffer[j>>2]=(((uint) buff[(j+3)]) <<24 ) |
+				Out.buffer[j>>2]=(((uint) buff[(j+3)]) <<24 ) |
 						    (((uint) buff[(j+2)]) <<16 ) |
 						    (((uint) buff[(j+1)]) <<8 ) |
 						    (((uint) buff[(j)]) ) ;

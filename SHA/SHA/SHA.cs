@@ -33,7 +33,8 @@ namespace SHA
                 }
             }
             else {
-                Digest.Valid = was_valid = was_valid && !axi_Digest.Ready;
+                // Digest.Valid = was_valid = was_valid && !axi_Digest.Ready;
+                Digest.Valid = was_valid = !(!was_valid || axi_Digest.Ready);
             }
             axi_Message.Ready = was_ready = !was_valid;
         }

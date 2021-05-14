@@ -4,34 +4,38 @@ using static AES.AESConfig;
 
 namespace AES
 {
+    [ClockedProcess]
     class AESe : SimpleProcess {
-        [InputBus]
-        public IPlainText PlainText;
-
-        [OutputBus]
-        public ICypher Cypher = Scope.CreateBus<ICypher>();
+        [InputBus] public IPlainText PlainText;
+        [OutputBus] public axi_r axi_Text = Scope.CreateBus<axi_r>();
+        [OutputBus] public ICipher Cipher = Scope.CreateBus<ICipher>();
+        [InputBus] public axi_r axi_Cipher;
 
         private byte[] IV = new byte[BLOCK_SIZE];
         private byte[] state = new byte[BLOCK_SIZE];
         private uint[] expandedKey128 = new uint[ROUND_SIZE_128];
 
 
+        bool was_valid = false;
+        bool was_ready = false;
         protected override void OnTick() {
             if (PlainText.ValidKey) {
                 Expand128(PlainText.Key);
-                // for(int i = 0; i < BLOCK_SIZE; i++) {
-                //     IV[i] = PlainText.Data[i];
-                // }
+            Console.WriteLine($"proc {was_ready} {was_valid}");
             } else if (PlainText.ValidBlock) {
                 for(int i = 0; i < BLOCK_SIZE; i++) {
                     state[i] = PlainText.block[i];
                 }
                 Encrypt128();
                 for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Cypher.block[i] = IV[i];
+                    Cipher.block[i] = IV[i];
                 }
-                Cypher.ValidBlock = true;
+                Cipher.ValidBlock = was_valid = true;
+            } else {
+                Cipher.ValidBlock = was_valid && !axi_Cipher.ready;
             }
+            axi_Text.ready = was_ready = !was_valid;
+            Console.WriteLine($"proc {was_ready} {was_valid}");
         }
 
         private uint SubWord(uint x) {

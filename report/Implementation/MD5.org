@@ -5,23 +5,27 @@
 :UNNUMBERED: nil
 :CUSTOM_ID: MD5naive
 :END:
-As explained in section \ref{SME}, SME consists of busses and processes. We can define the MD5 algorithm naively using 4 busses and one simple process. Overall there are two approaches,
-Firstly, one could have 2 inputbusses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach requires an extra bus which doesnt provide anything and which only job would be to make unnecessary data transactions as the IV will always be the same and hereby also create more boiler for the code that would call this function. Thus the alternative. Since we use the c# implementation of SME, we can easily store the Digest locally inside the process as a field. Thus we will only require a bus with the message, corresponding to the downward-facing arrows and one for the Hash (the rightmost arrow).
-we can define the Message bus as such:
+As explained in section \ref{SME}, SME consists of busses and processes. We can define the MD5 algorithm naively using 4 busses and one simple process.
+
+
+The compression function itself is completely contained in the single  clocked process and works as described in \ref{MD5alg}. The major difference comes in the data flow. Since our program will be mapped to hardware, we cannot have a variable sizes, everything has to be static. Thus we have opted for an approach which will receive 512 bits, corresponding to a single message block of the entire message, over the ~Message~ which we describe later. The process will both handle the padding and the compression and thus stand as a "independent" bus without depending on external computations.
+
+For the bus-interface between the simulation process and the MD5 process we considered two overall approaches,
+Firstly, one could have 2 inputbusses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach unecessary as the initialisation vector is fixed for every hash. Thus the alternative. Since we use the c# implementation of SME, we can easily store the Digest locally inside the process as a field. We will only require a single data bus with the message. we can define the Message bus as such:
 #+BEGIN_SRC csharp
-    public interface IMessage : IBus {
-        [InitialValue(false)] bool Valid { get; set; }
+public interface IMessage : IBus {
+    [InitialValue(false)] bool Valid { get; set; }
 
-        [FixedArrayLength(MAX_BUFFER_SIZE)]
-        IFixedArray<byte> Message { get; set; }
+    [FixedArrayLength(MAX_BUFFER_SIZE)]
+    IFixedArray<byte> Message { get; set; }
 
-        int BufferSize { get; set; }
-        int MessageSize { get; set; }
+    int BufferSize { get; set; }
+    int MessageSize { get; set; }
 
-        [InitialValue(true)] bool Last { get; set; }
-        [InitialValue(true)] bool Head { get; set; }
-        [InitialValue(false)] bool Set { get; set; }
-    }
+    [InitialValue(true)] bool Last { get; set; }
+    [InitialValue(true)] bool Head { get; set; }
+    [InitialValue(false)] bool Set { get; set; }
+}
 #+END_SRC
 One can see there are multiple things to keep track of. First and foremost, all busses we will be working with should have a flag for whether or not a bus has data inside of it, since we try to adhere to the AXI protocol, which specifies some standards for a ready/valid handshake between the processes. Secondly, A byte-array is used to store the message block itself. ~BufferSize~ will be updated for every iteration or tick, and denotes how many values in the buffer are set, essentially flag for when the message should be padded. MessageSize will be set in the initial tick and denote the length of the entire message used for the Merkle-Damgård strengthening.
 The last 3 flags are used to handle some "edge-cases".
@@ -29,18 +33,17 @@ Head Denotes that the initialization vector should be reconstructed.
 Last is used to denote when a block is the last in the message. The block cannot be filled with more than 447 bits.
 Set is used in the cases where the initial 1 should be set but where the block is not the last in the message, for instance when the length of the message is 448.
 
-The Digest or the output bus on the other hand is simple. It only consists of a Valid flag and the Hash as an array of 4 32-bit words.
-the last bus of which there is 2 instances is the ready bus which simply carries a bool which signals if the receiving process is ready to receive data.
+Since we also need to recive the digest from the process we also need an output bus. This bus is however fairly simple. It only consists of a Valid flag and the Hash as an array of 4 32-bit words.
 
-The MD5 process itself is completely contained in the single process and works as described in \ref{MD5alg}. The only modification we have to make to ensure this works is to let
-
-*TODO
-
-Except for the handling of the padding in relation to SME, the simple process works as explained in section \ref{MD5alg}
+Lastly we want 2 additional busses to make our design comply with the AXI protocol. This bus will be the most basic of all busses and contain only a single flag, to show if the process is ready to receive data. It will thus be wired such that the MD5 process will have an ingoing bus to know when it is safe to send the digest to the simulation and an outgoing ready bus to let the simulation know when to send the message values. \footnote{should we have a section in the background for AXI?} We will be using the AXI protocol for all implementations.
 
 *** First optimization approach
-To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. We can thus structure the program as such using a simple diagram. in figure \ref{fig:MD5opt1} one can see we can split the hash function as a whole up into 5 simple processes and build a pipeline from this. One process for message formatting, and one for each of the 4 rounds. along with an Imessage bus and a Digest bus as described in section \ref{MD5naive}. This construction will create a pipeline where each process can run concurrently and potentially execute faster than the naive approach.
+To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. Figure \ref{fig:MD5opt1} shows how the hash function as a whole up can be split up into 5 smaller processes and build a pipeline from this. One process for message formatting, and one for each of the 4 rounds. In our actual implementation we further added 2 processes:
+- A message-converter process between the message formatting and ~round 1 (f)~ to convert the message from bytes to unsigned integers.
+- A combiner which does the last addition of the two vectors.
+
 #+CAPTION: MD5 pipeline
 #+LABEL: fig:MD5opt1
 #+ATTR_LATEX: :placement [H]
 [[./Implementation/md5.png]]
+One problem we however have faced with this general approach is that MD5 is embarisingly sequential in the sense that ~round 1 (f)~ of the compression of the second message block 2, will depend of the result of ~combiner~ of the first message block's compression. This will create a stall. Thus for long messages the speed-up from the naive version should not be too considerable. However for very small messages (<448 bits) the throughput should be noticable faster as the propogation time should be decreased considerably. Hereby we expect to see a possibility to increase the clock frequency, which would tradeoff energy use for throughput.
