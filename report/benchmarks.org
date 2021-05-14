@@ -1,17 +1,42 @@
 * Results of implementation
-All of the different implementations have been tested against the C# standard library eqivalent algorithms and ensures that the results produced is correct. The only exception for this is Chacha as it is a quite uncommon cipher. All implementations synthesized using Xilinx Vivado, on a Zynq zedboard, which is a low-end FPGA. For comparisons we have chosen to include different implementations, in C, C#, Cuda, and the openssl implemention. Unfortunately we have not been able to get our hands on the board in time and we thus stand with some limitations on the benchmarking results. Firstly, the reported frequency is the results from vivado, which might be a little different had it been an actual test.  Secondly, we settled for a raspberry pi 4B for the comparisons. The reason being this having a low-end processor similar to the one on the Zedboard, a Broadcom BCM2711, Quad core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5GHz.
+All of the different implementations have been tested against the C# standard library eqivalent algorithms and ensures that the results produced is correct. The only exception for this is Chacha as it is a quite uncommon cipher. All implementations synthesized using Xilinx Vivado, on a Zynq zedboard, which is a low-end FPGA. For comparisons we have chosen to include different implementations, in C, C# and OpenSLL, using ~openssl speed -evp "algorithm"~. Unfortunately we have not been able to get our hands on the board in time and we thus stand with some limitations on the benchmarking results. Firstly, the reported frequency is the results from vivado, which might be a little different had it been an actual test.  Secondly, we settled for a raspberry pi 4B for the comparisons. The reason being this having a low-end processor similar to the one on the Zedboard, a Broadcom BCM2711, Quad core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5GHz.\footnote{write some descriptive text for the results}
 ** MD5
-MD5 naive: 2.38 Mhz
+MD5 naive: 2.38 Mhz\\
 throughput: 512*2.38Mhz=1.218GBit=152,3MB/s
+#+ATTR_LATEX: :environment tabular :width \textwidth :align |c|c|c|c|c|c|c| :caption Benchmarking results for MD5.
+|-------------------+--------+-----+--------+--------+-------------+--------------|
+| *Version*         |  Naive |  C# |      C |    C_t | OpenSSL_low | OpenSSL_high |
+|-------------------+--------+-----+--------+--------+-------------+--------------|
+| *Throughput* (MB/s) | 152.33 | 287 | 154.33 | 255.53 |       41.84 |       292.53 |
+|-------------------+--------+-----+--------+--------+-------------+--------------|
+
 ** SHA
-SHA naive: 2.10 Mhz
-throughput: 512*2.1Mhz=1.075GBit=134,4MB/s
+SHA naive: 2.10 Mhz\\
+*Throughput*: 512*2.1Mhz=1.075GBit=134,4MB/s
+#+ATTR_LATEX: :align |c|c|c|c|c| :caption Benchmarking results for SHA.
+|-------------------+-------+-----+-------------+--------------|
+|     *Version* | Naive |  C# | OpenSSL_low | OpenSSL_high |
+|-------------------+-------+-----+-------------+--------------|
+| *Throughput* (MB/s) | 134.4 | 163 |        26.3 |       164.97 |
+|-------------------+-------+-----+-------------+--------------|
 
 ** AES
-AES naive: 25 Mhz
-throughput: 128*25Mhz=3.2GBit=400MB/s
-
+AES naive: 25 Mhz\\
+*Throughput*: 128*25Mhz=3.2GBit=400MB/s
+#+ATTR_LATEX: :align |c|c|c|c|c|c|c| :caption Benchmarking results for AES.
+|-------------------+-------+----+-------+--------+-------------+--------------|
+|     *Version* | Naive | C# |     C |    C_t | OpenSSL_low | OpenSSL_high |
+|-------------------+-------+----+-------+--------+-------------+--------------|
+| *Throughput* (MB/s) |   400 | 70 | 64.49 | 198.28 |        72.4 |        89.06 |
+|-------------------+-------+----+-------+--------+-------------+--------------|
+\footnote{it seems odd it is so low in the OpenSSL implementation?????}
 ** CHACHA
-ChaCha naive: ? Mhz
-throughput: ?
+ChaCha naive: <5 Mhz ????\\
+*Throughput*: ?
 fails nets before timing, too much data for a small board.
+#+ATTR_LATEX: :align |c|c|c|c| :caption Benchmarking results for Chacha.
+|-------------------+-------+-------------+--------------|
+| *Version*           | Naive | OpenSSL_low | OpenSSL_high |
+|-------------------+-------+-------------+--------------|
+| *Throughput* (MB/s) | ?     |       84.03 |       306.81 |
+|-------------------+-------+-------------+--------------|
