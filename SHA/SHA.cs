@@ -17,7 +17,7 @@ namespace SHA
         protected override void OnTick() {
             if (Message.Valid) {
                 if (Message.Head) {
-                    a = READH0; b = READH1; c = READH2; d = READH3; e = READH4; f = READH5; g = READH6; h = READH7;
+                    a = H0; b = H1; c = H2; d = H3; e = H4; f = H5; g = H6; h = H7;
                 }
                 calculateSHA(Message.Message);
                 if (Message.Last) {
@@ -38,14 +38,6 @@ namespace SHA
             axi_Message.Ready = was_ready = !was_valid;
         }
 
-        private readonly uint READH0 = 0x6a09e667;
-        private readonly uint READH1 = 0xbb67ae85;
-        private readonly uint READH2 = 0x3c6ef372;
-        private readonly uint READH3 = 0xa54ff53a;
-        private readonly uint READH4 = 0x510e527f;
-        private readonly uint READH5 = 0x9b05688c;
-        private readonly uint READH6 = 0x1f83d9ab;
-        private readonly uint READH7 = 0x5be0cd19;
         private uint H0 = 0x6a09e667;
         private uint H1 = 0xbb67ae85;
         private uint H2 = 0x3c6ef372;
