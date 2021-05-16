@@ -1,3 +1,7 @@
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: SHAbackground
+:END:
 %% Forkort meget af det her ved at referere til artiklen for definitioner osv?
 
 SHA256 is a one way Secure Hash Algorithm. Which is where it gets its name from.
@@ -39,12 +43,15 @@ The extention of the input block works as follows:
 The second stage is to update the H variables.
 
 The third stage is to compute $ch$, $maj$, $temp_1$ and $temp_2$ for each of the 64 entries in the array K and the expanded message W.
-\begin{equation}
-ch &= (x \wedge y) \oplus (\neg x \wedge z)
-maj &= (x \wedge y) \oplus (x \wedge z) \oplus (y \wedge z)
-...
-\end{equation}
-See NIST-article
+%% \begin{equation}
+%% ch &= (x \wedge y) \oplus (\neg x \wedge z)
+%% maj &= (x \wedge y) \oplus (x \wedge z) \oplus (y \wedge z)
+%% s_1 = (e >>> 6) \oplus (e >>> 11) \oplus (e >>> 25)
+%% s_1 = (a >>> 2) \oplus (a >>> 13) \oplus (a >>> 22)
+%% temp_1 = h + s_1 + ch + k[i] + w[i]
+%% temp_2 = S_0 + maj
+%% \end{equation}
+%% See NIST-article
 
 For the last stage the H variables gets updated one last time, so they now contain the final hash. Then they get appended together and returned.
 

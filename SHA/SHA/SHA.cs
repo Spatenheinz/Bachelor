@@ -93,7 +93,6 @@ namespace SHA
             processBlock();
         }
 
-        // Padding er forkert? Den fejler når beskeden bliver over 64chars=512bits lang. Hvorfor?
         public void preprocess(IFixedArray<byte> mes)
         {
             // the amount of padding 448 mod 512, only applies to the last block
@@ -185,20 +184,10 @@ namespace SHA
 
         #region bitwise operators
 
+        // Make Maj, Ch and such functions? Is that faster?
         public uint rightrotate(uint x, int bits) {
             // Right rotate: https://stackoverflow.com/questions/812022/c-sharp-bitwise-rotate-left-and-rotate-right
             return (x >> bits) | (x << (32 - bits));
-        }
-
-        private uint LeftRotate(uint x, int k) {
-            return ((x << k) | (x >> (32 - k)));
-        }
-
-        private uint reverseByte(uint i) {
-            return ((i & 0x000000ff) << 24) |
-                (i >> 24) |
-                ((i & 0x00ff0000) >> 8) |
-                ((i & 0x0000ff00) << 8);
         }
         #endregion
     }
