@@ -16,10 +16,10 @@ So all the busses are set the same and functions the same as in MD5. With the ex
 
 The SHA256 algorithm is located in the ~processBlock()~ routine.
 The routine has the input block stored in the first 16 entires of the array ~blockD[]~.
-Then these blocks get expanded and the hash calculated as described in Section \ref{SHAbackground}.
+Then these blocks get expanded and the hash calculated as described in Section \ref{SHAalg}.
 
 The calculations for ch, maj, s1, and s0 could be their own functions, but they have been left as written out since they are simple and shouldn't significantly affect performance.
 
-%% If need should arise it would be simple to extend
-%% the implementation of SHA256 to these other versions since it would mostly
-%% consist of changing preset constants.
+# If need should arise it would be simple to extend
+# the implementation of SHA256 to these other versions since it would mostly
+# consist of changing preset constants.

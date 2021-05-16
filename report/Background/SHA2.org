@@ -1,8 +1,4 @@
-:PROPERTIES:
-:UNNUMBERED: nil
-:CUSTOM_ID: SHAbackground
-:END:
-%% Forkort meget af det her ved at referere til artiklen for definitioner osv?
+# Forkort meget af det her ved at referere til artiklen for definitioner osv?
 
 SHA256 is a one way Secure Hash Algorithm. Which is where it gets its name from.
 It is part of the SHA2 familiy and was designed and published by the NSA.
@@ -28,7 +24,7 @@ Finally the length of the original message is appended as a bigendian 64 bit int
 This also results in SHA256 not being able to handle messages that has a lenght of over $2^{64}$.
 
 For the first stage of the computation is to expand the message
-%% SHA2 works by first expanding the input and then compressing it with a one-way compression Davis-Meyers structure.
+# SHA2 works by first expanding the input and then compressing it with a one-way compression Davis-Meyers structure.
 As mentioned the input block is of 512 bits, so sixteen 32 bit words. These gets extended to 64 32 bit words.
 The extention of the input block works as follows:
 \begin{equation}
@@ -38,24 +34,26 @@ The extention of the input block works as follows:
     \sigma_1(W) +  &for 16 \leq i \leq 63
   \end{cases}
 \end{equation}
-%% Bla bla bla something smart. Samt et godt diagram eller noget..?
+# Bla bla bla something smart. Samt et godt diagram eller noget..?
 
 The second stage is to update the H variables.
 
 The third stage is to compute $ch$, $maj$, $temp_1$ and $temp_2$ for each of the 64 entries in the array K and the expanded message W.
-%% \begin{equation}
-%% ch &= (x \wedge y) \oplus (\neg x \wedge z)
-%% maj &= (x \wedge y) \oplus (x \wedge z) \oplus (y \wedge z)
-%% s_1 = (e >>> 6) \oplus (e >>> 11) \oplus (e >>> 25)
-%% s_1 = (a >>> 2) \oplus (a >>> 13) \oplus (a >>> 22)
-%% temp_1 = h + s_1 + ch + k[i] + w[i]
-%% temp_2 = S_0 + maj
-%% \end{equation}
-%% See NIST-article
+# \begin{equation}
+# ch &= (x \wedge y) \oplus (\neg x \wedge z)\\
+# maj &= (x \wedge y) \oplus (x \wedge z) \oplus (y \wedge z)\\
+# s_1 = (e >>> 6) \oplus (e >>> 11) \oplus (e >>> 25)\\
+# s_1 = (a >>> 2) \oplus (a >>> 13) \oplus (a >>> 22)\\
+# temp_1 = h + s_1 + ch + k[i] + w[i]\\
+# temp_2 = S_0 + maj
+# \end{equation}
+# See NIST-article
 
 For the last stage the H variables gets updated one last time, so they now contain the final hash. Then they get appended together and returned.
 
-
-#+CAPTION: One round of the SHA2 compression function (source https://upload.wikimedia.org/wikipedia/commons/7/7d/SHA-2.svg)
-#+LABEL: fig:SHA2-round
-[[SHA-2.svg]]
+\begin{figure}[H]
+\centering
+\includegraphics[width=8cm]{SHA-2.png}
+\caption{A SHA2 round}
+\label{fig:SHA2Round}
+\end{figure}
