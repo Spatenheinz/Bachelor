@@ -1,18 +1,25 @@
 ** SHA256
-SHA256 is a one way Secure Hash Algorithm. Which is where it gets its name from.
-It is part of the SHA2 familiy and was designed and published by the NSA.
-SHA256 is also build upon the Merkle-Damgård construction, like MD5.
-
-The 256 part refers to the output size of 256-bit.
-SHA256 can take in input of any size (depending on the implementation) but works
-on chunks of 512-bits and then outputs a digest or hash of 256-bits.
-Other versions from the SHA2 familiy exsits, like SHA512 and the truncated
-versions like SHA224 and SHA384. If need should arise it would be simple to extend
-the implementation of SHA256 to these other versions since it would mostly
-consist of changing preset constants.
+The implementation of SHA256 is very similar to that of the implementation of MD5,
+since they both are hashing algorithms of the Merkle-Damgård construction.
+The major differences is that SHA uses big endian encodings while MD5 uses little endian.
 
 *** naive
 :PROPERTIES:
 :UNNUMBERED: nil
 :CUSTOM_ID: AESnaive
 :END:
+The naive unoptimized SHA256 implementation upholds the same general structure in the code, including the padding and block fetching as the naive MD5.
+The only difference is that the output digest is 256 bits, so an array of eight 32 bit unsigned integers,
+and the format is changed from little endian to big endian in the padding and fetch block routines.
+
+So all the busses are set the same and functions the same as in MD5. With the exception of the array in the ~Digest~ output bus being extended to contain a 256 bit hash.
+
+The SHA256 algorithm is located in the ~processBlock()~ routine.
+The routine has the input block stored in the first 16 entires of the array ~blockD[]~.
+Then these blocks get expanded and the hash calculated as described in Section \ref{SHAalg}.
+
+The calculations for ch, maj, s1, and s0 could be their own functions, but they have been left as written out since they are simple and shouldn't significantly affect performance.
+
+# If need should arise it would be simple to extend
+# the implementation of SHA256 to these other versions since it would mostly
+# consist of changing preset constants.

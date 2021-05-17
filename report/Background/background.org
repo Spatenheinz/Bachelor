@@ -48,7 +48,7 @@ A stream cipher as the name suggests works using stream and is thus independent 
 :UNNUMBERED: nil
 :CUSTOM_ID: SHAalg
 :END:
-*TODO
+#+INCLUDE: SHA2.org
 ** AES
 :PROPERTIES:
 :UNNUMBERED: nil
