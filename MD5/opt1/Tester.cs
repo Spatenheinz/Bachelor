@@ -18,7 +18,7 @@ namespace opt1
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 2;
+        private static int testsize = 10;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -43,29 +43,29 @@ namespace opt1
         string [] results = new string [MESSAGES.Length];
             await ClockAsync();
             // string str2 = "";
-            while (i < MESSAGES.Length) {
+            while (j < MESSAGES.Length) {
                 // message = MESSAGES[i];
                 if (was_valid && axi_Message.Ready) {
                     was_valid = false;
                     Console.WriteLine("oy");
                 }
                 if (was_ready && Digest.Valid) {
-                results[i] += Digest.A.ToString("X8");
-                results[i] += Digest.B.ToString("X8");
-                results[i] += Digest.C.ToString("X8");
-                results[i] += Digest.D.ToString("X8");
-                i++; ii=0;
+                results[j] += Digest.A.ToString("X8");
+                results[j] += Digest.B.ToString("X8");
+                results[j] += Digest.C.ToString("X8");
+                results[j++] += Digest.D.ToString("X8");
                 Console.WriteLine("done!!!!!!!");
                 was_ready = false;
                 }
                 if (i < MESSAGES.Length) {
-                    if (ii <= MESSAGES[i].Length) {
-                        Console.WriteLine($"ii {ii}");
+                    Console.WriteLine(i);
+                    if (ii < MESSAGES[i].Length) {
+                        Console.WriteLine($"ii {ii} {MESSAGES[i]}");
                     int buffersize = 0;
                     int current_blocksize = MESSAGES[i].Length - ii;
+                    Console.WriteLine($"buffersize: {current_blocksize}");
                     // if we have less than 56 chars we are in the last block
                     if (current_blocksize < 56) {
-                        Console.WriteLine("This has to stop");
                         Message.Last = true;
                     }
                     // if the current blocksize is less than the max buffer size,
@@ -84,7 +84,6 @@ namespace opt1
                     }
                     Message.MessageSize = MESSAGES[i].Length;
                     Message.BufferSize = buffersize = Math.Min(current_blocksize, MAX_BUFFER_SIZE);
-                    Console.WriteLine($"buffersize {buffersize}");
                     for(int jj = 0 ; jj < MAX_BUFFER_SIZE; jj++) {
                         if (jj < buffersize)
                         {
@@ -93,17 +92,19 @@ namespace opt1
                             Message.Message[jj] = 0;
                         }
                     }
-                    ii+=buffersize;
+                    ii+= MESSAGES[i].Length == 0 ? 1 : buffersize;
                     Message.Valid = was_valid = true;
                         // break;
                     } else {
                         i++;
+                        ii=0;
+                    Message.Valid = was_valid = false;
                     }
                 }
                 else {
                     Message.Valid = was_valid = false;
                 }
-                if (i < MESSAGES.Length) {
+                if (j < results.Length) {
                     axi_Digest.Ready = was_ready = true;
                 }
                 else {

@@ -9,26 +9,24 @@ namespace opt1
         [InputBus] public IRound I;
         [OutputBus] public axi_r axi_i = Scope.CreateBus<axi_r>();
 
-        // [InputBus] public IIV IV;
-        // [OutputBus] public axi_r axi_iv = Scope.CreateBus<axi_r>();
-
         [InputBus] public axi_r axi_out;
         [OutputBus] public IRound Out = Scope.CreateBus<IRound>();
-        // [InputBus] public axi_r axi_iv_out;
-        // [OutputBus] public IIV IV_Out = Scope.CreateBus<IIV>();
+
         bool was_valid = false;
         bool was_ready = false;
 
         protected override void OnTick() {
             if (was_ready && I.Valid) {
+                for(int i = 0; i < BLOCK_SIZE; i++) {
+                    Console.Write(I.buffer[i]);
+                }
+                Console.WriteLine();
                 A = 0x67452301; B = 0xefcdab89; C = 0x98badcfe; D = 0x10325476;
             Console.WriteLine($"before F: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 processBlock();
                 forwardBlock();
             Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
-                // forwardIV();
                 Out.Valid = was_valid = true;
-                // axi_iv.Ready = true;
             } else {
                 Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
@@ -52,9 +50,7 @@ namespace opt1
                 Out.buffer[i] = I.buffer[i];
             }
         }
-        // private void forwardIV() {
-        //     IV_Out.A = A; IV_Out.B = B; IV_Out.C = C; IV_Out.D = D;
-        // }
+
         private void processBlock(){
             // round 1
             FF(ref A, B, C, D, 0, 7, 0);    FF(ref D, A, B, C, 1, 12, 1);
@@ -293,18 +289,18 @@ namespace opt1
         uint D = 0x10325476;
         protected override void OnTick() {
             if (was_ready && I.Valid) {
-                Console.WriteLine($"combiner {was_valid}, {!axi_final.Ready}");
+                // Console.WriteLine($"combiner {was_valid}, {!axi_final.Ready}");
                 Final.A = reverseByte(A + I.A);
                 Final.B = reverseByte(B + I.B);
                 Final.C = reverseByte(C + I.C);
                 Final.D = reverseByte(D + I.D);
                 Final.Valid = was_valid = true;
-            Console.WriteLine($"called combiner after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
+            // Console.WriteLine($"called combiner after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
             } else {
                 Final.Valid = was_valid = was_valid && !axi_final.Ready;
             }
             axi_I.Ready = was_ready = !was_valid;
-            Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
+            // Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
         }
         private uint reverseByte(uint i) {
             return ((i & 0x000000ff) << 24) |

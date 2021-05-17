@@ -17,13 +17,19 @@ namespace opt1
         protected override void OnTick() {
             // if the process is ready and the data-transfer is valid
             if (was_ready && Message.Valid) {
+                Console.Write("from message: ");
+                for(int i = 0; i < MAX_BUFFER_SIZE; i++) {
+                    Console.Write(Message.Message[i]);
+                }
+                Console.WriteLine();
                 preprocess(Message.Message);
                 paddedBuffer.Valid = was_valid = true;
             } else {
                 // if we are not valid or the
                 paddedBuffer.Valid = was_valid = was_valid && !axi_pad.Ready;
             }
-            axi_mes.Ready = was_ready = !was_valid;
+            axi_mes.Ready = was_ready = true;
+            // axi_mes.Ready = was_ready = !was_valid;
                 Console.WriteLine($"hey {was_ready}, {Message.Valid}");
         }
 
