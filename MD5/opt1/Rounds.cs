@@ -9,45 +9,31 @@ namespace opt1
         [InputBus] public IRound I;
         [OutputBus] public axi_r axi_i = Scope.CreateBus<axi_r>();
 
-        [InputBus] public IIV IV;
-        [OutputBus] public axi_r axi_iv = Scope.CreateBus<axi_r>();
+        // [InputBus] public IIV IV;
+        // [OutputBus] public axi_r axi_iv = Scope.CreateBus<axi_r>();
 
         [InputBus] public axi_r axi_out;
         [OutputBus] public IRound Out = Scope.CreateBus<IRound>();
         // [InputBus] public axi_r axi_iv_out;
         // [OutputBus] public IIV IV_Out = Scope.CreateBus<IIV>();
-        bool iv_was_valid = false;
-        bool iv_was_ready = false;
         bool was_valid = false;
         bool was_ready = false;
-        // public RoundF () {
 
-        // }
         protected override void OnTick() {
-            if (was_ready && I.Valid && IV.Valid) {
-            
-            // if (was_ready && iv_was_ready I.Valid && IV.Valid) {
-                // for(int i = 0; i < BLOCK_SIZE; i++) {
-                //     Console.Write(I.buffer[i]);
-                // }
-                // Console.WriteLine();
-                A = IV.A; B = IV.B; C = IV.C; D = IV.D;
+            if (was_ready && I.Valid) {
+                A = 0x67452301; B = 0xefcdab89; C = 0x98badcfe; D = 0x10325476;
             Console.WriteLine($"before F: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 processBlock();
                 forwardBlock();
             Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 // forwardIV();
                 Out.Valid = was_valid = true;
-                iv_was_valid = true;
                 // axi_iv.Ready = true;
             } else {
                 Out.Valid = was_valid = was_valid && !axi_out.Ready;
-                // IV_Out.Valid = iv_was_valid = iv_was_valid && !axi_iv_out.Ready;
             }
-            // Console.WriteLine($"{was_ready}, {iv_was_ready}, {I.Valid}, {IV.Valid}");
             axi_i.Ready = was_ready = !was_valid;
-            Console.WriteLine($"wtf {was_ready}, {was_valid}, {I.Valid}, {IV.Valid}");
-            // axi_iv.Ready = iv_was_ready = !iv_was_valid;
+            Console.WriteLine($"wtf {was_ready}, {was_valid}, {I.Valid}");
         }
 
         private uint A; private uint B;private uint C; private uint D;
@@ -109,7 +95,6 @@ namespace opt1
         bool was_ready = false;
         protected override void OnTick() {
 
-            // Console.WriteLine($"G {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}"); processBlock();
             if (was_ready && F.Valid) {
                 A = F.A; B = F.B; C = F.C; D = F.D;
                 processBlock();
@@ -245,8 +230,6 @@ namespace opt1
                 A = H.A; B = H.B; C = H.C; D = H.D;
                 processBlock();
             Console.WriteLine($"called I after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
-            // Console.WriteLine($"called H after: {A}, {B}, {C}, {D}");
-            // Console.WriteLine($"called H {cc++}: {A}, {B}, {C}, {D}");
                 Out.Valid = was_valid = true;
                 Out.Final = H.Last;
             }  else {
@@ -296,56 +279,38 @@ namespace opt1
 
     [ClockedProcess]
     class Combiner : SimpleProcess {
-        // [InputBus] public IIV IV;
-        // [OutputBus] public axi_r axi_iv = Scope.CreateBus<axi_r>();
         [InputBus] public IIV I;
         [OutputBus] public axi_r axi_I = Scope.CreateBus<axi_r>();
 
-        [InputBus] public axi_r axi_out;
-        [OutputBus] public IIV Out = Scope.CreateBus<IIV>();
 
         [InputBus] public axi_r axi_final;
         [OutputBus] public IIV Final = Scope.CreateBus<IIV>();
         bool was_valid = false;
         bool was_ready = false;
-        bool initial = true;
         uint A = 0x67452301;
         uint B = 0xefcdab89;
         uint C = 0x98badcfe;
         uint D = 0x10325476;
         protected override void OnTick() {
-            if (initial) {
-                Out.A = A = 0x67452301;
-                Out.B = B = 0xefcdab89;
-                Out.C = C = 0x98badcfe;
-                Out.D = D = 0x10325476;
-                initial = false;
-            Out.Valid = was_valid = true;
-            }
             if (was_ready && I.Valid) {
-                Console.WriteLine($"combiner {was_valid}, {!axi_out.Ready}");
-                if (I.Final) {
-                Final.A = A + I.A;
-                Final.B = B + I.B;
-                Final.C = C + I.C;
-                Final.D = D + I.D;
-                Final.Valid = was_valid = false;
-                initial = true;
-                } else {
-                Out.A = A + I.A;
-                Out.B = B + I.B;
-                Out.C = C + I.C;
-                Out.D = D + I.D;
+                Console.WriteLine($"combiner {was_valid}, {!axi_final.Ready}");
+                Final.A = reverseByte(A + I.A);
+                Final.B = reverseByte(B + I.B);
+                Final.C = reverseByte(C + I.C);
+                Final.D = reverseByte(D + I.D);
+                Final.Valid = was_valid = true;
             Console.WriteLine($"called combiner after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
-            Out.Valid = was_valid = true;
-                // Out.Final = I.Final;
-                }
             } else {
-                Out.Valid = was_valid = was_valid && !axi_out.Ready;
+                Final.Valid = was_valid = was_valid && !axi_final.Ready;
             }
-            Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
-            // axi_.Ready = iv_was_ready = !iv_was_valid;
             axi_I.Ready = was_ready = !was_valid;
+            Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
+        }
+        private uint reverseByte(uint i) {
+            return ((i & 0x000000ff) << 24) |
+                (i >> 24) |
+                ((i & 0x00ff0000) >> 8) |
+                ((i & 0x0000ff00) << 8);
         }
     }
 }

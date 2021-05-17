@@ -23,8 +23,8 @@ namespace opt1
                 // if we are not valid or the
                 paddedBuffer.Valid = was_valid = was_valid && !axi_pad.Ready;
             }
-                Console.WriteLine($"hey {was_ready}, {Message.Valid}");
             axi_mes.Ready = was_ready = !was_valid;
+                Console.WriteLine($"hey {was_ready}, {Message.Valid}");
         }
 
         public void preprocess(IFixedArray<byte> mes)
@@ -71,9 +71,9 @@ namespace opt1
             } else {
                 Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
-            Console.WriteLine($"ok, {was_valid}, {was_ready}");
 
             axi_out.Ready = was_ready = !was_valid;
+            Console.WriteLine($"ok, {was_valid}, {was_ready}");
         }
 
         private void fetchBlock(IFixedArray<byte> buff) {

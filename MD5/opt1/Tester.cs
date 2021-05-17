@@ -18,7 +18,7 @@ namespace opt1
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 1;
+        private static int testsize = 2;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -29,7 +29,7 @@ namespace opt1
                 throw new ArgumentNullException(nameof(messages));
             if (messages.Length == 0) {
                 for (int i = 0; i < testsize; i++) {
-                    randomStrings[i] = RandomString((i+1) * 192);
+                    randomStrings[i] = RandomString(55);
                 }
                 MESSAGES = randomStrings;
             } else { MESSAGES = messages; }
@@ -47,6 +47,7 @@ namespace opt1
                 // message = MESSAGES[i];
                 if (was_valid && axi_Message.Ready) {
                     was_valid = false;
+                    Console.WriteLine("oy");
                 }
                 if (was_ready && Digest.Valid) {
                 results[i] += Digest.A.ToString("X8");
@@ -94,18 +95,23 @@ namespace opt1
                     }
                     ii+=buffersize;
                     Message.Valid = was_valid = true;
+                        // break;
+                    } else {
+                        i++;
                     }
                 }
                 else {
                     Message.Valid = was_valid = false;
                 }
-                if (j < MESSAGES.Length) {
+                if (i < MESSAGES.Length) {
                     axi_Digest.Ready = was_ready = true;
                 }
                 else {
                     axi_Digest.Ready = was_ready = false;
                 }
-                    Console.WriteLine($"sim: {was_ready}, {was_valid}");
+                Console.WriteLine($"sim: {was_ready}, {was_valid}");
+                // if (j++ == 10)
+                //     break;
                     await ClockAsync();
                 }
                 for (int k = 0; k < MESSAGES.Length; k++) {
