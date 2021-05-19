@@ -1,18 +1,25 @@
 * Results of implementation
-All of the different implementations have been tested against the C# standard library eqivalent algorithms and ensures that the results produced is correct. The only exception for this is Chacha as it is a quite uncommon cipher. All implementations synthesized using Xilinx Vivado, on a Zynq zedboard, which is a low-end FPGA. For comparisons we have chosen to include different implementations, in C, C# and OpenSLL, using ~openssl speed -evp "algorithm"~. Unfortunately we have not been able to get our hands on the board in time and we thus stand with some limitations on the benchmarking results. Firstly, the reported frequency is the results from vivado, which might be a little different had it been an actual test.  Secondly, we settled for a raspberry pi 4B for the comparisons. The reason being this having a low-end processor similar to the one on the Zedboard, a Broadcom BCM2711, Quad core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5GHz.\footnote{write some descriptive text for the results}
+All of the different implementations have been tested against the C# standard library eqivalent algorithms and ensures that the results produced is correct. The only exception for this ~Chacha~ as it still is a quite uncommon cipher. All implementations synthesized using Xilinx Vivado on a Zynq zedboard, which is a low-end FPGA. For comparisons, we have chosen to include different implementations, in C, C# and OpenSLL, using ~openssl speed -evp "algorithm"~. Unfortunately we have not been able to get our hands on the board in time and we thus stand with some limitations on the benchmarking results. Firstly, the reported frequency is the results from vivado, which might be a little different had it been an actual test from calling the function from a C library.  Secondly, we settled for a raspberry pi 4B for the comparisons. The reason being this having a low-end processor similar to the one on the Zedboard, a Broadcom BCM2711, Quad core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5GHz.\footnote{write some descriptive text for the results} All the "raw" stdout results from the benchmarks can be found in Appendix \ref{}.
 ** MD5
 MD5 naive: 2.38 Mhz\\
 throughput: 512*2.38Mhz=1.218GBit=152,3MB/s
+*** Throughput
+Looking at Table /ref{} we can see our naive implementation of performs adequatly. Our naive version runs at around 150 MB/s, thus performing about as well as our own C-version optimized with -O3. When comparing to a threaded version C_t, which uses 7 threads to calculate the 7 smaller messages of the C-version, the naive version performs quite poorly. This is to be expected as a completely sequential should in general not be faster than a parallel version. The OpenSSL_low is the worst utilization of the ~openssl speed~, which happens on message sizes of 16 bytes. Compared to the worst utilization of OpenSLL this is a speedup of more than 300 pct. There are some things to keep in mind from this:
+- 16 bytes is not nearly enough to fill a block and thus full blocks of data is not process meaning there is a lot of spill. Even when running the same benchmarks on a i7-7500 the result of 16 bytes is merely 78 MB/s. Thus to get the full utilization we should focus the attention to 256 byte blocks or higher, as the 64 byte blocks will have a round of "wasteful" computation as this block is purely padding and not part of the message size.
+Comparing to OpenSSL_high one notices that our naive version cant really compare as its only about half as fast. The same is true for the C# version, which just as well could be using openssl.
 #+ATTR_LATEX: :environment tabular :width \textwidth :align |c|c|c|c|c|c|c| :caption Benchmarking results for MD5.
 |-------------------+--------+-----+--------+--------+-------------+--------------|
 | *Version*         |  Naive |  C# |      C |    C_t | OpenSSL_low | OpenSSL_high |
 |-------------------+--------+-----+--------+--------+-------------+--------------|
 | *Throughput* (MB/s) | 152.33 | 287 | 154.33 | 255.53 |       41.84 |       292.53 |
 |-------------------+--------+-----+--------+--------+-------------+--------------|
-
-** SHA
+*** Power Consumptions
+From the previous section we showed that our FPGA version was overall not as fast as its CPU counterparts, however the FPGA version shows promises in power usage. from Figure \ref{}
+** SHA256
 SHA naive: 2.10 Mhz\\
 *Throughput*: 512*2.1Mhz=1.075GBit=134,4MB/s
+*** Throughput
+Since SHA256 is closely related to MD5 we would expect the results to be relatively similar, however percentage-wise the FPGA version performs relatively better as our Naive version has a throughput of 134.4 MB/s whereas OpenSSL_high is 30 MB/s faster, corresponding to ?? percent.
 #+ATTR_LATEX: :align |c|c|c|c|c| :caption Benchmarking results for SHA.
 |-------------------+-------+-----+-------------+--------------|
 |     *Version* | Naive |  C# | OpenSSL_low | OpenSSL_high |
@@ -23,13 +30,17 @@ SHA naive: 2.10 Mhz\\
 ** AES
 AES naive: 25 Mhz\\
 *Throughput*: 128*25Mhz=3.2GBit=400MB/s
+*** Throughput
+The results of AES is interesting compared to our other implementations in the sense that even the naive FPGA version is outperforming the CPU. We can see that our naive version has a throughput of 400 MB/s which is around than 4.49 times as much as OpenSLL on its peak performance and outperforms C# and our own C-version with 5.7 and 6.2 times respectively. Even the threaded version is only half as fast as the FPGA solution. These results are quite promising in itself and clearly shows that the FPGA is very suitable for solutions as this one and in cases where large amaounts of data needs to be encrypted or decrypted the FPGA is preferable over an arm processor. It is however still worth noting that this still only outperforms processors as, atleast the one we are using, does not have AES-NI. For instance running the same OpenSSL benchmark on an intel i7-7500 the worst case has a throughput of 788 MB/s and an optimal solution of 5.61 GB/s. Even though there also is a significant price difference between the ARM and Intel processor it still hints to how one of our highlevel FPGA implementations will never be able to compete with what is essentially a dedicated ASIC.
 #+ATTR_LATEX: :align |c|c|c|c|c|c|c| :caption Benchmarking results for AES.
 |-------------------+-------+----+-------+--------+-------------+--------------|
 |     *Version* | Naive | C# |     C |    C_t | OpenSSL_low | OpenSSL_high |
 |-------------------+-------+----+-------+--------+-------------+--------------|
 | *Throughput* (MB/s) |   400 | 70 | 64.49 | 198.28 |        72.4 |        89.06 |
 |-------------------+-------+----+-------+--------+-------------+--------------|
-\footnote{it seems odd it is so low in the OpenSSL implementation?????}
+In the implementation section we described how we rejected to make a solution that was flexible in its key-size. The results hint that this have good impact on the performance. Comparing our solution to the solution presented in the SME github repository, which is more flexible in the key size, our solution outperforms this by a factor of 1.66, as it is reported to have a throughput of 1.92Gbit/s.
+
+
 ** CHACHA
 ChaCha naive: <5 Mhz ????\\
 *Throughput*: ?

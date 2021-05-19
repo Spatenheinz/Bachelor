@@ -17,12 +17,7 @@ namespace opt1
 
         protected override void OnTick() {
             if (was_ready && I.Valid) {
-                for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Console.Write(I.buffer[i]);
-                }
-                Console.WriteLine();
                 A = 0x67452301; B = 0xefcdab89; C = 0x98badcfe; D = 0x10325476;
-            Console.WriteLine($"before F: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 processBlock();
                 forwardBlock();
             Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
@@ -31,7 +26,7 @@ namespace opt1
                 Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
             axi_i.Ready = was_ready = !was_valid;
-            Console.WriteLine($"wtf {was_ready}, {was_valid}, {I.Valid}");
+            Console.WriteLine($"f {was_ready} {was_valid}");
         }
 
         private uint A; private uint B;private uint C; private uint D;
@@ -289,18 +284,15 @@ namespace opt1
         uint D = 0x10325476;
         protected override void OnTick() {
             if (was_ready && I.Valid) {
-                // Console.WriteLine($"combiner {was_valid}, {!axi_final.Ready}");
                 Final.A = reverseByte(A + I.A);
                 Final.B = reverseByte(B + I.B);
                 Final.C = reverseByte(C + I.C);
                 Final.D = reverseByte(D + I.D);
                 Final.Valid = was_valid = true;
-            // Console.WriteLine($"called combiner after: {I.A.ToString("x8")}, {I.B.ToString("x8")}, {I.C.ToString("x8")}, {I.D.ToString("x8")}");
             } else {
                 Final.Valid = was_valid = was_valid && !axi_final.Ready;
             }
             axi_I.Ready = was_ready = !was_valid;
-            // Console.WriteLine($"out , {I.Valid}, {was_ready}, {was_valid}");
         }
         private uint reverseByte(uint i) {
             return ((i & 0x000000ff) << 24) |
