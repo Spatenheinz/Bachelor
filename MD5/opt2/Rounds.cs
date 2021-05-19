@@ -15,29 +15,18 @@ namespace opt2
         [OutputBus]
         public IRound Out = Scope.CreateBus<IRound>();
 
-        [OutputBus]
-        public IRound IV_Out = Scope.CreateBus<IRound>();
         protected override void OnTick() {
             Console.WriteLine($"{block.Valid}");
             if (block.Valid) {
                 if (block.Head) {
-                IV_Out.A = A = 0x067452301;
-                IV_Out.B = B = 0xefcdab89;
-                IV_Out.C = C = 0x98badcfe;
-                IV_Out.D = D = 0x10325476;
+                A = 0x67452301;
+                B = 0xefcdab89;
+                C = 0x98badcfe;
+                D = 0x10325476;
                 processBlock();
             Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
-                IV_Out.Valid = Out.Valid = true;
-                } else if (IV.Valid) {
-                IV_Out.A = A = IV.A;
-                IV_Out.B = B = IV.B;
-                IV_Out.C = C = IV.C;
-                IV_Out.D = D = IV.D;
-                processBlock();
-                IV_Out.Valid = Out.Valid = true;
+                Out.Valid = true;
                 }
-            // Console.WriteLine($"called F {cc++}: {A}, {B}, {C}, {D}");
-            // Console.WriteLine($"called F after: {A}, {B}, {C}, {D}");
             } else {
                 Out.Valid = false;
             }

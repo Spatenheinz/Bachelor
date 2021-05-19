@@ -91,7 +91,7 @@ namespace MD5
                             Message.Message[jj] = 0;
                         }
                     }
-                    ii+=buffersize;
+                    ii+= buffersize;
                     Message.Valid = was_valid = true;
                     }
                 }
