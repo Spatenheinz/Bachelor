@@ -28,10 +28,10 @@ For the first stage of the computation is to expand the message
 As mentioned the input block is of 512 bits, so sixteen 32 bit words. These gets extended to 64 32 bit words.
 The extention of the input block works as follows:
 \begin{equation}
-  w[i] =
+  W[i] =
   \begin{cases}
-    M[i]  &for 0 \leq i \leq 15
-    \sigma_1(W) +  &for 16 \leq i \leq 63
+    M[i]  &\text{for } 0 \leq i \leq 15\\
+    \sigma_1(W_{i-2}) + W[i-16] + \sigma_0(W_{i-15}) + W[i-7] &\text{for } 16 \leq i \leq 63
   \end{cases}
 \end{equation}
 # Bla bla bla something smart. Samt et godt diagram eller noget..?
