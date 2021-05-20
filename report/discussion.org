@@ -1,1 +1,4 @@
 * Discussion
+- SME vs VHDL
+- How easy is FPGA programming
+- ???

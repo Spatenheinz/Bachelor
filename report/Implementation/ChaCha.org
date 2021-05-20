@@ -17,8 +17,7 @@ public interface IState : IBus {
     [FixedArrayLength(TEXT_SIZE)] IFixedArray<byte> Text { get; set; }
 }
 #+END_SRC
-Where ~BLOCK_SIZE = 16~ and ~TEXT_SIZE = 64~. This design however have posed some challenges. When synthesizing this design, we found the timing to be abyssmal, despite the computations being fairly, simple. The reason for this might be that there simply is too much data in the busses. the input bus itself covers 1152 bits, and the output bus carries 544 bits to output the cipher. Corollary we have also made a version which does not perform the XOR of the text and keystream.
-
+Where ~BLOCK_SIZE = 16~ and ~TEXT_SIZE = 64~. This design however have posed some challenges.
 ** First optimization
 :PROPERTIES:
 :UNNUMBERED: nil
