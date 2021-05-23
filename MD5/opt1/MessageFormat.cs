@@ -17,11 +17,6 @@ namespace opt1
         protected override void OnTick() {
             // if the process is ready and the data-transfer is valid
             if (was_ready && Message.Valid) {
-                Console.Write("from message: ");
-                for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Console.Write(Message.Message[i]);
-                }
-                Console.WriteLine();
                 preprocess(Message.Message);
                 paddedBuffer.Valid = was_valid = true;
             } else {
@@ -29,7 +24,6 @@ namespace opt1
                 paddedBuffer.Valid = was_valid = was_valid && !axi_pad.Ready;
             }
             axi_mes.Ready = was_ready = !was_valid;
-                Console.WriteLine($"hey {was_ready}, {was_valid}");
         }
 
         public void preprocess(IFixedArray<byte> mes)
@@ -71,7 +65,6 @@ namespace opt1
         protected override void OnTick() {
             if (was_ready && paddedBuffer.Valid) {
                 fetchBlock(paddedBuffer.buffer);
-            Console.WriteLine($"oy");
                 Out.Last = paddedBuffer.Last;
                 Out.Valid = was_valid = true;
             } else {
@@ -79,7 +72,6 @@ namespace opt1
             }
 
             axi_pad.Ready = was_ready = !was_valid;
-            Console.WriteLine($"ok, {was_valid}, {was_ready}");
         }
 
         private void fetchBlock(IFixedArray<byte> buff) {

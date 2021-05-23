@@ -41,9 +41,6 @@ namespace opt1
         [InitialValue(false)]
         bool Valid { get; set; }
 
-        // [InitialValue(false)]
-        // bool Ready { get; set; }
-
         [InitialValue(false)]
         bool Last {get; set; }
 
@@ -54,7 +51,6 @@ namespace opt1
         uint B { get; set; }
         uint C { get; set; }
         uint D { get; set; }
-
     }
 
     public interface IIV : IBus {

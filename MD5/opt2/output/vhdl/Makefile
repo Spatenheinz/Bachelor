@@ -36,17 +36,29 @@ $(WORKDIR)/MessageFormat.o: MessageFormat.vhdl $(WORKDIR)/system_types.o $(WORKD
 $(WORKDIR)/FormatConverter.o: FormatConverter.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) FormatConverter.vhdl
 
-$(WORKDIR)/RoundF.o: RoundF.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
-	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundF.vhdl
+$(WORKDIR)/RoundF1.o: RoundF1.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundF1.vhdl
 
-$(WORKDIR)/RoundG.o: RoundG.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
-	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundG.vhdl
+$(WORKDIR)/RoundF2.o: RoundF2.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundF2.vhdl
 
-$(WORKDIR)/RoundH.o: RoundH.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
-	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundH.vhdl
+$(WORKDIR)/RoundG1.o: RoundG1.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundG1.vhdl
 
-$(WORKDIR)/RoundI.o: RoundI.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
-	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundI.vhdl
+$(WORKDIR)/RoundG2.o: RoundG2.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundG2.vhdl
+
+$(WORKDIR)/RoundH1.o: RoundH1.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundH1.vhdl
+
+$(WORKDIR)/RoundH2.o: RoundH2.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundH2.vhdl
+
+$(WORKDIR)/RoundI1.o: RoundI1.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundI1.vhdl
+
+$(WORKDIR)/RoundI2.o: RoundI2.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) RoundI2.vhdl
 
 $(WORKDIR)/Combiner.o: Combiner.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Combiner.vhdl
@@ -54,7 +66,7 @@ $(WORKDIR)/Combiner.o: Combiner.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_
 $(WORKDIR)/csv_util.o: csv_util.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) csv_util.vhdl
 
-$(WORKDIR)/opt2.o: opt2.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)/MessageFormat.o $(WORKDIR)/FormatConverter.o $(WORKDIR)/RoundF.o $(WORKDIR)/RoundG.o $(WORKDIR)/RoundH.o $(WORKDIR)/RoundI.o $(WORKDIR)/Combiner.o $(WORKDIR)/csv_util.o 
+$(WORKDIR)/opt2.o: opt2.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_opt2.o $(WORKDIR)/MessageFormat.o $(WORKDIR)/FormatConverter.o $(WORKDIR)/RoundF1.o $(WORKDIR)/RoundF2.o $(WORKDIR)/RoundG1.o $(WORKDIR)/RoundG2.o $(WORKDIR)/RoundH1.o $(WORKDIR)/RoundH2.o $(WORKDIR)/RoundI1.o $(WORKDIR)/RoundI2.o $(WORKDIR)/Combiner.o $(WORKDIR)/csv_util.o 
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) opt2.vhdl
 
 $(WORKDIR)/TestBench_opt2.o: TestBench_opt2.vhdl $(WORKDIR)/opt2.o

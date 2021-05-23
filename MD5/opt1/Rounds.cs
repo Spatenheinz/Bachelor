@@ -20,13 +20,12 @@ namespace opt1
                 A = 0x67452301; B = 0xefcdab89; C = 0x98badcfe; D = 0x10325476;
                 processBlock();
                 forwardBlock();
-            Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called F after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 Out.Valid = was_valid = true;
             } else {
                 Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
             axi_i.Ready = was_ready = !was_valid;
-            Console.WriteLine($"f {was_ready} {was_valid}");
         }
 
         private uint A; private uint B;private uint C; private uint D;
@@ -91,7 +90,7 @@ namespace opt1
                 processBlock();
                 forwardBlock();
                 Out.Valid = was_valid = true;
-                Console.WriteLine($"called G after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+                // Console.WriteLine($"called G after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
             }  else {
                 Out.Valid = was_valid = was_valid && !axi_out.Ready;
             }
@@ -153,7 +152,7 @@ namespace opt1
             if (was_ready && G.Valid) {
                 A = G.A; B = G.B; C = G.C; D = G.D;
                 processBlock();
-            Console.WriteLine($"called H after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called H after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 forwardBlock();
                 Out.Valid = was_valid = true;
             }  else {
@@ -211,8 +210,6 @@ namespace opt1
 
         [InputBus] public axi_r axi_out;
         [OutputBus] public IIV Out = Scope.CreateBus<IIV>();
-        // [InputBus] public axi_r axi_out_block;
-        // [OutputBus] public IBlock OutBlock = Scope.CreateBus<IBlock>();
 
         bool was_valid = false;
         bool was_ready = false;
@@ -220,7 +217,7 @@ namespace opt1
             if (was_ready && H.Valid) {
                 A = H.A; B = H.B; C = H.C; D = H.D;
                 processBlock();
-            Console.WriteLine($"called I after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
+            // Console.WriteLine($"called I after: {A.ToString("x8")}, {B.ToString("x8")}, {C.ToString("x8")}, {D.ToString("x8")}");
                 Out.Valid = was_valid = true;
                 Out.Final = H.Last;
             }  else {

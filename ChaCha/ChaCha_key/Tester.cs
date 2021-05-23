@@ -24,22 +24,6 @@ namespace ChaCha_key {
                 .Select(x => Convert.ToUInt32(hex.Substring(x,8), 16))
                 .ToArray();
         }
-        // private void targetCypher(string val) {
-        //     ProcessStartInfo start = new ProcessStartInfo();
-        //     start.FileName = "";
-        //     // start.Arguments = "ls";
-        //     start.Arguments = "echo \'" + val + "\' | openssl enc -chacha20 -nosalt -pass pass:test -p -in /dev/stdin -o /dev/stdout";
-        //     start.RedirectStandardOutput = true;
-        //     Process p = new Process();
-        //     p.StartInfo.FileName = "echo \'" + val + " \'";
-        //     p.StartInfo.RedirectStandardInput
-        //     using (var process = Process.Start(start)) {
-        //         using (StreamReader reader = process.StandardOutput) {
-        //             string result = reader.ReadToEnd();
-        //             Console.WriteLine(result);
-        //         }
-        //     }
-        // }
 
         private uint[] testkey = StringToArray("03020100070605040b0a09080f0e0d0c13121110171615141b1a19181f1e1d1c");
         private byte[] plaintext = Encoding.ASCII.GetBytes("Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.");
