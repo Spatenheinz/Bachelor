@@ -9,7 +9,7 @@ namespace SHA
         {
             using (var sim = new Simulation()) {
                 var sha = new SHA();
-                var tester = new Tester();
+                var tester = new Tester("");
                 sha.Message = tester.Message;
                 sha.axi_Digest = tester.axi_Digest;
                 tester.Digest = sha.Digest;
@@ -17,9 +17,9 @@ namespace SHA
                 sim.AddTopLevelInputs(sha.Message, sha.axi_Digest)
                     .AddTopLevelOutputs(sha.Digest, sha.axi_Message)
                     .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
-                    .BuildCSVFile()
-                    .BuildGraph()
-                    .BuildVHDL()
+                    // .BuildCSVFile()
+                    // .BuildGraph()
+                    // .BuildVHDL()
                     .Run();
             }
         }

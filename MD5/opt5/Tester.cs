@@ -58,39 +58,39 @@ namespace opt5
                 }
                 if (i < MESSAGES.Length) {
                     if (ii < MESSAGES[i].Length) {
-                    int buffersize = 0;
-                    int current_blocksize = MESSAGES[i].Length - ii;
-                    // if we have less than 56 chars we are in the last block
-                    if (current_blocksize < 56) {
-                        Message.Last = true;
-                    }
-                    // if the current blocksize is less than the max buffer size,
-                    // we need to set the 1 in the padding.
-                    else if (current_blocksize < MAX_BUFFER_SIZE) {
-                        Message.Set = true;
-                    } else {
-                        Message.Last = false;
-                        Message.Set = false;
-                    }
-                    // set the buffer size according to the sizes
-                    if (ii > 0) {
-                        Message.Head = false;
-                    } else{
-                        Message.Head = true;
-                    }
-                    Message.MessageSize = MESSAGES[i].Length;
-                    Message.BufferSize = buffersize = Math.Min(current_blocksize, MAX_BUFFER_SIZE);
-                    for(int jj = 0 ; jj < MAX_BUFFER_SIZE; jj++) {
-                        if (jj < buffersize)
-                        {
-                            Message.Message[jj] = (byte)MESSAGES[i][ii + jj];
-                        } else {
-                            Message.Message[jj] = 0;
+                        int buffersize = 0;
+                        int current_blocksize = MESSAGES[i].Length - ii;
+                        // if we have less than 56 chars we are in the last block
+                        if (current_blocksize < 56) {
+                            Message.Last = true;
                         }
-                    }
-                    ii+= MESSAGES[i].Length == 0 ? 1 : buffersize;
-                    Message.Valid = was_valid = true;
-                        // break;
+                        // if the current blocksize is less than the max buffer size,
+                        // we need to set the 1 in the padding.
+                        else if (current_blocksize < MAX_BUFFER_SIZE) {
+                            Message.Set = true;
+                        } else {
+                            Message.Last = false;
+                            Message.Set = false;
+                        }
+                        // set the buffer size according to the sizes
+                        if (ii > 0) {
+                            Message.Head = false;
+                        } else{
+                            Message.Head = true;
+                        }
+                        Message.MessageSize = MESSAGES[i].Length;
+                        Message.BufferSize = buffersize = Math.Min(current_blocksize, MAX_BUFFER_SIZE);
+                        for(int jj = 0 ; jj < MAX_BUFFER_SIZE; jj++) {
+                            if (jj < buffersize)
+                            {
+                                Message.Message[jj] = (byte)MESSAGES[i][ii + jj];
+                            } else {
+                                Message.Message[jj] = 0;
+                            }
+                        }
+                        ii+= MESSAGES[i].Length == 0 ? 1 : buffersize;
+                        Message.Valid = was_valid = true;
+                            // break;
                     } else {
                         i++;
                         ii=0;

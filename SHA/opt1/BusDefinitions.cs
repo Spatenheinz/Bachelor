@@ -38,7 +38,7 @@ namespace opt1
         [InitialValue(false)]
         bool Last {get; set; }
 
-        [FixedArrayLength(BLOCK_SIZE)]
+        [FixedArrayLength(MAX_BUFFER_SIZE)]
         IFixedArray<uint> buffer { get; set; }
 
         [FixedArrayLength(DIGEST_SIZE)]

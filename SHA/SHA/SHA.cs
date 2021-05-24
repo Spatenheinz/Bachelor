@@ -79,17 +79,7 @@ namespace SHA
         public void calculateSHA(IFixedArray<byte> mes)
         {
             preprocess(mes);
-            // string str = "";
-            // for (int j = 0; j<MAX_BUFFER_SIZE; j++) {
-            //     str += workingBuffer[j].ToString("X2");
-            // }
-            // Console.WriteLine("workingBuffer: " + str);
             fetchBlock(workingBuffer);
-            // str = "";
-            // for (int j = 0; j<64; j++) {
-            //     str += workingBuffer[j].ToString("X2");
-            // }
-            // Console.WriteLine("blockD: " + str);
             processBlock();
         }
 
@@ -113,11 +103,6 @@ namespace SHA
                 workingBuffer[MAX_BUFFER_SIZE - 6] = (byte)(fullSize >> 40 & 0x00000000000000ff);
                 workingBuffer[MAX_BUFFER_SIZE - 7] = (byte)(fullSize >> 48 & 0x00000000000000ff);
                 workingBuffer[MAX_BUFFER_SIZE - 8] = (byte)(fullSize >> 56 & 0x00000000000000ff);
-                // string str = "";
-                // for (int j = 0; j<MAX_BUFFER_SIZE; j++) {
-                //     str += workingBuffer[j].ToString("X2");
-                // }
-                // Console.WriteLine("Padding?: " + str);
 
             }
             else if (Message.Set) {
@@ -167,6 +152,7 @@ namespace SHA
                 c = b;
                 b = a;
                 a = temp1 + temp2;
+                Console.WriteLine($"a: {a}, b {b}, c {c}, d {d}, e {e}, f {f}, g {g} h {h}");
                 // Console.WriteLine($"a:{a.ToString("X8")} b:{b.ToString("X8")} c:{c.ToString("X8")} d:{d.ToString("X8")} e:{e.ToString("X8")} f:{f.ToString("X8")} g:{g.ToString("X8")} h:{h.ToString("X8")}");
             }
 
