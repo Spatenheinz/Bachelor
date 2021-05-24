@@ -1,38 +1,4 @@
-#+LATEX_CLASS: article
-#+LATEX_CLASS_OPTIONS: [a4paper]
-#+LATEX_COMPILER: pdflatex
-#+OPTIONS: toc:nil \n:nil
-#+LATEX_HEADER: \input{baseHeader.tex}
-#+TITLE:
-#+AUTHOR:
-#+DATE:
-#+LATEX_HEADER: \titel{\textbf{Bachelorproject}} \undertitel{Cryptographic library for FPGA's} \opgave{Bachelor Project} \forfatter{Jacob Herbst(mwr148), Jonas Flach Jensen (sjm233)} \dato{12 june 2021} \vejleder{Advisor: Kenneth Skovhede}
-\maketitle
-\tableofcontents
-\newpage
-#+INCLUDE: "introduction.org"
-
-#+INCLUDE: "Background/background.org"
-
-#+INCLUDE: "Implementation/implementation.org"
-
-#+INCLUDE: "benchmarks.org"
-
-#+INCLUDE: "discussion.org"
-
-#+INCLUDE: "conclusion.org"
-
-# #bibliography
-\bibliographystyle{unsrt}
-\bibliography{ref}
-
-\begin{appendix}
-# #+INCLUDE: "Appendix.org"
-* AES Look Up Table
-:PROPERTIES:
-:UNNUMBERED: nil
-:CUSTOM_ID: AESLUT
-:END:
+* AES look-up table
 #+BEGIN_EXPORT latex
 \begin{table}[!htb]
 \centering
@@ -63,4 +29,3 @@ f0 & 8c & a1 & 89 & 0d & bf & e6 & 42 & 68 & 41 & 99 & 2d & 0f & b0  & 54 & bb &
 \label{tab:AESTable}
 \end{table}
 #+END_EXPORT
-\end{appendix}

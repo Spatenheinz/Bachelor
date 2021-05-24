@@ -1,17 +1,20 @@
-ChaCha20 is a stream cipher, which intend is to be a fast and efficient standby cipher in case AES is compromised. unlike block cyphers, such as AES, which works on a fixed sized block of text steam ciphers work on a per byte level. This is usually done by combining the plaintext with a pseudorandom stream of digits using XOR. As the objective of the cipher is to generate a random stream one first needs a seed. The seed of ChaCha is 16 32 bit words, layed out as such:
-#+CAPTION: seed of ChaCha20
-#+LABEL: fig:ChaChaSeed
-#+ATTR_LATEX: :width 4cm
-[[./Background/ChaChaSeed.png]]
+ChaCha20 is a stream cipher intended to be a fast and efficient standby cipher in case AES is compromised. Unlike block ciphers, such as AES, which works on a fixed-sized block of text, stream ciphers work on a per-byte level. This is usually done by combining the plaintext with a pseudorandom stream of digits using XOR. Since the objective of the cipher is to generate a random stream, one first needs a seed. The seed of ChaCha is 16 32 bit words, laid out as such:
 
-As one can see, the layout of the seed is fairly simple, and constitutes 4 parts:
-- A 4 word constant "expand 32-byte k", which is a classic case of a "nothing up my sleeve number".
-- A 256 bit key in little endian order.
-- A word for the block counter (BC), which is sufficient for up to 256GB of plaintext.
-- A nonce which spans 3 word in little endian.
-It might seem counter-intuitive that the seed would include a word, which holds the current block number. However the result of each iteration of chacha will result in 16 words generated for the stream. Since the rest of the seed will stay the same for the entire encryption the increasing block counter will ensure that no two "blocks" should result in the same cipher, and essentially including the CTR mode of operation for blockciphers into the streaming cipher. The confusion part of the algorithm follows a simple add-rotate-XOR (ARX) structure. That is every round is based on only simple arithmetic add, left rotations and XOR operations. more specifically ChaCha20 consist of 20 round of which each consists of 4 quarter rounds will confuse 4 input words. Each quarter round looks as such:
-#+BEGIN_EXPORT latex
 \begin{figure}[!htb]
+\centering
+\includegraphics[width=3cm]{ChaChaSeed.png}
+\caption{Seed of ChaCha20}
+\label{fig:ChaChaSeed}
+\end{figure}
+
+As one can see, the layout of the seed is relatively simple and constitutes 4 parts:
+- A 4 word constant "expand 32-byte k", which is a classic case of a "nothing up my sleeve number".
+- A 256 bit key in little-endian order.
+- A word for the block counter (BC). This is sufficient for up to 256GB of plaintext.
+- A nonce which spans 3 words in little-endian.
+It might seem counter-intuitive that the seed would include a word, which holds the current block number. However, the result of each iteration of ChaCha20 will result in 16 words generated for the stream. Since the rest of the seed will stay the same for the entire encryption, the increasing block counter will ensure that no two "blocks" should result in the same cipher, and essentially including the CTR mode of operation for block ciphers into the streaming cipher. The confusion part of the algorithm follows a simple add-rotate-XOR (ARX) structure. Every round is based on only simple arithmetic add, left rotations, and XOR operations. More specifically ChaCha20 consist of 20 round of which each consist of 4 quarter rounds will confuse 4 input words. Each quarter round looks as such:
+#+BEGIN_EXPORT latex
+\begin{figure}[H]
 \begin{minipage}{0.4\textwidth}
 \begin{verbatim}
 a += b; d ^= a; d <<<= 16;
@@ -22,19 +25,20 @@ c += d; b ^= c; b <<<= 7;
 \end{minipage}
 \qquad
 \begin{minipage}{0.4\textwidth}
-\includegraphics[width=6cm]{Background/ChaChaQR.png}
+\includegraphics[width=6cm]{ChaChaQR.png}
 \end{minipage}
-\caption{ChaCha Quarter Round}
+\caption{ChaCha20 Quarter Round}
 \label{fig:ChaChaQR}
 \end{figure}
 #+END_EXPORT
-As said chacha20 will perform 20 round consisting of 4 quarter rounds. For the a quarter round in an even numbered round will take a column of the seed as the input. where an odd numbered round will work on diagonals.
+As said, ChaCha20 will perform 20 rounds consisting of 4 quarter rounds. For a quarter-round (QR) in an even-numbered round it will take a column of the seed as the input, an odd-numbered round will work on diagonals.
 #+BEGIN_EXPORT latex
-\begin{figure}[!htb]
+\begin{figure}[H]
 \centering
-\includegraphics[width=8cm]{Background/diagonal.png}
-\caption{ChaCha Rounds}
+\includegraphics[width=8cm]{diagonal.png}
+\caption{ChaCha20 Rounds}
 \label{fig:ChaChaRound}
 \end{figure}
 #+END_EXPORT
-Lastly when the 20 rounds has been computed, the intial seed and the modifed version is index-wise added giving a resulting block of 16 words of stream and this stream can then be XORed with the plaintext to get the cypher.
+
+Lastly, when the 20 rounds have been computed, the initial seed and the modified version are index-wise added, giving a resulting block of 16 words of the stream, and this stream can then be XORed with the plaintext to get the plaintext cipher.

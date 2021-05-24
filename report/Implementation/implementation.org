@@ -1,4 +1,6 @@
 * Implementation
+
+We will be using the streaming AXI protocol (from hereon just called AXI) for all implementations. AXI is a lightweight protocol for synchronizing data transactions between hardware components. It specifies some standards for a ready/valid handshake between components. This means that whenever a Master component is valid to send data over a bus, and the slave is ready to receive data simultaneously, a transaction is completed.
 #+INCLUDE: "MD5.org"
 #+INCLUDE: "SHA256.org"
 #+INCLUDE: "AES.org"

@@ -1,22 +1,32 @@
 The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{rfc1321}.
-THe MD5 algorithm will  thus create a the 128-bit digest from a arbitrary sized message of n bits. Since MD5 uses a merkel damgaard construction, it follows figure\ref{fig:merkel}. It will thus partition the n bit message into smaller blocks of 512 bits. This is done by following a fairly common padding scheme, seen in the merkel damgaard family. It is done by always padding the message with a single set bit followed by a series of 0's until the message length = 448 mod 512. Thus in situations where the original message has a length of 448 mod 512, a 1 is followed by 511 bits of 0's. Lastly, a merkel damgaard strengthening is applied by appending a 64-bit representation of the message length mod 2^64 to the padded message, resulting in every partiotion being 512 bits wide.
-Each partition of the message will then be fed into the compression ~f~ function in Figure \ref{fig:merkel}.
+The MD5 algorithm will thus create a 128-bit digest from an arbitrary-sized message of n bits. Since MD5 uses a Merkle-Damgård construction, it follows Figure \ref{fig:Merkle}. It will thus partition the n bit message into smaller blocks of 512 bits. This is done by following a fairly common padding scheme, seen in the Merkle-Damgård family. It is done by always padding the message with a single set bit followed by a series of 0's until the message length = 448 mod 512. Thus in situations where the original message has a length of 448 mod 512, a 1 is followed by 511 bits of 0's. Lastly, a Merkle-Damgård strengthening is applied by appending a 64-bit representation of the message length mod 2^64 to the padded message, resulting in every partition being 512 bits wide.
+Each partition of the message will then be fed into the compression ~f~ function in Figure \ref{fig:Merkle}.
 
-#+CAPTION: Two iterations of the MD5 rounds.
-#+LABEL: fig:MD5
-[[./Background/MD5rounds.png]]
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=10cm]{MD5rounds.png}
+\caption[MD5 Rounds]%
+{Rounds of MD5. Each of the two outer circles, is what corresponds to the f-function in Figure \ref{fig:Merkle}. Each of f function consists of a set of functions which will hash the (A,B,C,D) vector and forward it to the next round. The last round of an application of f will forward the vector to the next application of f on the next block of the message.}
+\label{fig:MD5}
+\end{figure}
 
 Figure \ref{fig:MD5}\footnote{this is a horrible picture and we should prob make a better one} shows the expanded compression function ~f~. ~f~ will modify a 128-bit initialization vector (A, B, C, D), with the initial value:\\
 ~[~ ~A: 0x67542301~, ~B: 0xefcdab89~, ~C: 0x98badcfe~, ~D: 0x10325476~ ~]~\\
-~f~ will use the following 4 functions, defined as such to, in "bitwise parallel" produce independent and unbiased bits in each of the rounds.
-\begin{equation}
-F(X, Y, Z) = (X \wedge Y) \vee (\neg X \wedge Z) \\
-G(X, Y, Z) = (X \wedge Z) \vee (Y \wedge \neg Z) \\
-H(X, Y, Z) = X \oplus Y \oplus Z \\
-I(X, Y, Z) = Y \oplus ( X \vee \neg Z) \\
-\end{equation}
-In ~f~ a total number of 64 rounds will be computed, each of the functions 1-4 is applied a total of 16 times. Figure \ref{fig:MD5Rounds} shows each of the specific rounds, where ~[abcd k s i]~ denotes ~a = b + (( a + round(b,c,d) + M[k] + K[i]) \lll s)~, where ~round~ denotes the function corresponding to one of the 4 functions corresponding to that round, ~M~ denotes the current 16-word buffer of the padded message and ~K[i]~ denotes the ~floor(2^32 * abs (sin(i + 1)))~.
-#+BEGIN_SRC
+~f~ will use the following four functions, defined as such, to in "bitwise parallel" produce independent and unbiased bits in each of the rounds.
+\begin{align}
+F(X, Y, Z) &= (X \wedge Y) \vee (\neg X \wedge Z) \\
+G(X, Y, Z) &= (X \wedge Z) \vee (Y \wedge \neg Z) \\
+H(X, Y, Z) &= X \oplus Y \oplus Z \\
+I(X, Y, Z) &= Y \oplus ( X \vee \neg Z)
+\end{align}
+In ~f~ a total number of 64 rounds will be computed, each of the functions 1-4 is applied a total of 16 times. Figure \ref{fig:MD5Rounds} shows each of the specific rounds, where\\
+~[abcd k s i]~\\
+denotes ~a = b + (( a + round(b,c,d) + M[k] + K[i]) \lll s)~, and ~round~ denotes the function corresponding to one of the 4 functions corresponding to that round, ~M~ denotes the current 16-word buffer of the padded message and ~K[i]~ denotes the ~floor(2^32 * abs (sin(i + 1)))~.
+#+BEGIN_EXPORT latex
+\begin{table}[!htb]
+\centering
+\begin{verbatim}
 round 1  :: F
 [ABCD  0  7  1] [DABC  1 12  2] [CDAB  2 17  3] [BCDA  3 22  4]
 [ABCD  4  7  5] [DABC  5 12  6] [CDAB  6 17  7] [BCDA  7 22  8]
@@ -37,6 +47,10 @@ Round 4 :: I
 [ABCD 12  6 53] [DABC  3 10 54] [CDAB 10 15 55] [BCDA  1 21 56]
 [ABCD  8  6 57] [DABC 15 10 58] [CDAB  6 15 59] [BCDA 13 21 60]
 [ABCD  4  6 61] [DABC 11 10 62] [CDAB  2 15 63] [BCDA  9 21 64]
-#+END_SRC
-when all rounds have are completed the new vector (A_1,B_1,C_1,D_1), will be added to the vector from before the rounds. This result will store the digest for that round. If this is the result of applying ~f~ to the last block of message, we have the MD5 digest of the message. Is this however result of applying ~f~ to any other block this result will be the IV of the next round.
-It is worth noting that MD5 is not a very good hashing algorithm for cryptography, as collision attacks exist, despite the fact that it uses the merkle damgaard construction, but still show use for data integrity purposes and such.
+\end{verbatim}
+\caption{All rounds of a single MD5 iteration}
+\label{fig:MD5Rounds}
+\end{table}
+#+END_EXPORT
+When all rounds are completed, the new vector (A_1 , B_1 , C_1 , D_1) will be added to the vector from before the rounds. This result will store the digest for that round. If this results from applying ~f~ to the last block of the message, we have the MD5 digest of the message. Is this, however, a result of applying ~f~ to any other block, the result will be the IV of the next round.
+It is worth noting that MD5 is not a very good hashing algorithm for cryptography, as collision attacks exist, although it uses the Merkle-Damgård construction, but still shows use for data integrity purposes and such.
