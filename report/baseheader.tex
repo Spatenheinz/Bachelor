@@ -34,3 +34,10 @@
 % \BeforeBeginEnvironment{verbatim}{\begin{mdframed}}
 %   \AfterEndEnvironment{verbatim}{\end{mdframed}}
 \setlength\parindent{0pt}
+\usepackage{titlesec}
+
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% this alters "before" spacing (the second length argument) to 0
+\titlespacing*{\chapter}{0pt}{-60pt}{10pt}

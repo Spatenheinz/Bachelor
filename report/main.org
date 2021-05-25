@@ -1,5 +1,5 @@
-#+LATEX_CLASS: article
-#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS: book-noparts
+#+LATEX_CLASS_OPTIONS: [a4paper, openany]
 #+LATEX_COMPILER: pdflatex
 #+OPTIONS: toc:nil \n:nil
 #+LATEX_HEADER: \input{baseHeader.tex}
@@ -9,14 +9,13 @@
 #+LATEX_HEADER: \titel{\textbf{Bachelorproject}} \undertitel{Cryptographic library for FPGA's} \opgave{Bachelor Project} \forfatter{Jacob Herbst(mwr148), Jonas Flach Jensen (sjm233)} \dato{12 june 2021} \vejleder{Advisor: Kenneth Skovhede}
 \maketitle
 \tableofcontents
-\newpage
 #+INCLUDE: "introduction.org"
 
 #+INCLUDE: "Background/background.org"
 
 #+INCLUDE: "Implementation/implementation.org"
 
-#+INCLUDE: "benchmarks.org"
+#+INCLUDE: "Benchmarks/benchmarks.org"
 
 #+INCLUDE: "discussion.org"
 

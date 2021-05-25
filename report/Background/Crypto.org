@@ -8,6 +8,8 @@ The crypto library consists of 4 cryptographic functions, two of which are hash 
 
 It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
 These implementations should also be optimized in terms of speed to compete with the existing software solutions.
+
+*** Hashing
 Hashing is a mathematical concept referring to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptographic hash functions are a subset of all hash functions.
 The reason for this is that for a hash function to be a cryptographic hash function, it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementation of hash functions. Lastly and most importantly, computers can't do true randomness.
 If a hash function can be implemented with a limited input space, it is pseudo-random, and upholds specific properties listed below, it can be categorized as a "Cryptographic Hash Function".
