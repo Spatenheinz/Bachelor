@@ -45,6 +45,10 @@ namespace AES
                    ((uint)S[0xff & x]);
         }
 
+        private void SubBytes() {
+
+        }
+
         private void Expand128(IFixedArray<byte> key) {
             for (int i = 0; i < N_KEY_128<<2; i+=4) {
                 expandedKey128[i>>2] = ((uint)key[i] << 24) |

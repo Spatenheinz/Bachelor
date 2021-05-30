@@ -1,8 +1,8 @@
 using System;
 using SME;
-using static opt1.Statics;
+using static opt2.Statics;
 
-namespace opt1
+namespace opt2
 {
     [ClockedProcess]
     class SHA : SimpleProcess {

@@ -5,23 +5,23 @@
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c}
+\begin{tabular}{c c c c c c c c}
 \hline
-Version & f$_{max}$(Mhz) & clocks & TP(MBps) & LUT & FF\\
+Version & f$_{max}$(Mhz) & clocks$_{high}$ & TP(MBps)$_{high}$ & clocks$_{low}$ & TP(MBps)$_{low}$ & LUT & FF\\
 \hline
-Naive & 2.38 & b & 152.3 & 11607 & 2304\\
-Proc_{4} & 9.5 &   \( 6+2 \cdot b\) & 265.9 & 10247 & 5226\\
-Proc_{8} & 19 &    \(10+2 \cdot b\) & 531.7 & 10087 & 7538\\
-Proc_{16} & 33.5 & \(18+2 \cdot b\) & 937.2 & 10206 & 12162\\
-Proc_{32} & 65 &   \(34+2 \cdot b\) & 1816.9 & 10149 & 21347\\
-Proc_{64} & 115 &  \(66+2 \cdot b\) & 3209.4 & 10350 & 39718\\
+Naive & 2.38 & b & 152.3 & b & 152.3 & 11607 & 2304\\
+Proc_{4} & 9.5 &   \( 6+2 \cdot b\) & 265.9 &  \( 2+6 \cdot b\) & 101.3 & 10247 & 5226\\
+Proc_{8} & 19 &    \(10+2 \cdot b\) & 531.7 &  \(2+10 \cdot b\) & 121.6 & 10087 & 7538\\
+Proc_{16} & 33.5 & \(18+2 \cdot b\) & 937.2 &  \(2+18 \cdot b\) & 119.1 & 10206 & 12162\\
+Proc_{32} & 65 &   \(34+2 \cdot b\) & 1816.9 & \(2+34 \cdot b\) & 122.6 &  10149 & 21347\\
+Proc_{64} & 115 &  \(66+2 \cdot b\) & 3209.4 & \(2+66 \cdot b\) & 111.5 &  10350 & 39718\\
 \end{tabular}
 \caption[MD5-versions]%
-{Performance and statistics over the different MD5 implementations. f$_{max}$ is the clockrate reported from Vivado. clocks, describes how many clock cycles it takes to calculate \texttt{b} blocks. The throughput TP is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many i processes the 64 rounds are distributed over.}
+{Performance and statistics over the different MD5 implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where high and low describe a best and worst-case scenario, respectively. The throughput TP is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
 \label{tab:MD5versions}
 \end{table}
 #+END_EXPORT
-As can be seen in Table \ref{tab:MD5versions}, there is a monumental difference between the naive versions. Even the most simple of the pipelines have 74.6 pct. increase over the naive version and the highest performing version which calculates only a single round in each process more than 20 times faster than the naive version. This comes at a cost of a lot more Flip-Flops but with a slightly fewer LUTs. It is however quite remarkable that such performance increases is achievable without doing specific FPGA optimisations as such. Especially one thing aspect has been surprising to see. To keep track of the input block, each process simply forwards it from its input bus to its outputbus. Thus one would assume this computation would take a relatively long time compared to calculating a single round value, but this has not been the case. The reason might be because this is optimized away by Vivado.
+As can be seen in Table \ref{tab:MD5versions}, there is a monumental difference between the naive versions. Even the most simple of the pipelines has a 74.6 pct increase over the naive version and the highest performing version, which calculates only a single round in each process more than 20 times faster than the naive version. This comes at the cost of a lot more Flip-Flops but with slightly fewer LUTs. It is, however, quite remarkable that such performance increases are achievable without doing specific FPGA optimizations as such but simply applying pipelining. Especially one aspect has been surprising to see. To keep track of the input block, each process simply forwards it from its input bus to its outputbus. Thus one would assume this computation would take a relatively long time compared to calculating a single round value, but this has not been the case. The reason might be because this is optimized away by Vivado. However, one aspect to be aware of is that the pipelined versions actually "theoretically" perform worse than the naive version. The worst case scenario happens when the string to hash is very long as the process thus becomes inherently sequential. Thus the "cycles saved" from pipelining will amount to simply 2 cycles, and since the pipelined versions have additional computations, signals, etc., that need to be routed, these will not be as fast as the naive version. Thus if the user need to hash long inputs instead of many short ones, the naive version would be preferable.
 #+BEGIN_EXPORT latex
 \begin{table}[!htb]
 \centering
@@ -34,12 +34,12 @@ As can be seen in Table \ref{tab:MD5versions}, there is a monumental difference 
  & & & 604 & 622 & 600 & 81 & 691
 \end{tabular}
 \caption[MD5-versions]%
-{Performance comparison of the worst and best FPGA implementations and the various CPU versions. The C\# uses the \texttt{System.Security.Cryptography.MD5}, the C version and C$_t$ is our own implementations and is optimised with \texttt{-O3}. The openSSL is from \texttt{openssl speed -evp md5}. Each of the CPU implementations has two value, the first being the Pi results and the second the I5 results.}
+{The takeaway from these results is that if one needs to hash long strings, one might as well choose a CPU implementation over our versions, and is one to use our implementations for such one should use the naive {Performance comparison of the worst and best FPGA implementations and the various CPU versions. The C\# uses the \texttt{System.Security.Cryptography.MD5}, the C version and C$_t$ are our implementations and are optimized with \texttt{-O3}. The OpenSSL is from \texttt{openssl speed -evp md5}. Each of the CPU implementations has two values, the first being the Pi results and the second the I5 results.}
 \label{tab:MD5compare}
 \end{table}
 #+END_EXPORT
-Comparing the implementations to the CPU versions, the naive only performs adequatly with the C version on the Pi. Likewise it seems to beat OpenSSL_low by quite a margin. The OpenSSL_low is the worst utilization of the ~openssl speed~, which happens on message sizes of 16 bytes. Compared to the worst utilization of OpenSLL this is a speedup of more than 300 pct. One should keep in mind that OpenSSL only works on inputs of 16 bytes, which is not nearly enough to fill a block and thus full blocks of data is not processed meaning there is a lot of spill. Even when running the same benchmarks on the I5 the result of 16 bytes is merely 81 MB/s. Thus to get the full utilization we should focus the attention to 256 byte blocks or higher, as the 64 byte blocks will have a round of "wasteful" computation as this block is purely padding and not part of the message size.
-For all other versions the naive version performs poorly, especially on the I5 where most of the versions is around 4 times faster. The best performing pipeline on the other hand outperforms all the CPU versions by a significant amount, by atleast 4.6 times. This is a significant increase in speed which really emphasizes how well a FPGA can perform if designed correctly. One thing to keep in mind about these results however is that this is an optimal case; if the version worked on longer strings suchs performance would not be as fast.
+Comparing the implementations to the CPU versions, the naive only perform adequately with the C version on the Pi. Likewise, it seems to beat OpenSSL_low by quite a margin. The OpenSSL_low is the worst utilization of the ~openssl speed~, which happens on message sizes of 16 bytes. Compared to the worst utilization of OpenSSL, this is a speedup of more than 300 pct. One should keep in mind that OpenSSL only works on inputs of 16 bytes, which is not nearly enough to fill a block, and thus entire blocks of data are not processed, meaning there is a significant spill. Even when running the same benchmarks on the I5, 16 bytes are merely 81 MB/s. Thus to get the full utilization, we should focus the attention on 256-byte blocks or higher, as the 64-byte blocks will have a round of "wasteful" computation as this block is purely padding and not part of the message size.
+Compared to all the other CPU versions, the naive version performs poorly, especially on the I5, where most versions are around 4 times faster. On the other hand, the best-performing pipeline outperforms all the CPU versions by a significant amount by at least 4.6 times. This is a significant increase in speed, emphasizing how well an FPGA can perform if designed correctly. However, the Throughput of the optimal pipeline will only serve as the theoretical maximum, and in a real-world example, such speed might not be observable depending on how fast the host can provide the data for the FPGA.
 *** Power Consumptions
 From the previous section we showed that our FPGA solution could outperform not only low-end CPU's but also mid-end CPU by quite a margin. But not only are the FPGA able to achieve high throughput it also does it at a very low power consumption. Figure \ref{fig:md5_naive_power} shows the power consumption as reported by Vivado. The power consumtion of the naive version sum up to 0.016 watt without including the processing system, which is almost 11 times less than the optimized version using 0.189 watt. We can thus see one need only 11 times as much power to get a speed increase of 20 times. In any case, we can assume this to be very power efficient compared to the power used by a CPU, without having any real proof of this. We base this assumption on the fact that processing system (PS7) uses atleast 88 percent of the power.
 \begin{figure}[H]
@@ -50,3 +50,5 @@ From the previous section we showed that our FPGA solution could outperform not 
 {Powerconsumption of MD5 designs}
 \label{fig:md5_naive_power}
 \end{figure}
+*** Takeaways
+The takeaway from these results is that if one needs to hash long strings, one might as well choose a CPU implementation over our versions, and is one to use our implementations for such one should use the naive version, whereas the pipelined version will be a lot faster (or at least not be the bottleneck). If the power consumption by the computations, on the other hand, is more important than throughput, our naive version, however, is a good choice over the other alternatives presented in the previous sections.

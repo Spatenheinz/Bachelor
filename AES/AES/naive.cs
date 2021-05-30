@@ -21,7 +21,6 @@ namespace AES
         protected override void OnTick() {
             if (PlainText.ValidKey) {
                 Expand128(PlainText.Key);
-            Console.WriteLine($"proc {was_ready} {was_valid}");
             } else if (PlainText.ValidBlock) {
                 for(int i = 0; i < BLOCK_SIZE; i++) {
                     state[i] = PlainText.block[i];
@@ -35,7 +34,6 @@ namespace AES
                 Cipher.ValidBlock = was_valid && !axi_Cipher.ready;
             }
             axi_Text.ready = was_ready = !was_valid;
-            Console.WriteLine($"proc {was_ready} {was_valid}");
         }
 
         private uint SubWord(uint x) {
