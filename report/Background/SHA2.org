@@ -52,6 +52,6 @@ For the last stage, the H variables get updated one last time, containing the fi
 \begin{figure}[H]
 \centering
 \includegraphics[width=8cm]{sha-2.png}
-\caption{a sha2 round}
-\label{fig:sha2round}
+\caption{A SHA256 round}
+\label{fig:sha256round}
 \end{figure}

@@ -5,7 +5,7 @@
 :UNNUMBERED: nil
 :CUSTOM_ID: ChaChaNaive
 :END:
-Just like AES, ChaCha will work in two phases. The initial phase will be to set up the seed. After the initial setup, the only modification to the initial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. Every iteration will perform chacha described in \ref{ChaChaAlg}. Like the other algorithms, we have opted for a total solution, meaning the FPGA solution should be as independent as possible. Such that our chacha20 version will not merely produce the keystream but will produce the cipher itself. Thus the input bus should look like this:
+Just like AES, ChaCha will work in two phases. The initial phase will be to set up the seed. After the initial setup, the only modification to the initial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. Every iteration will perform ChaCha described in \ref{ChaChaalg}. Like the other algorithms, we have opted for a total solution, meaning the FPGA solution should be as independent as possible. Such that our chacha20 version will not merely produce the keystream but will produce the cipher itself. Thus the input bus should look like this:
 #+BEGIN_SRC csharp
 public interface IState : IBus {
     [InitialValue(false)] bool ValidSeed { get; set; }
@@ -13,8 +13,10 @@ public interface IState : IBus {
     uint Nonce0   { get; set; }
     uint Nonce1   { get; set; }
     uint Nonce2   { get; set; }
-    [FixedArrayLength(BLOCK_SIZE)] IFixedArray<uint> Key { get; set; }
-    [FixedArrayLength(TEXT_SIZE)] IFixedArray<byte> Text { get; set; }
+    [FixedArrayLength(BLOCK_SIZE)]
+    IFixedArray<uint> Key { get; set; }
+    [FixedArrayLength(TEXT_SIZE)]
+    IFixedArray<byte> Text { get; set; }
 }
 #+END_SRC
 Where ~BLOCK_SIZE = 16~ and ~TEXT_SIZE = 64~. This design however have posed some challenges.
