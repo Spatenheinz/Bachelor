@@ -50,6 +50,7 @@ namespace AES
                                         ((uint)key[i+1] << 16) |
                                         ((uint)key[i+2] << 8) |
                                         ((uint)key[i+3]);
+                Console.WriteLine($"i: {i>>2} key: {expandedKey128[i>>2].ToString("x8")}");
             }
             for (int i = N_KEY_128; i < ROUND_SIZE_128; i++) {
                 uint w = expandedKey128[i-1];
@@ -59,6 +60,7 @@ namespace AES
                     w = SubWord(w);
                 }
                 expandedKey128[i] = expandedKey128[i-N_KEY_128] ^ w;
+                Console.WriteLine($"i: {i} i-1: {i-1} i-N_KEY {i-N_KEY_128} i/N_KEY_128: {i/N_KEY_128} key: {expandedKey128[i].ToString("x8")}");
             }
         }
         private uint LeftRotate(uint x, int k) {
