@@ -79,47 +79,65 @@ namespace AES
         return ByteArrayToString(encryptor.TransformFinalBlock(PlainText, 0, PlainText.Length));
         }
 
+        bool was_valid = false;
+        bool was_ready = false;
+        bool key_set = false;
+        int i = 0, j = 0, ii = 0, jj = 0;
         public async override Task Run() {
 
+        string [] results = new string [MESSAGES.Length];
             await ClockAsync();
-
-            PlainText.ValidBlock = false;
-            PlainText.ValidKey = true;
-            for(int i = 0; i < key.Length; i++) {
-                PlainText.Key[i] = key[i];
-            }
-            await ClockAsync();
-            PlainText.ValidKey = false;
-            foreach (string message in MESSAGES) {
-            string res = "";
-            for(int i = 0; i < message.Length; i+=BLOCK_SIZE) {
-                for(int j = 0; j < BLOCK_SIZE; j++) {
-                PlainText.block[j] = (byte)message[i+j];
+            // string str2 = "";
+            while (j < MESSAGES.Length) {
+                // message = MESSAGES[i];
+                if (was_valid && axi_Text.ready) {
+                    was_valid = false;
                 }
-                PlainText.ValidBlock = true;
-                await ClockAsync();
-                PlainText.ValidBlock = false;
-                await ClockAsync();
-                for(int j = 0; j < BLOCK_SIZE; j++) {
-                res += Cipher.block[j].ToString("X2");
+                if (was_ready && Cipher.ValidBlock) {
+                    for (int jj = 0; jj < BLOCK_SIZE; jj++) {
+                        results[j] += Cipher.block[jj].ToString("X2");
+                    }
+                    // the length is double as it is converted from ascii to bytes
+                    if(results[j].Length == MESSAGES[j].Length * 2) {
+                        Console.WriteLine("done!!!!!!!");
+                        j++;
+                    }
+                was_ready = false;
                 }
+                if (i < MESSAGES.Length) {
+                    if (!key_set) {
+                        PlainText.ValidKey = key_set = true;
+                        for(int i = 0; i < key.Length; i++) {
+                            PlainText.Key[i] = key[i];
+                        }
+                    } else if (ii < MESSAGES[i].Length) {
+                        for(int iii = 0; iii < BLOCK_SIZE; iii++) {
+                            PlainText.block[iii] = (byte)MESSAGES[i][ii+iii];
+                        }
+                    PlainText.ValidKey = false;
+                    PlainText.ValidBlock = was_valid = true;
+                    ii += BLOCK_SIZE;
+                    } else {
+                        i++;
+                        ii=0;
+                    PlainText.ValidBlock = key_set = was_valid = false;
+                    }
+                }
+                else {
+                    PlainText.ValidBlock = was_valid = false;
+                }
+                if (j < results.Length) {
+                    axi_Cipher.ready = was_ready = true;
+                }
+                else {
+                    axi_Cipher.ready = was_ready = false;
+                }
+            Console.WriteLine($"ok, {was_ready}, {was_valid}");
+                await ClockAsync();
             }
-            axi_Cipher.ready = true;
-            string target = targetCypher(StringToByteArray(message), key, IV);
-            Debug.Assert(res == target, $"String {message} - {res} doesnt match the MS library {target}");
-
-            // CypherDecrypt.ValidKey = true;
-            // for(int i = 0; i < key.Length; i++) {
-            //     CypherDecrypt.Key[i] = key[i];
-            // }
-            // await ClockAsync();
-            // CypherDecrypt.ValidKey = false;
-            // CypherDecrypt.ValidBlock = true;
-            // for(int i = 0; i < tmpData.Length; i++) {
-            //     CypherDecrypt.block[i] = Cypher.block[i];
-            // }
-            // await ClockAsync();
-            // string resD = ByteArrayToString(PlainDecrypt.block);
+            for (int k = 0; k < MESSAGES.Length; k++) {
+                string target = targetCypher(StringToByteArray(MESSAGES[k]), key, IV);
+                Debug.Assert(results[k] == target, $"String2 {MESSAGES[k]} with Hash nr. {k} - {results[k]} doesnt match the MS library {target}");
             }
         }
     }

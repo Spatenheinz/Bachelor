@@ -1,36 +1,38 @@
-The Advanced Encryption Standard (AES) is a symmetric block cipher and specified as the standard for encryption by the National Institute of Standards and Technology (NIST). As AES is the standard for encryption it is used mostly everywhere and is critical to include in a cryptographic library. The algorithm behind AES is called Rijndahl and was chosen since it had a good balance of security, performance on a vast variety of devices\cite{AESofficial}. Rijndahl is an Substitution-permutation (SP) network which manipulates a block and keysize of any multiple of 32 in the range 128-256 bits. In the exact specification of AES the blocksize is fixed to 128 bits where the key potentially can be 128, 192 or 256 bits. The 128 bits is arranged in a 4 x 4 column-major order matrix. As stated AES is a SP-network, meaning it is constructed as a series of rounds of substitutions and permutations. More precisely the algorithm is listed as follows:
+The Advanced Encryption Standard (AES) is a symmetric block cipher and specified as the standard for encryption by the National Institute of Standards and Technology (NIST). As AES is the standard for encryption, it is used chiefly everywhere and is critical to include in a cryptographic library. The algorithm behind AES is called Rijndahl and was chosen since it had a good balance of security, performance on a vast variety of devices\cite{AESofficial}. Rijndael is a Substitution-permutation (SP) network that manipulates a block and key size of any multiple of 32 in the range 128-256 bits. In the exact specification of AES, the block size is fixed to 128 bits, where the key potentially can be 128, 192, or 256 bits. The 128 bits are arranged in a 4 x 4 column-major order matrix. As stated, AES is an SP network, meaning it is constructed as a series of rounds of substitutions and permutations. More precisely, the algorithm is listed as follows:
 1. KeyExpansion: The key, whether it be 128, 192 or 256 bits is expanded using a keyschedule which will expand a key into the number of rounds + 1 keys. The schedule look as follows:
-   \begin{equation}
+   \begin{equation*}
    W_i \begin{cases}
-       K_i & \text{if} i < N\\
-       W_{i-N} \oplus \text{SubWords($W_{i-1}\lll 8$))} \oplus \text{rcon}_{i/N} & \text{if $i \geq N$ and $i \equiv 0$ (mod $N$)}\\
+       K_i & \text{if } i < N\\
+       W_{i-N} \oplus \text{SubWords($W_{i-1}\lll 8$))} \oplus \text{rcon}_{i/N} & \text{if } i \geq N \text{ and }  i \equiv 0 (\text{mod } N)}\\
        W_{i-N} \oplus \text{SubWords($W_{i-1}$)} & \text{if $i \geq N$, $N > 6$, and $i \equiv 4$ (mod $N$)}\\
        W_{i-N} \oplus W_{i-1} & \text{otherwise}
    \end{cases}
-   \end{equation}
-   where $i = 0 ... 4 \cdot \text{rounds} - 1$, $K_i$ is the i^th 32 bit word of the original key. $W$ is a 32 bit word of the expanded key. $N$ is the number of words in the original key and subword and rcon beeing defined as follows:
+   \end{equation*}
+   where $i = 0 ... 4 \cdot \text{rounds} - 1$, $K_i$ is the i^th 32 bit word of the original key. $W$ is a 32-bit word of the expanded key. $N$ is the number of words in the original key and subword and rcon being defined as follows:
    \begin{equation}
-    \text{SubWord}([b_0 b_1 b_2 b_3]) = [S(b_0) S(b_1) S(b_2) S(b_3)] \text{}
+    \text{SubWord}([b_0 b_1 b_2 b_3]) = [S(b_0) S(b_1) S(b_2) S(b_3)]
    \end{equation}
    With $S$ being the Substitution box explained later for the ~SubBytes~ function.
    | i                                                 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 |
    |---------------------------------------------------+----+----+----+----+----+----+----+----+----|
    | rcon\footnote{all values with a trailing 0 bytes} | 01 | 02 | 04 | 08 | 10 | 20 | 80 | 1b | 36 |
 
-2. The initial round-key is xored with the plaintext.
-3. SP - round: the rounds of the SP is performed, by first doing a substitution which officially is called SubBytes\cite{Rijndahl}, followed by the permutation which consists of 2 functions ~ShiftRows~ and ~MixColumns~, which will ensure the 4x4 matrix is permuted and diffused. Lastly the round-key is xored with the result. This is done 9, 11 or 13 times depending on whether the key-size is 128, 192 or 256 bits respectively.
-4. The last round will work like the other except it will only permute the rows and not the columns.
+2. The initial round-key is XORed with the plaintext.
+3. SP - round: the rounds of the SP is performed by first doing a substitution which officially is called SubBytes\cite{Rijndael}, followed by the permutation, which consists of 2 functions ~ShiftRows~ and ~MixColumns~, which will ensure the 4x4 matrix is permuted and diffused. Lastly, the round-key is XORed with the result. This is done 9, 11, or 13 times depending on whether the key size is 128, 192, or 256 bits, respectively.
+4. The last round will work like the other, except it will only permute the rows and not the columns.
 
-Subbytes is non-linear byte substitution and is usually implemented as a lookup table. It is calculated in 2 steps first by taking the multiplicative inverse in the galois field GF(2^8) followed by an affine transformation over GF(2):
-\[b_i = b_i \oplus b_{(i+4) \% 8} \oplus b_{(i+5) \% 8} \oplus b_{(i+6) \% 8} \oplus b_{(i+7) \% 8} \oplus c_i \] with b_i denoting the i^th bit of the byte and c_i denoting the i^th bit of 0x63. Since these and mostly every calculation in AES operates on galois fields we can be certain the cipher also will be 128 bits. The lookup table can be seen in appendix \ref{AESlookup}\footnote{TODO insert substitution box}
+Subbytes is a non-linear byte substitution and is usually implemented as a lookup table. It is calculated in 2 steps first by taking the multiplicative inverse in the Galois field GF(2^8) followed by an affine transformation over GF(2):
+\[b_i = b_i \oplus b_{(i+4) \% 8} \oplus b_{(i+5) \% 8} \oplus b_{(i+6) \% 8} \oplus b_{(i+7) \% 8} \oplus c_i \] with b_i denoting the i^th bit of the byte and c_i denoting the i^th bit of 0x63. Since these and mostly every calculation in AES operates on Galois fields, we can be certain the cipher also will be 128 bits. The lookup table can be seen in Appendix \ref{AESLUT}
 
-ShiftRows will transform the 4x4 input matrix by rotating the rows 0 to 3 bytes to the left, meaning the first row {b_0, b_4, b_8, b_12} will not be rotated, the second row will be rotated one bit to the left, i.e. {b_5, b_9, b_13, b_1} after the rotation. Likewise the 3rd row is shifted 2 and the last row is shifted 3 to the left (or 1 to the right). The transformation can be seen in figure \ref{fig:ShiftRows}
+ShiftRows will transform the 4x4 input matrix by rotating the rows 0 to 3 bytes to the left, meaning the first row {b_0, b_4, b_8, b_12} will not be rotated, the second row will be rotated one bit to the left, i.e. {b_5, b_9, b_13, b_1} after the rotation. Likewise the 3rd row is shifted 2 and the last row is shifted 3 to the left (or 1 to the right). The transformation can be seen in Figure \ref{fig:ShiftRows}
 
 
-#+CAPTION: ShiftRows operation
-#+LABEL: fig:ShiftRows
-#+ATTR_LATEX: placement: [H]
-[[./Background/shiftRows.png]]
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=8cm]{shiftRows.png}
+\caption[ShiftRows operation]{ShiftRows operation. Shows the rearrangement of the bytes in the matrix}
+\label{fig:ShiftRows}
+\end{figure}
 
 MixColumns takes each column as a polynomial over the GF(2^8) and is multiplied (mod x^4 +1,as it is a finite field) by \(a(x) = 3x^3 + x^2 + x + 2\), which can be written as a matrix as:
 #+attr_latex: :mode math :environment bmatrix :math-suffix =
@@ -48,11 +50,11 @@ MixColumns takes each column as a polynomial over the GF(2^8) and is multiplied 
 | s_{1,c} |
 | s_{2,c} |
 | s_{3,c} |
-where c denotes the column. Multiplication is as described above and addition is XOR.
+Where c denotes the column, multiplication is as described above, and addition is XOR.
 
-For decryption the equivalent inverse functions can be used, as Rijndahl is truely invertible, meaning an implementation in a reversible programming language would result in correct encryption or decryption based on whether the function was called or uncalled.
+The equivalent inverse functions can be used for decryption, as Rijndael is truly invertible, meaning an implementation in a reversible programming language would result in correct encryption or decryption based on whether the function was called or uncalled.
 
-The original paper for Rijndahl\cite{Rijndahl} describes how these different steps can be implemented using lookup tables. This implementation can be realised on any 32-bit system with 4096 bits of memory, as we would need 4 lookup tables of 256 32-bit entries. That is one table for each column with all the 256 values in GF(2^8). The tables can simply be computed:
+The original paper for Rijndael\cite{Rijndael} describes how these different steps can be implemented using lookup tables. This implementation can be realized on any 32-bit system with 4096 bits of memory, as we would need 4 lookup tables of 256 32-bit entries. That is one table for each column with all the 256 values in GF(2^8). The tables can simply be computed:
 \begin{equation}
 T_0[a] = \begin{bmatrix}
           S[a] \cdot 02_{16}\\
@@ -85,4 +87,4 @@ e_j = T_0 [a_{0,3}] \oplus T_1 [a_{1,2}] \oplus T_2 [a_{2,1}] \oplus T_3 [a_{3,0
 \end{equation}
 where $a_{x,y}$ denotes the byte in row $x$ and column $y$ and j is the round transformation.
 
-This approach are generally considered faster as it reduces each round to 16 lookups and 16 xors compared to the normal approach where memory needs to be moved around. This is approach however is more prone to cache timing attacks and since the introduction of AES instruction set in 2008\cite{intel}\footnote{TODO insert reference} this method is no longer the fastest on CPUs.
+This approach are generally considered faster as it reduces each round to 16 lookups and 16 XORs compared to the normal approach where memory needs to be moved around. This is approach however is more prone to cache timing attacks and since the introduction of AES instruction set in 2010 this method is no longer the fastest on CPUs.

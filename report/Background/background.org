@@ -1,41 +1,12 @@
 * Background
+This chapter will present the theoretical aspect applied in implementing our cryptographic library. Firstly, we will briefly give a high-level overview of the target device, Field Programmable Gate Array, followed by an introduction to the programming model which has enabled us to implement the cryptographic functions included in the library. A review of the different cryptographic terms and constructs used in the library is presented for good measure.
+
+The algorithm of the four cryptographic functions in the library is presented in detail in the following order: MD5, SHA256, AES, and ChaCha20.
 
 #+INCLUDE: "fpga.org"
 
 #+INCLUDE: "SME.org"
-** A crypto library
-Cryptographic functions are used by developers across most branches, whether it'll be communicating securely over a network, or hashing programs to do version control.
-So there is a motive for having a crypto library for FPGA's. In fact, such a processor has been made before. IBM created their own "IBM 4758 Secure Coprocessor"\cite{IBM4758}. Another point is modern Hardware Security Modules (HSM) which also does this.
-However, the problem with the existing solutions is that many of them require setting up a royalty-based licensing deal, which makes it difficult to use for experimental development, small projects, and in research, and academics.
-So we set out to create an open-source crypto library.
-
-The crypto library consists of 4 cryptographic functions, two of which are hash functions, MD5 and SHA-256, and two of which are ciphers, AES and Chacha.
-
-It should also have an API allowing users to utilize these functions in their projects, as they would with any other library.
-These implementations should also be optimized in terms of speed so that they are competitive with the existing software solutions.
-Creating a crypto library for FPGA's ...
-
-*** Hashing
-Hashing is a mathematical concept referring to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptographic hash functions are a subset of all hash functions.
-The reason for this is that for a hash function to be a cryptographic hash function it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementation of hash functions. Lastly and most importantly, computers can't do true randomness.
-If a hash function can be implemented with a limited input space, is pseudo-random, and upholds certain properties listed below, it can be categorized as a "Cryptographic Hash Function".
-- It should be deterministic, as it is important that the same hash is computed given some input.
-- It is unreasonably hard to predict the hashed value. One reason for this is the requirement to exercise the avalanche effect, meaning the tiniest change in the input message would resolve in big changes in the hash.
-- It is collision-resistant, meaning it is unreasonably hard to find two distinct messages to have the same hash.
-
-***** Merkle-Damgård construction
-As stated previously this library include implementations of MD5 and SHA-256. These are very similar in design and follows a widely construction method for cryptographic hashing, the Merkle-Damgård construction. One of the reasons this approach is desirable when developing a cryptographic hashing algorithm is because the hash function will be collision-resistant given the compression function itself is collision-resistant\footnote{ref to the article}.
-From Figure \ref{fig:Merkle} one can see the construction of the hashing function. One can see that the message will be padded to have a certain length since any compression function must work on static size. The compression function ~f~ will initially take two arguments, the initialization vector (IV), and the first message block. ~f~ will then produce a result of the same size as the initialization vector. This result will then be fed into the next iteration of ~f~ along with the second block of the message. This is repeated until the entire padded message has been processed. From here a potential finalization function can be used to improve the hash and a hashed value is produced.
-
-#+CAPTION: Merkle-Damgård construction
-#+LABEL: fig:Merkle
-[[./merkle.png]]
-*** Cipher
-Ciphers are algorithms used for symmetric encryption and decryption of data. This means that rather than generating a fixed sized output like most (if not all) hash functions a cipher should always output as many bits as its input. There are generally two types of ciphers: block ciphers and stream ciphers. They a similar in that they always have to be a bijective mapping from key/plaintext to ciphertext, such that no two plaintexts can map to the same ciphertext. Furthermore Claude Shannon defined\footnote{ref til confusion difussion} that secures ciphers should have confusion and diffusion. Confusion meaning a bit of the ciphertext should depend of key in multiple ways, such that no connection between those two are easily observable. Diffusion meaning a single change of bit in the plaintext should change the majority of bits in the ciphertext. Fortheir internal workings the two types of ciphers are however vastly different.
-**** Block ciphers
-Block ciphers are defined to work on a fixed sized block of bits, which often, and in the case of AES, is 128 bits. Obviously this requires some considerations, firstly data that is not a multiple of the block size will require some sort of padding, as the method of choice is not defined by any standard we have not taken uneven sized plaintexts into account. Furthermore there are defined multiple Modes of operations to handle data with more than one block. Of these the most simple is Electronic Code Book (ECB), which simply will encrypt each block of the data independently. It is worth noting that this is not the most secure mode since identical data blocks will produce identical cipher blocks. Another more secure method is Cipher Block Chaining (CBC) which will xor the cipher text of the previous block with the plaintext of the current block before encrypting the block. This approach is a embarrisingly sequential method. More parallel and robust modes also exist, such as Counter Mode (CTR) and Galois Counter Mode (GCM). These work by taking a nonce as input to the cipher instead of the plaintext. The result will then be XORed with the plaintext. Each block after the initial will then take the nonce increased by some fixed size pr. block.
-**** Stream ciphers
-A stream cipher as the name suggests works using stream and is thus independent of size. Stream ciphers generate a pseudorandom keystream, which will be combined with the plaintext. Most often this combination will be by XOR, such that bit 0th of the plaintext will be XORed with the 0th bit of the keystream.
+#+INCLUDE: Crypto.org
 
 ** MD5
 :PROPERTIES:
@@ -43,7 +14,7 @@ A stream cipher as the name suggests works using stream and is thus independent 
 :CUSTOM_ID: MD5alg
 :END:
 #+INCLUDE: MD5.org
-** SHA-256
+** SHA256
 :PROPERTIES:
 :UNNUMBERED: nil
 :CUSTOM_ID: SHAalg
