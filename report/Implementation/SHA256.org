@@ -20,4 +20,4 @@ Then these blocks get expanded and the hash calculated as described in Section \
 
 The calculations for ch, maj, s1, and s0 could be their own functions, but they have been left as written out since they are simple and shouldn't significantly affect performance.
 *** Optimizations
-Since SHA256 is so similar to MD5, we can apply the same pipeline approaches as we did for MD5. One difference, however, is the block expansion, which likewise can be pipelined. Thus we should be able to create an even deeper pipeline for SHA256 without going completely overboard with the processes.
+Since SHA256 is so similar to MD5, we can apply the same pipeline approaches as we did for MD5. One difference, however, is the block expansion, which likewise can be pipelined. Thus we should theoretically be able to create an even deeper pipeline for SHA256. Because the target FPGA runs out of resources even before pipelining the rounds, we have not looked into this. The problem and the resource usage will be explained further in Section \ref{sec:SHAperformance}.

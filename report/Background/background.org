@@ -1,4 +1,7 @@
 * Background
+This chapter will present the theoretical aspect applied in implementing our cryptographic library. Firstly, we will briefly give a high-level overview of the target device, Field Programmable Gate Array, followed by an introduction to the programming model which has enabled us to implement the cryptographic functions included in the library. A review of the different cryptographic terms and constructs used in the library is presented for good measure.
+
+The algorithm of the four cryptographic functions in the library is presented in detail in the following order: MD5, SHA256, AES, and ChaCha20.
 
 #+INCLUDE: "fpga.org"
 
@@ -11,7 +14,7 @@
 :CUSTOM_ID: MD5alg
 :END:
 #+INCLUDE: MD5.org
-** SHA-256
+** SHA256
 :PROPERTIES:
 :UNNUMBERED: nil
 :CUSTOM_ID: SHAalg
