@@ -1,0 +1,27 @@
+The subject of running and optimizing hash functions on FPGAs isn't new. One work on this subject is "Improving SHA-2 Hardware Implementation", by R. Chaves, G. Kuzmanov, L. Sousa, and S. Vassiliadis.
+In their report, the biggest increase they documented was a throughput increase of 40% on the a VIRTEX II Pro FPGA(XC2P30-7) board.
+The increase comes from mesureing their own implementation against a commercial product (Helion) on the same board.
+
+The improvements they found were some rescheduling of operations. SHA-2 is designed to have data dependency for previous rounds.
+So values of round $i$ can not be computed untill round $i-1$ is finished, making unrolling and pipelining almost impossible.
+They did find some values and techniques they could optimize without increasing the circuit size much, which is usually a problem.
+
+One improvement they did were to pre-calculate all possible values needed in round $i+1$ in round $i$.
+Of the variables A-H, only A and E are dependent on calculations, the rest just gets shifted. So the following was done:
+\begin{equation}
+E_{t+1} &= D_t+\Sigma_1(E_t)+Ch(E_t,F_t,G_t)+H_t+K_t+W_t\\
+A_{t+1} &= \Sigma_0(A_t)+Maj(B_t,C_t,D_t)+\Sigma(E_t)+Ch(E_t,F_t,G_t)+H_t+K_t+W_t\\
+\Downarrow\\
+E_{t+1} &= D_t+\Sigma_1(E_t)+Ch(E_t,F_t,G_t)+\sigma_t\\
+A_{t+1} &= \Sigma_0(A_t)+Maj(B_t,C_t,D_t)+\Sigma(E_t)+Ch(E_t,F_t,G_t)+\sigma_t\\
+\end{equation}
+Where $\sigma_t = H_t + K_t + W_t = G_{t-1} + K_t + W_t$.
+
+If time permitted we could have tested this strategy, along with the other changes they describe. Such as decreasing the curcuit size by generalizing the computations for the digested message (DM):
+\begin{equation}
+DM(j+4)_i &= E_{t-3+j} + DM(j+4)_{i-1}\qquad \text{for } 1\leq j \leq 3
+DM(j)_i &= A_{t-3+j} + DM(j)_{i-1}\qquad \text{for } 1\leq j \leq 3
+\end{equation}
+# 1 Operation rescheduling, E_(t+1) og A_(t+1) kan optimeres ved at lave nogle af udregningerne tidligere. DM_1-DM_3, DM_5-DM_7 kan også udregnes tidligere
+# 2 Hardware specifications, circular buffer? BRAM?
+# 3 results
