@@ -1,4 +1,4 @@
-ChaCha20 (From hereon just called ChaCha) is a stream cipher intended to be a fast and efficient standby cipher in case AES is compromised. Unlike block ciphers, such as AES, which works on a fixed-sized block of text, stream ciphers work on a per-byte level. This is usually done by combining the plaintext with a pseudorandom stream of digits using XOR. Since the objective of the cipher is to generate a random stream, one first needs a seed. The seed of ChaCha is 16 32 bit words, laid out as such:
+ChaCha20 (From hereon just called ChaCha) is a stream cipher intended to be a fast and efficient standby cipher in case AES is compromised\cite{rfc7539}. Unlike block ciphers, such as AES, which works on a fixed-sized block of text, stream ciphers work on a per-byte level. This is usually done by combining the plaintext with a pseudorandom stream of digits using XOR. Since the objective of the cipher is to generate a random stream, one first needs a seed. The seed of ChaCha is 16 32 bit words, laid out as such:
 
 \begin{figure}[!htb]
 \centering
