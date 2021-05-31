@@ -1,0 +1,41 @@
+** AES
+\label{sec:AESperformance}
+\footnote{This section is not done}
+*** Throughput
+#+BEGIN_EXPORT latex
+\begin{table}[!htb]
+\centering
+\captionsetup{width=.8\linewidth}
+\begin{tabular}{c c c c c c c c}
+\hline
+Version & f$_{max}$(Mhz) & clocks$_{high}$ & TP(MBps)$_{high}$ & clocks$_{low}$ & TP(MBps)$_{low}$ & LUT & FF\\
+\hline
+Naive & X & b & X & b & X & X & X\\
+TBox  & 25 & b & 400 & b & 400 & 16458 & 3195
+\end{tabular}
+\caption[AES: FPGA Versions]%
+{Performance and statistics over the different AES implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where high and low describe a best and worst-case scenario, respectively. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
+\label{tab:AESversions}
+\end{table}
+#+END_EXPORT
+The results of AES is interesting compared to our other implementations in the sense that even the naive FPGA version is outperforming the CPU. One can notice that our naive version has a throughput of 400 MB/s which is around 4.49 times as much as OpenSLL on its peak performance and that it likewise outperforms C# and our own C-version with 5.7 and 6.2 times respectively. Even the threaded version is only half as fast as the FPGA solution. These results are quite promising in itself and clearly shows that the FPGA is very suitable for solutions as this one and in cases where large amounts of data needs to be encrypted or decrypted the FPGA is preferable over an arm processor. It is however still worth noting that this still only outperforms processors that does not have AES-NI. For instance running the same OpenSSL benchmark on an intel i7-7500 the worst case has a throughput of 788 MB/s and an optimal solution of 5.61 GB/s. Even though there is a significant price difference between the ARM and Intel processor it still hints to how AES-NI, essentially a dedicated ASIC, outperforms more general CPU solutions by an order of magnitude. One aspect which would have been interesting to measure is how well the implementation synthesized on a high-end FPGA would perform compared to cabable CPU's. An article from 2020 which compares both pipelined and non-pipelined versions of AES on FPGA's shows that even on expensive FPGA's such as the Virtex-7 family only runs between 2.06-6.34 Gbps (257.5-792.5 MB/s)\cite{Zodpe}. Thus a nonpipelined version will never be able to compete with an ASIC. One aspect that would have been interested exploring is how well our highlevel version would compare to a solution which has been optimized directly in one of the HDL languages. We have not been able to do this but we can hint at the fact that some of the solutions described previously performs worse than our solution despite the difference in chipset.
+#+BEGIN_EXPORT latex
+\begin{table}[!htb]
+\centering
+\captionsetup{width=.8\linewidth}
+\begin{tabular}{c c c c c c c c}
+\hline
+\textbf{Version} & Naive & Proc & C\# & C & C$_t$ & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
+\hline
+\textbf{TP(MBps)} & 400 & ? & 70 & 64 & 198 & 72.4 & 89\\
+ & & & X & X & X & X & X & X
+\end{tabular}
+\caption[AES: FPGA and CPU comparisons]%
+{Performance comparison of the worst and best AES FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp aes-128-ecb}. Each of the CPU implementations has two values, the first being the Pi results and the second the I5 results.}
+\label{tab:AEScompare}
+\end{table}
+#+END_EXPORT
+In the implementation section we described how we rejected to make a solution that was flexible in its key-size. The results hint that this have good impact on the performance. Comparing our solution to the solution presented in the SME github repository, which is more flexible in the key size, our solution outperforms this by a factor of 1.66, as it is reported to have a throughput of 1.92Gbps(240MB/s)\cite{sme}. This shows that we can tradeoff some flexibility for a significant speedup.
+*** Power Consumptions
+
+*** Takeaways
