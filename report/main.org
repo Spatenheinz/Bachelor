@@ -29,7 +29,7 @@
 \begin{appendix}
 
 \end{appendix}
-%%% Cha Cha er smart fordi den ikke bruger nogen "advanceret" operationer. Så specielle instruktioner på CPU'en kan ikke blive udnyttet
-%%% Så den burde virke lige så hurtig på hyper moderne optimeret CPU'er som på low power alternative CPU'er
-%%% Carl sagde vi kunne bruge: https://www.ctan.org/pkg/ieeetran til mødet
-%%% Nævn at både SHA256 og MD5 har samme opbygning.
+# Cha Cha er smart fordi den ikke bruger nogen "advanceret" operationer. Så specielle instruktioner på CPU'en kan ikke blive udnyttet
+# Så den burde virke lige så hurtig på hyper moderne optimeret CPU'er som på low power alternative CPU'er
+# Carl sagde vi kunne bruge: https://www.ctan.org/pkg/ieeetran til mødet
+# Nævn at både SHA256 og MD5 har samme opbygning.
