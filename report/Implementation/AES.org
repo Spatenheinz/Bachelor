@@ -32,6 +32,7 @@ For the actual AES process, we follow the T-box approach described earlier, as w
 :UNNUMBERED: nil
 :CUSTOM_ID: AESopt
 :END:
+\footnote{TODO: not done}
 AES has shown to be quite fast even in the naive implementation (see Section \ref{sec:AESperformance}); however, it should still be a reasonably slow approach compared to a pipelined solution, as long as the FPGA can handle the additional logic. Exactly as the other algorithms. We notice that AES likewise uses rounds, and the single process from before can be divided such that each round can is its process. We have tried two solutions this way.
 
 The first solution will merely be the original process split up into smaller parts. This is relatively easy to implement, but it has one flaw which might underutilize the LUT's of the FPGA since each process will only know about each other through a bus and henceforth not have access to the same lookup tables/T-boxes. Corollary, every process that needs access to one of the lookup tables will have to have it defined for itself. Arguably this is a wasteful approach as each process will have to use its own 4KB of T-boxes, which sums up to 36KB. Hence this could be wasteful and use too many LUTs leading to a worse clock rating.

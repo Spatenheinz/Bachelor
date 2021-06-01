@@ -1,1 +1,11 @@
 * Introduction
+Crytography is an important branch of both mathematics and computer science. It is used in wast variety of fields, from security to compression and data validation. Because of the widespead use the cryptographic algorithms should be fast and efficient without exposing vulerabilities. With this in mind algorithms are often developed with hardware as a major consideration. With hardware in focus, cryptographic functions are appropriate for a larger variety of devices, since the generality of a CPU is not critical. Some examples include low-ressource devices, Field Programmable Gate Arrays (FPGAs) and Application Specific Integrated Circuits (ASICs). Devices such as the latter two are similar in that they are designed to compute a specific task instead of doing general computations. This allows for the devices to do faster computations at a lower ressource cost\footnote{is this too general, should we describe it as power usage?} since the need for generality is ommitted. The advantage of an FPGA over an ASIC is that it is in general more approachable for private users and in academics, and that they can be field programmed, meaning the specific computational "purpose" can be changed, whereas ASICs are "soldered" to its purpose. This was the main inspiration for the project.
+
+*** Project Objective
+This projects main objective is to implement a cryptographic library which can be synthesized on an FPGA, hence a secondary objective explore the area of FPGA development. This is done using a highlevel programming model (Synchronous Message Exchange) intended for FPGA development. The library consists of four cryptographic functions, which covers a varied in both its cryptographic purpose and its perculiarities\footnote{maybe not the best word} in the specific implementation. We have implemented each cryptographic function naively and then tried to improve these by pipelining the computation. Lastly we have made comparisons of how well a naive version compares to a pipelined one and how well it compares with its CPU alternative.
+
+*** Report Structure
+\footnote{TODO}
+
+*** Requirements for the reader
+\footnote{TODO}

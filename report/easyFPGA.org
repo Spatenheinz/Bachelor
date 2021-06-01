@@ -1,0 +1,23 @@
+VHDL is a hardware description language that is commonly used for FPGA programming.
+It being a hardware description language makes it an abstraction to physically connecting signals together.
+Abstractions like this are usually created to make tasks easier for humans to write and read,
+but since VHDL is a "first-level" abstraction from hardware, it can be difficult for untrained people to use.
+SME is another level of abstraction from VHDL, since SME is a framework for C\# it should be easier for a lot of software programmers to use.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=.6]{SMEabstraction}
+  \caption{Levels of hardware abstraction, note that SME is the top level.}
+\end{figure}
+
+Since SME compiles to VHDL, it still has some of the same quirks. SME also requires the user to set up input and output busses and define certain processes,
+but it is comparetively not very much. SME also allows the user to write all the logic in C\#.
+For us this was a big advantage, since we have worked in C\# before but had no knowledge working with VHDL.
+
+As mentioned the major problems we encountered was in using Vivado to synthesize our implementations.
+There are alternatives to Vivado, but we have not had time to explore if they are any easier, or what their advantages/disadvanteges are.
+
+An important thing to note is that even though it proved difficult to optimize SHA-2 and MD5 their naive implementations had a
+surprisingly large data-throughput and uses few resources. This is important since it was a fairly quick to get them implemented using SME.
+If we look past the Vivado problems we could have a prototype ready to use relatively quickly.
+Of course we had access to expert guidence, given that our supervisor helped create SME, however SME has still proved to be a usefull tool for FPGA programming.
