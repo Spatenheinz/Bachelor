@@ -21,7 +21,7 @@ namespace AES
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 1;
+        private static int testsize = 2;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -114,7 +114,7 @@ namespace AES
                     } else if (ii < MESSAGES[i].Length) {
                         Console.WriteLine($"i {i}");
                         for(int iii = 0; iii < BLOCK_SIZE; iii++) {
-                            PlainText.block[iii] = IV[iii];//(byte)MESSAGES[i][ii+iii];
+                            PlainText.block[iii] = (byte)MESSAGES[i][ii+iii];
                         }
                     PlainText.ValidKey = false;
                     PlainText.ValidBlock = was_valid = true;
