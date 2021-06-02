@@ -11,7 +11,7 @@
 #define NUM_THREADS 7
 #define CLOSEST_MUL16(x) ((x+15) & -16);
 int main(int argc, char **argv) {
-	int runs = 100;
+	int runs = 1000;
     if (argc == 2) {
         runs = atoi(argv[1]);
     }

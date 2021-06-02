@@ -1,40 +1,29 @@
 using System;
 using SME;
-using static AES.AESConfig;
+using static opt2.AESConfig;
 
-namespace AES
+namespace opt2
 {
     [ClockedProcess]
-    class AESe : SimpleProcess {
-        [InputBus] public IPlainText PlainText;
-        [OutputBus] public axi_r axi_Text = Scope.CreateBus<axi_r>();
-        [OutputBus] public ICipher Cipher = Scope.CreateBus<ICipher>();
-        [InputBus] public axi_r axi_Cipher;
+    class Round9 : SimpleProcess {
+        [InputBus] public IState In;
+        [OutputBus] public axi_r axi_in = Scope.CreateBus<axi_r>();
+        [OutputBus] public IState Out = Scope.CreateBus<IState>();
+        [InputBus] public axi_r axi_out;
 
-        private byte[] IV = new byte[BLOCK_SIZE];
-        private byte[] state = new byte[BLOCK_SIZE];
-        private uint[] expandedKey128 = new uint[ROUND_SIZE_128];
-
+        private uint[] expandedKey128 = new uint[8];
 
         bool was_valid = false;
         bool was_ready = false;
         protected override void OnTick() {
-            if (was_ready && PlainText.ValidKey) {
-                Expand128(PlainText.Key);
-            } else if (was_ready && PlainText.ValidBlock) {
-                for(int i = 0; i < BLOCK_SIZE; i++) {
-                    state[i] = PlainText.block[i];
-                }
+            if (was_ready && In.Valid) {
+                Expand128();
                 Encrypt128();
-                for(int i = 0; i < BLOCK_SIZE; i++) {
-                    Cipher.block[i] = IV[i];
-                }
-                Cipher.ValidBlock = was_valid = true;
+                Out.Valid = was_valid = true;
             } else {
-                Cipher.ValidBlock = was_valid = was_valid && !axi_Cipher.ready;
+                Out.Valid = was_valid = was_valid && !axi_out.ready;
             }
-            axi_Text.ready = was_ready = !was_valid;
-            Console.WriteLine($"proc, {was_ready}, {was_valid}");
+            axi_in.ready = was_ready = !was_valid;
         }
 
         private uint SubWord(uint x) {
@@ -45,23 +34,21 @@ namespace AES
                    ((uint)S[0xff & x]);
         }
 
-        private void Expand128(IFixedArray<byte> key) {
-            for (int i = 0; i < N_KEY_128<<2; i+=4) {
-                expandedKey128[i>>2] = ((uint)key[i] << 24) |
-                                        ((uint)key[i+1] << 16) |
-                                        ((uint)key[i+2] << 8) |
-                                        ((uint)key[i+3]);
-                Console.WriteLine($"i: {i>>2} key: {expandedKey128[i>>2].ToString("x8")}");
+        private void Expand128() {
+            for (int i = 0; i < 4; i++) {
+                expandedKey128[i] = In.Key[i];
             }
-            for (int i = N_KEY_128; i < ROUND_SIZE_128; i++) {
+            for (int i = 4; i < 8; i++) {
                 uint w = expandedKey128[i-1];
                 if (i % N_KEY_128 == 0) {
-                    w = SubWord(LeftRotate(w,8)) ^ Round[i / N_KEY_128];
+                    w = SubWord(LeftRotate(w,8)) ^ 0x80000000;
                 } else if ( N_KEY_128 > 6 && (i % N_KEY_128) == 4) {
                     w = SubWord(w);
                 }
                 expandedKey128[i] = expandedKey128[i-N_KEY_128] ^ w;
-                Console.WriteLine($"i: {i} i-1: {i-1} i-N_KEY {i-N_KEY_128} i/N_KEY_128: {i/N_KEY_128} key: {expandedKey128[i].ToString("x8")}");
+            }
+            for (int i = 0; i < 4; i++) {
+                Out.Key[i] = expandedKey128[4+i];
             }
         }
         private uint LeftRotate(uint x, int k) {
@@ -70,84 +57,13 @@ namespace AES
 
 
         private void Encrypt128() {
-
-            uint a0 = (((uint)state[0] << 24) | ((uint)state[1] << 16) | ((uint)state[2] << 8) | (uint)state[3]) ^ expandedKey128[0];
-			uint a1 = (((uint)state[4] << 24) | ((uint)state[5] << 16) | ((uint)state[6] << 8) | (uint)state[7]) ^ expandedKey128[1];
-			uint a2 = (((uint)state[8] << 24) | ((uint)state[9] << 16) | ((uint)state[10] << 8) | (uint)state[11]) ^ expandedKey128[2];
-			uint a3 = (((uint)state[12] << 24) | ((uint)state[13] << 16) | ((uint)state[14] << 8) | (uint)state[15]) ^ expandedKey128[3];
-
-            // Console.WriteLine($"k_sch: {expandedKey128[0].ToString("x8")}{expandedKey128[1].ToString("x8")}{expandedKey128[2].ToString("x8")}{expandedKey128[3].ToString("x8")}");
-            // Console.WriteLine($"start: {a0.ToString("x8")}{a1.ToString("x8")}{a2.ToString("x8")}{a3.ToString("x8")}");
-            /* Round 1 */
-			uint b0 = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[4];
-			uint b1 = T0[a1 >> 24] ^ T1[(byte)(a2 >> 16)] ^ T2[(byte)(a3 >> 8)] ^ T3[(byte)a0] ^ expandedKey128[5];
-			uint b2 = T0[a2 >> 24] ^ T1[(byte)(a3 >> 16)] ^ T2[(byte)(a0 >> 8)] ^ T3[(byte)a1] ^ expandedKey128[6];
-			uint b3 = T0[a3 >> 24] ^ T1[(byte)(a0 >> 16)] ^ T2[(byte)(a1 >> 8)] ^ T3[(byte)a2] ^ expandedKey128[7];
-			/* Round 2 */
-			a0 = T0[b0 >> 24] ^ T1[(byte)(b1 >> 16)] ^ T2[(byte)(b2 >> 8)] ^ T3[(byte)b3] ^ expandedKey128[8];
-			a1 = T0[b1 >> 24] ^ T1[(byte)(b2 >> 16)] ^ T2[(byte)(b3 >> 8)] ^ T3[(byte)b0] ^ expandedKey128[9];
-			a2 = T0[b2 >> 24] ^ T1[(byte)(b3 >> 16)] ^ T2[(byte)(b0 >> 8)] ^ T3[(byte)b1] ^ expandedKey128[10];
-			a3 = T0[b3 >> 24] ^ T1[(byte)(b0 >> 16)] ^ T2[(byte)(b1 >> 8)] ^ T3[(byte)b2] ^ expandedKey128[11];
-			/* Round 3 */
-			b0 = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[12];
-			b1 = T0[a1 >> 24] ^ T1[(byte)(a2 >> 16)] ^ T2[(byte)(a3 >> 8)] ^ T3[(byte)a0] ^ expandedKey128[13];
-			b2 = T0[a2 >> 24] ^ T1[(byte)(a3 >> 16)] ^ T2[(byte)(a0 >> 8)] ^ T3[(byte)a1] ^ expandedKey128[14];
-			b3 = T0[a3 >> 24] ^ T1[(byte)(a0 >> 16)] ^ T2[(byte)(a1 >> 8)] ^ T3[(byte)a2] ^ expandedKey128[15];
-			/* Round 4 */
-			a0 = T0[b0 >> 24] ^ T1[(byte)(b1 >> 16)] ^ T2[(byte)(b2 >> 8)] ^ T3[(byte)b3] ^ expandedKey128[16];
-			a1 = T0[b1 >> 24] ^ T1[(byte)(b2 >> 16)] ^ T2[(byte)(b3 >> 8)] ^ T3[(byte)b0] ^ expandedKey128[17];
-			a2 = T0[b2 >> 24] ^ T1[(byte)(b3 >> 16)] ^ T2[(byte)(b0 >> 8)] ^ T3[(byte)b1] ^ expandedKey128[18];
-			a3 = T0[b3 >> 24] ^ T1[(byte)(b0 >> 16)] ^ T2[(byte)(b1 >> 8)] ^ T3[(byte)b2] ^ expandedKey128[19];
-			/* Round 5 */
-			b0 = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[20];
-			b1 = T0[a1 >> 24] ^ T1[(byte)(a2 >> 16)] ^ T2[(byte)(a3 >> 8)] ^ T3[(byte)a0] ^ expandedKey128[21];
-			b2 = T0[a2 >> 24] ^ T1[(byte)(a3 >> 16)] ^ T2[(byte)(a0 >> 8)] ^ T3[(byte)a1] ^ expandedKey128[22];
-			b3 = T0[a3 >> 24] ^ T1[(byte)(a0 >> 16)] ^ T2[(byte)(a1 >> 8)] ^ T3[(byte)a2] ^ expandedKey128[23];
-			/* Round 6 */
-			a0 = T0[b0 >> 24] ^ T1[(byte)(b1 >> 16)] ^ T2[(byte)(b2 >> 8)] ^ T3[(byte)b3] ^ expandedKey128[24];
-			a1 = T0[b1 >> 24] ^ T1[(byte)(b2 >> 16)] ^ T2[(byte)(b3 >> 8)] ^ T3[(byte)b0] ^ expandedKey128[25];
-			a2 = T0[b2 >> 24] ^ T1[(byte)(b3 >> 16)] ^ T2[(byte)(b0 >> 8)] ^ T3[(byte)b1] ^ expandedKey128[26];
-			a3 = T0[b3 >> 24] ^ T1[(byte)(b0 >> 16)] ^ T2[(byte)(b1 >> 8)] ^ T3[(byte)b2] ^ expandedKey128[27];
-			/* Round 7 */
-			b0 = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[28];
-			b1 = T0[a1 >> 24] ^ T1[(byte)(a2 >> 16)] ^ T2[(byte)(a3 >> 8)] ^ T3[(byte)a0] ^ expandedKey128[29];
-			b2 = T0[a2 >> 24] ^ T1[(byte)(a3 >> 16)] ^ T2[(byte)(a0 >> 8)] ^ T3[(byte)a1] ^ expandedKey128[30];
-			b3 = T0[a3 >> 24] ^ T1[(byte)(a0 >> 16)] ^ T2[(byte)(a1 >> 8)] ^ T3[(byte)a2] ^ expandedKey128[31];
+            uint a0 = In.Block[0]; uint a1 = In.Block[1];
+            uint a2 = In.Block[2]; uint a3 = In.Block[3];
 			/* Round 8 */
-			a0 = T0[b0 >> 24] ^ T1[(byte)(b1 >> 16)] ^ T2[(byte)(b2 >> 8)] ^ T3[(byte)b3] ^ expandedKey128[32];
-			a1 = T0[b1 >> 24] ^ T1[(byte)(b2 >> 16)] ^ T2[(byte)(b3 >> 8)] ^ T3[(byte)b0] ^ expandedKey128[33];
-			a2 = T0[b2 >> 24] ^ T1[(byte)(b3 >> 16)] ^ T2[(byte)(b0 >> 8)] ^ T3[(byte)b1] ^ expandedKey128[34];
-			a3 = T0[b3 >> 24] ^ T1[(byte)(b0 >> 16)] ^ T2[(byte)(b1 >> 8)] ^ T3[(byte)b2] ^ expandedKey128[35];
-			/* Round 9 */
-			b0 = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[36];
-			b1 = T0[a1 >> 24] ^ T1[(byte)(a2 >> 16)] ^ T2[(byte)(a3 >> 8)] ^ T3[(byte)a0] ^ expandedKey128[37];
-			b2 = T0[a2 >> 24] ^ T1[(byte)(a3 >> 16)] ^ T2[(byte)(a0 >> 8)] ^ T3[(byte)a1] ^ expandedKey128[38];
-			b3 = T0[a3 >> 24] ^ T1[(byte)(a0 >> 16)] ^ T2[(byte)(a1 >> 8)] ^ T3[(byte)a2] ^ expandedKey128[39];
-
-            IV[0] = (byte)(S[b0 >> 24] ^ (byte)(expandedKey128[40] >> 24));
-			IV[1] = (byte)(S[(byte)(b1 >> 16)] ^ (byte)(expandedKey128[40] >> 16));
-			IV[2] = (byte)(S[(byte)(b2 >> 8)] ^ (byte)(expandedKey128[40] >> 8));
-			IV[3] = (byte)(S[(byte)b3] ^ (byte)expandedKey128[40]);
-
-			IV[4] = (byte)(S[b1 >> 24] ^ (byte)(expandedKey128[41] >> 24));
-			IV[5] = (byte)(S[(byte)(b2 >> 16)] ^ (byte)(expandedKey128[41] >> 16));
-			IV[6] = (byte)(S[(byte)(b3 >> 8)] ^ (byte)(expandedKey128[41] >> 8));
-			IV[7] = (byte)(S[(byte)b0] ^ (byte)expandedKey128[41]);
-
-			IV[8] = (byte)(S[b2 >> 24] ^ (byte)(expandedKey128[42] >> 24));
-			IV[9] = (byte)(S[(byte)(b3 >> 16)] ^ (byte)(expandedKey128[42] >> 16));
-			IV[10] = (byte)(S[(byte)(b0 >> 8)] ^ (byte)(expandedKey128[42] >> 8));
-			IV[11] = (byte)(S[(byte)b1] ^ (byte)expandedKey128[42]);
-
-			IV[12] = (byte)(S[b3 >> 24] ^ (byte)(expandedKey128[43] >> 24));
-			IV[13] = (byte)(S[(byte)(b0 >> 16)] ^ (byte)(expandedKey128[43] >> 16));
-			IV[14] = (byte)(S[(byte)(b1 >> 8)] ^ (byte)(expandedKey128[43] >> 8));
-			IV[15] = (byte)(S[(byte)b2] ^ (byte)expandedKey128[43]);
-            // Console.Write($"output :");
-            // for(int i = 0; i < BLOCK_SIZE; i++) {
-            //     Console.Write($"{IV[i].ToString("x2")}");
-            // }
-            // Console.WriteLine("");
+			Out.Block[0] = T0[a0 >> 24] ^ T1[(byte)(a1 >> 16)] ^ T2[(byte)(a2 >> 8)] ^ T3[(byte)a3] ^ expandedKey128[4];
+			Out.Block[1] = T0[a1 >> 24] ^ T1[(byte)(a2 >> 16)] ^ T2[(byte)(a3 >> 8)] ^ T3[(byte)a0] ^ expandedKey128[5];
+			Out.Block[2] = T0[a2 >> 24] ^ T1[(byte)(a3 >> 16)] ^ T2[(byte)(a0 >> 8)] ^ T3[(byte)a1] ^ expandedKey128[6];
+			Out.Block[3] = T0[a3 >> 24] ^ T1[(byte)(a0 >> 16)] ^ T2[(byte)(a1 >> 8)] ^ T3[(byte)a2] ^ expandedKey128[7];
         }
 
 		static readonly byte[] S = new byte[] {
@@ -167,12 +83,6 @@ namespace AES
 			0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e,
 			0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
 			0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
-		};
-
-		static readonly uint[] Round = new uint[] {
-			0x00000000, 0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000, 0x20000000, 0x40000000,
-			0x80000000, 0x1b000000, 0x36000000, 0x6c000000, 0xd8000000, 0xab000000, 0x4d000000, 0x9a000000,
-			0x2f000000
 		};
         static readonly uint[] T0 = {
 			0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d, 0xfff2f20d, 0xd66b6bbd, 0xde6f6fb1, 0x91c5c554,

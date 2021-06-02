@@ -31,7 +31,7 @@ namespace AES
                 }
                 Cipher.ValidBlock = was_valid = true;
             } else {
-                Cipher.ValidBlock = was_valid = was_valid && !axi_Cipher.ready;
+                Cipher.ValidBlock = was_valid && !axi_Cipher.ready;
             }
             axi_Text.ready = was_ready = !was_valid;
             Console.WriteLine($"proc {was_ready} {was_valid}");

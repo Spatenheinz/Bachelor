@@ -21,7 +21,7 @@ namespace AES
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 2;
+        private static int testsize = 10;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 

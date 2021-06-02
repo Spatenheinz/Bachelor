@@ -27,8 +27,8 @@ The results of AES is interesting compared to our other implementations in the s
 \hline
 \textbf{Version} & Naive & Proc & C\# & C & C$_t$ & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
 \hline
-\textbf{TP(MBps)} & 400 & ? & 70 & 64 & 198 & 72.4 & 89\\
- & & & X & X & X & X & X & X
+\textbf{TP(MBps)} & 400 & ? & 70 & 64 & 198 & 72 & 89\\
+ & & &  & 1699 & 340 & 307 & 847 & 5722
 \end{tabular}
 \caption[AES: FPGA and CPU comparisons]%
 {Performance comparison of the worst and best AES FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp aes-128-ecb}. Each of the CPU implementations has two values, the first being the Pi results and the second the I5 results.}

@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
-using static AES.AESConfig;
+using static opt1.AESConfig;
 
-namespace AES
+namespace opt1
 {
     public class Tester : SimulationProcess
     {
@@ -21,7 +21,7 @@ namespace AES
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 2;
+        private static int testsize = 10;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
@@ -68,14 +68,14 @@ namespace AES
         }
 
         private string targetCypher(byte[] PlainText, byte[] key, byte[] iv) {
-            AesManaged aes = new AesManaged{
+            AesManaged opt1 = new AesManaged{
                                       KeySize = 128,
                                       Key = key,
                                       BlockSize = 128,
                                       Mode = CipherMode.ECB,
                                       Padding = PaddingMode.None,
                                       };
-            ICryptoTransform encryptor = aes.CreateEncryptor(key, iv);
+            ICryptoTransform encryptor = opt1.CreateEncryptor(key, iv);
         return ByteArrayToString(encryptor.TransformFinalBlock(PlainText, 0, PlainText.Length));
         }
 
@@ -104,7 +104,6 @@ namespace AES
                     }
                 was_ready = false;
                 }
-            Console.WriteLine($"ok, {was_ready}, {was_valid}");
                 if (i < MESSAGES.Length) {
                     if (!key_set) {
                         PlainText.ValidKey = key_set = true;
@@ -129,7 +128,6 @@ namespace AES
                 }
                 if (j < results.Length) {
                     axi_Cipher.ready = was_ready = true;
-            Console.WriteLine($"ok, {was_ready}, {was_valid}");
                 }
                 else {
                     axi_Cipher.ready = was_ready = false;
