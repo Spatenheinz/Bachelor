@@ -52,5 +52,4 @@ Round 4 :: I
 \label{fig:MD5Rounds}
 \end{table}
 #+END_EXPORT
-When all rounds are completed, the new vector (A_1 , B_1 , C_1 , D_1) will be added to the vector from before the rounds. This result will store the digest for that round. If this results from applying ~f~ to the last block of the message, we have the MD5 digest of the message. Is this, however, a result of applying ~f~ to any other block, the result will be the IV of the next round.
-It is worth noting that MD5 is not a very good hashing algorithm for cryptography, as collision attacks exist, although it uses the Merkle-Damgård construction, but still shows use for data integrity purposes and such.
+When all rounds are completed, the new vector (A_1 , B_1 , C_1 , D_1) added to the vector from before the rounds will store the digest of that block. This digest will then serve as the initial vector for the next block of the message. We can thus see there is a True Data Dependency (RAW) between the compression function on the block i depending on the result from the compression function on block i-1.

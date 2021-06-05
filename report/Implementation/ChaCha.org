@@ -25,4 +25,4 @@ Where ~BLOCK_SIZE = 16~ and ~TEXT_SIZE = 64~. This design however have posed som
 :UNNUMBERED: nil
 :CUSTOM_ID: ChaCha1
 :END:
-version of AES, quite a few table lookups. Furthermore, ChaCha encourages concurrency and parallelism, as each "block" can be computed entirely independently of each other in a similar fashion to AES. Thus a pipelined version is easy to implement compared to the has functions. Unfortunately, we have not actually implemented a pipelined option because of the board limitations; the possibility of increasing the performance seemed unreasonable.
+ChaCha encourages concurrency and parallelism, as each chunk of the keystream can be computed entirely independently of each other in a similar fashion to AES. Thus a pipelined version is easy to implement compared to the has functions. Unfortunately, we have not actually implemented a pipelined option because of the board limitations; the possibility of increasing the performance seemed unreasonable.

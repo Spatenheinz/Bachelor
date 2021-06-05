@@ -5,16 +5,16 @@
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c c c}
+\begin{tabular}{c c c c c c}
 \hline
-Version & f$_{max}$(Mhz) & clocks$_{high}$ & TP(MBps)$_{high}$ & clocks$_{low}$ & TP(MBps)$_{low}$ & LUT & FF\\
+Version & f$_{max}$(Mhz) & clocks$_{hi/lo}$ & TP(MBps)$_{hi/lo}$ & LUT & FF\\
 \hline
-Naive & 2.1 & b & 134.4 & b & 134.4 & 24330 & 2560\\
-Proc_{4} & 8 &   \( 6+2 \cdot b\) & 223.9 &  \( 2+6 \cdot b\) & 85.3 & 24466 & 8938\\
-Proc_{8} & 8 &    \(10+2 \cdot b\) & 223.8 & \(2+10 \cdot b\) & 51.2 & X & X\\
+Naive & 2.1 & b & 134.4 & 24330 & 2560\\
+Proc_{4} & 8 &   hi(6)/lo(6) & 223.9/85.3 & 24466 & 8938\\
+Proc_{8} & 8 &   hi(10)/lo(10) & 223.8/51.2 & 24756 & 14066\\
 \end{tabular}
 \caption[SHA256: FPGA Versions]%
-{Performance and statistics over the different SHA implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where high and low describe a best and worst-case scenario, respectively. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
+{Performance and statistics over the different SHA implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $hi(x) = x+2 \cdot blocks$ and $lo(x) = 2 + 6 \cdot blocks$ describe a best and worst-case scenario, respectively. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
 \label{tab:SHAversions}
 \end{table}
 #+END_EXPORT

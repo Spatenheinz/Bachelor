@@ -7,7 +7,7 @@ The algorithm of the four cryptographic functions in the library is presented in
 
 #+INCLUDE: "SME.org"
 #+INCLUDE: Crypto.org
-
+* Library functions
 ** MD5
 :PROPERTIES:
 :UNNUMBERED: nil

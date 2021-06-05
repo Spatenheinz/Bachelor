@@ -69,4 +69,34 @@ f0 & 8c & a1 & 89 & 0d & bf & e6 & 42 & 68 & 41 & 99 & 2d & 0f & b0  & 54 & bb &
 \label{tab:AESTable}
 \end{table}
 #+END_EXPORT
+* Modes of operations
+:PROPERTIES:
+:UNNUMBERED: nil
+:CUSTOM_ID: MODES
+:END:
+\begin{figure}[H]
+# \centering
+\hspace*{-2cm}
+\subfloat[Encryption \cite{wiki:ecb}]{\includegraphics[width=9cm]{ECB.png}}
+\subfloat[Decryption \cite{wiki:ecbD}]{\includegraphics[width=9cm]{ECBD.png}}
+\caption{Electronic Codebook (ECB) mode}
+\label{fig:ECB}
+\end{figure}
+\begin{figure}[H]
+# \centering
+\hspace*{-2cm}
+\subfloat[Encryption \cite{wiki:cbc}]{\includegraphics[width=9cm]{CBC.png}}
+\subfloat[Decryption \cite{wiki:cbcD}]{\includegraphics[width=9cm]{CBCD.png}}
+\caption{Cipher Block Chaining (CBC) mode}
+\label{fig:CBC}
+\end{figure}
+\begin{figure}[H]
+# \centering
+\hspace*{-2cm}
+\subfloat[Encryption \cite{wiki:ctr}]{\includegraphics[width=9cm]{CTR.png}}
+\subfloat[Decryption \cite{wiki:ctrD}]{\includegraphics[width=9cm]{CTRD.png}}
+\caption{Counter (CTR) mode}
+\label{fig:CTR}
+\end{figure}
+
 \end{appendix}

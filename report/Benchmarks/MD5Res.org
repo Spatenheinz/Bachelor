@@ -5,19 +5,19 @@
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c c c}
+\begin{tabular}{c c c c c c}
 \hline
-Version & f$_{max}$(Mhz) & clocks$_{high}$ & TP(MBps)$_{high}$ & clocks$_{low}$ & TP(MBps)$_{low}$ & LUT & FF\\
+Version & f$_{max}$(Mhz) & clocks$_{hi/lo}$ & TP(MBps)$_{hi/lo}$ & LUT & FF\\
 \hline
-Naive & 2.38 & b & 152.3 & b & 152.3 & 11607 & 2304\\
-Proc_{4} & 9.5 &   \( 6+2 \cdot b\) & 265.9 &  \( 2+6 \cdot b\) & 101.3 & 10247 & 5226\\
-Proc_{8} & 19 &    \(10+2 \cdot b\) & 531.7 &  \(2+10 \cdot b\) & 121.6 & 10087 & 7538\\
-Proc_{16} & 33.5 & \(18+2 \cdot b\) & 937.2 &  \(2+18 \cdot b\) & 119.1 & 10206 & 12162\\
-Proc_{32} & 65 &   \(34+2 \cdot b\) & 1816.9 & \(2+34 \cdot b\) & 122.6 &  10149 & 21347\\
-Proc_{64} & 115 &  \(66+2 \cdot b\) & 3209.4 & \(2+66 \cdot b\) & 111.5 &  10350 & 39718\\
+Naive & 2.38 & b & 152.3 & 11607 & 2304\\
+Proc_{4} & 9.5 &   hi(6)/lo(6) & 266/101 & 10247 & 5226\\
+Proc_{8} & 19 &    hi(10)/lo(10) & 532/122 & 10087 & 7538\\
+Proc_{16} & 33.5 & hi(18)/lo(18)& 937/119 & 10206 & 12162\\
+Proc_{32} & 65 &   hi(34)/lo(34) & 1817/123 & 10149 & 21347\\
+Proc_{64} & 115 &  hi(66)/lo(66) & 3209/112 &  10350 & 39718\\
 \end{tabular}
 \caption[MD5: FPGA Versions]%
-{Performance and statistics over the different MD5 implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where high and low describe a best and worst-case scenario, respectively. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
+{Performance and statistics over the different MD5 implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $hi(x) = x+2 \cdot blocks$ and $lo(x) = 2 + 6 \cdot blocks$ describe a best and worst-case scenario, respectively. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
 \label{tab:MD5versions}
 \end{table}
 #+END_EXPORT
@@ -28,13 +28,13 @@ As can be seen in Table \ref{tab:MD5versions}, there is a monumental difference 
 \captionsetup{width=.8\linewidth}
 \begin{tabular}{c c c c c c c c}
 \hline
-\textbf{Version} & Naive & Proc_{64} & C\# & C & C$_{t}$ & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
+\textbf{Version} & Naive & Proc_{64} & C\# & C & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
 \hline
-\textbf{TP(MBps)} & 152 & 3210 & 287 & 154 & 256 & 42 & 293\\
- & & & 604 & 622 & 600 & 81 & 691
+\textbf{TP(MBps)} & 152 & 3210 & 287 & 256 & 42 & 293\\
+ & & & 604 & 622 & 81 & 691
 \end{tabular}
 \caption[MD5: FPGA and CPU comparisons]%
-{Performance comparison of the worst and best MD5 FPGA implementations and the various CPU versions. The C\# uses the \texttt{System.Security.Cryptography.MD5}, the C version and C$_t$ are our implementations and are optimized with \texttt{-O3}. The OpenSSL is from \texttt{openssl speed -evp md5}. Each of the CPU implementations has two values, the first being the Pi results and the second the I5 results.}
+{Performance comparison of the worst and best MD5 FPGA implementations and the various CPU versions. The C\# uses the \texttt{System.Security.Cryptography.MD5}, the C version is our implementation and are optimized with \texttt{-O3}. The OpenSSL is from \texttt{openssl speed -evp md5}. Each of the CPU implementations has two values, the first being the Pi results and the second the I5 results.}
 \label{tab:MD5compare}
 \end{table}
 #+END_EXPORT

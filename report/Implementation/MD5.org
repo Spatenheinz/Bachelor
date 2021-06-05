@@ -6,26 +6,23 @@
 :END:
 As explained in Section \ref{sec:SME}, SME consists of busses and processes. We can define the MD5 algorithm naively using 4 busses and one simple process.\\
 \\
-The compression function itself is wholly contained in the single clocked process and works as described in \ref{MD5alg}. The significant difference comes in the data flow. Since our program will be mapped to hardware, we cannot have variable sizes; everything must be static. Thus we have opted for an approach that will receive 512 bits, corresponding to a single message block of the entire message, over the ~Message~ which we describe later. The process will both handle the padding and the compression and thus stand as an "independent" bus having np dependency on external computations.
+The compression function itself is wholly contained in the single clocked process and works as described in \ref{MD5alg}. The significant difference comes in the data flow. Since our program will be mapped to hardware, we cannot have variable sizes; everything must be static. Thus we have opted for an approach that will receive 512 bits, corresponding to a single message block of the entire message, over the ~Message~ which we describe later. The process will both handle the padding and the compression and thus stand as an "independent" bus having no dependency on external computations.
 
 For the bus interface between the simulation process and the MD5 process, we considered two overall approaches,
 Firstly, one could have 2 input buses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach unnecessary as the initialization vector is fixed for every hash, thus the alternative. Since we use the C# implementation of SME, we can easily store the Digest locally inside the process as a field. We will only require a single data bus with the message. We can define the Message bus as such:
 #+BEGIN_SRC csharp
 public interface IMessage : IBus {
     [InitialValue(false)] bool Valid { get; set; }
-
     [FixedArrayLength(MAX_BUFFER_SIZE)]
     IFixedArray<byte> Message { get; set; }
-
     int BufferSize { get; set; }
     int MessageSize { get; set; }
-
     [InitialValue(true)] bool Last { get; set; }
     [InitialValue(true)] bool Head { get; set; }
     [InitialValue(false)] bool Set { get; set; }
 }
 #+END_SRC
-One can see there are multiple things to keep track of. First and foremost, all busses we will be working with should have a flag for whether or not a bus has data inside of it since we try to adhere to AXI.  Secondly, A byte array is used to store the message block itself. ~BufferSize~ will be updated for every iteration or tick, and denotes how many values in the buffer are set, essentially flag for when the message should be padded. ~MessageSize~ will be set in the initial tick and denote the length of the entire message used for the Merkle-Damgård strengthening.
+A byte array ~Message~ is used to store the message block itself. ~BufferSize~ will be updated for every iteration or tick, and denotes how many values in the buffer are set, essentially flag for when the message should be padded. ~MessageSize~ will be set in the initial tick and denote the length of the entire message used for the Merkle-Damgård strengthening.
 The last 3 flags are used to handle some "edge-cases".
 Head Denotes that the initialization vector should be reconstructed.
 Last is used to denote when a block is the last in the message. The block cannot be filled with more than 447 bits.
@@ -39,15 +36,45 @@ Lastly, we want 2 additional busses to make our design comply with the AXI proto
 To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. Figure \ref{fig:MD5opt1} shows how the hash function as a whole up can be split up into 5 smaller processes and build a pipeline from this. One process for message formatting and one for each of the 4 rounds. In our actual implementation, we further added 2 processes:
 - A message-converter process between the message formatting and ~round 1 (f)~ to convert the message from bytes to unsigned integers.
 - A combiner that does the last addition of the two vectors.
-
+Each of these processes should be clocked and thus run concurrently on each clock tick, and the results of each process will be sent to the next.
 \begin{figure}[H]
 \centering
 \includegraphics[width=8cm]{md5.png}
 \caption[Pipeline MD5]{Highlevel overview of the MD5 pipeline. Each circle is a process and an arrow can be seen as a data bus. The downwards facing arrow carries the initial message and the leftmost arrow is simply (A,B,C,D). All arrows going out from a round carries both (A,B,C,D) and the block.}
 \label{fig:MD5opt1}
 \end{figure}
+One problem we have faced with this general approach is that MD5 is embarrassingly sequential because of the RAW dependency, as described in section \ref{MD5alg}, is that we need a bus between the process which calculates the 16 first rounds (F) and the ~combinator~ process. As of now, we have not sorted the logic of this "wiring" out. Hence our pipelined version is only able to calculate messages of <448 bits. A bit of a hack that could be implemented easily would be to extend the Top Level Bus (the bus which is exposed to other devices) with a vector (A,B,C,D). Thus one could simply chain the computations together. In any case, a RAW dependency will create a stall in the concurrent pipeline, as seen in Table \ref{tab:MD5pipeline}. Such a long stall has a big difference in throughput, which will be elaborated in section \ref{sec:MD5performance}.
 
-However, one problem we have faced with this general approach is that MD5 is embarrassingly sequential because ~round 1 (f)~ of the compression of the second message block 2 will depend on the result of ~combiner~ of the first message block's compression. This will create a stall. Thus for long messages, the speed-up from the naive version should not be too considerable. However, for tiny messages (<448 bits), the throughput should be noticeably faster as the propagation time should be decreased considerably. As a result of this, we expect to see a possibility to increase the clock frequency, which would trade-off energy use for higher throughput.
-As of now, our pipelined versions only work on messages <448 bits.
+#+BEGIN_EXPORT latex
+\begin{table}[H]
+\centering
+\captionsetup{width=.8\linewidth}
+\begin{tabular}{c c c c c c c c c c}
+\hline
+\multicolumn{10}{c}{Independent message blocks}\\
+\hline
+\textbf{clock} & 0   &  1  &  2  &  3  &  4   & 5 &  6 &  7 & 8\\
+\hline
+               & P$_1$ & M$_1$ & F$_1$ & G$_1$ & H$_1$  & I$_1$ & C$_1$ &  \\
+               &       & P$_2$ & M$_2$ & F$_2$ & G$_2$ & H$_2$  & I$_2$ & C$_2$ \\
+\end{tabular}
+\newline
+\vspace*{0.5cm}
+\newline
+\begin{tabular}{c c c c c c c c c c c c c}
+\hline
+\multicolumn{13}{c}{Dependent message blocks}\\
+\hline
+\textbf{clock} & 0   &  1  &  2  &  3  &  4   & 5 &  6 &     7 &    8  & 9   &    10  &    11\\
+\hline
+               & P$_1$ & M$_1$ & F$_1$ & G$_1$ & H$_1$  & I$_1$ & C$_1$ &     &        &         &       &     \\
+               &       & P$_2$ & M$_2$ &   -   &   -    &   -    &   -   & F$_2$ & G$_2$ & H$_2$  & I$_2$ & C$_2$ \\
+\end{tabular}
+\caption[MD5 pipeline]%
+{Shows how the proposed MD5 pipeline would work in case of smaller messages (independence) and larger messages (dependence), where $P$ are the padding process, $M$ is the formatter, $F$, $G$, $H$, $I$ is each of the rounds and $C$ is the last vector addition.}
+\label{tab:MD5pipeline}
+\end{table}
+#+END_EXPORT
+
 *** Further optimizations
-Because the initial optimization approach showed good promise we wanted to see how well a deeper pipeline performed. Hence we further chose to make versions that propagated the rounds into 8, 16, 32, and 64 processes. The results of this can be seen in Section \ref{sec:MD5performance}
+Because the initial optimization approach showed good promise we wanted to see how well a deeper pipeline performed. Hence we further chose to make versions that propagated the rounds into 8, 16, 32, and 64 processes. The results of this can be seen in Section \ref{sec:MD5performance}. As of now, each of our pipelined versions only work on messages <448 bits. Since we have not been able to fix the additional signal wirering.
