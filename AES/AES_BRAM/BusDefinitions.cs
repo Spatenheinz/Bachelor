@@ -15,13 +15,15 @@ namespace AES_BRAM
         [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<byte> Key { get; set; }
     }
+    public interface IState : IBus {
+        [InitialValue(false)]
+        bool Valid { get; set; }
+        [FixedArrayLength(BLOCK_SIZE_UINT)]
+        IFixedArray<uint> Block { get; set; }
+        [FixedArrayLength(BLOCK_SIZE_UINT)]
+        IFixedArray<uint> Key { get; set; }
+    }
     public interface ICipher : IBus {
-        // [InitialValue(false)]
-        // bool ValidKey { get; set; }
-
-        // [FixedArrayLength(BLOCK_SIZE)]
-        // IFixedArray<byte> Key { get; set; }
-
         [InitialValue(false)]
         bool ValidBlock { get; set; }
         [FixedArrayLength(BLOCK_SIZE)]

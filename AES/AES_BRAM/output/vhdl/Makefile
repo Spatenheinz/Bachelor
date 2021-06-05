@@ -30,13 +30,46 @@ $(WORKDIR)/system_types.o: system_types.vhdl $(WORKDIR)
 $(WORKDIR)/Types_AES_BRAM.o: Types_AES_BRAM.vhdl $(WORKDIR)
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Types_AES_BRAM.vhdl
 
-$(WORKDIR)/AESe.o: AESe.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
-	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) AESe.vhdl
+$(WORKDIR)/Round1.o: Round1.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round1.vhdl
+
+$(WORKDIR)/Round2.o: Round2.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round2.vhdl
+
+$(WORKDIR)/SME_Components_TrueDualPortMemory_1_UInt32.o: SME_Components_TrueDualPortMemory_1_UInt32.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) SME_Components_TrueDualPortMemory_1_UInt32.vhdl
+
+$(WORKDIR)/Round3.o: Round3.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round3.vhdl
+
+$(WORKDIR)/Round4.o: Round4.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round4.vhdl
+
+$(WORKDIR)/Round5.o: Round5.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round5.vhdl
+
+$(WORKDIR)/Round6.o: Round6.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round6.vhdl
+
+$(WORKDIR)/Round7.o: Round7.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round7.vhdl
+
+$(WORKDIR)/Round8.o: Round8.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round8.vhdl
+
+$(WORKDIR)/Round9.o: Round9.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round9.vhdl
+
+$(WORKDIR)/Round10.o: Round10.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round10.vhdl
+
+$(WORKDIR)/Round11.o: Round11.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Round11.vhdl
 
 $(WORKDIR)/csv_util.o: csv_util.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) csv_util.vhdl
 
-$(WORKDIR)/AES_BRAM.o: AES_BRAM.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)/AESe.o $(WORKDIR)/csv_util.o 
+$(WORKDIR)/AES_BRAM.o: AES_BRAM.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_BRAM.o $(WORKDIR)/Round1.o $(WORKDIR)/Round2.o $(WORKDIR)/SME_Components_TrueDualPortMemory_1_UInt32.o $(WORKDIR)/Round3.o $(WORKDIR)/Round4.o $(WORKDIR)/Round5.o $(WORKDIR)/Round6.o $(WORKDIR)/Round7.o $(WORKDIR)/Round8.o $(WORKDIR)/Round9.o $(WORKDIR)/Round10.o $(WORKDIR)/Round11.o $(WORKDIR)/csv_util.o 
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) AES_BRAM.vhdl
 
 $(WORKDIR)/TestBench_AES_BRAM.o: TestBench_AES_BRAM.vhdl $(WORKDIR)/AES_BRAM.o
