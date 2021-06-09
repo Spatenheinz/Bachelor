@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
-using static AES.AESConfig;
+using static AES_Alt.AESConfig;
 
-namespace AES
+namespace AES_Alt
 {
     public class Tester : SimulationProcess
     {
@@ -21,7 +21,7 @@ namespace AES
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 10;
+        private static int testsize = 3;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 

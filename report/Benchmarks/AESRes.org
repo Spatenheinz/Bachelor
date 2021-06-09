@@ -1,6 +1,5 @@
 ** AES
 \label{sec:AESperformance}
-\footnote{This section is not done}
 *** Throughput
 #+BEGIN_EXPORT latex
 \begin{table}[!htb]
@@ -10,18 +9,18 @@
 \hline
 Version & f$_{max}$(Mhz) & clocks & TP(MBps) & LUT & FF\\
 \hline
-Naive      &   X & b          & X    & X     & X\\
+Naive      &   22 & b          & 352    & 10612     &  3195\\
 TBox       &  25 & b           & 400 & 16458 & 3195\\
 Proc$_{4}$  &  68 & $C(3)$ & 544 & 16474 & 2817\\
 Proc$_{11}$ & 208 & $C(10)$ & 1663 & 15659 & 4383\\
 Proc$_{22}$ & 217 & $C(24)$ & 1662 & 15454 & 7401\\
 \end{tabular}
 \caption[AES: FPGA Versions]%
-{Performance and statistics over the different AES implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $C(x) = x+2 \cdot blocks$. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes AES are distributed over.}
+{Performance and statistics over the different AES implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $C(x) = x+2 \cdot blocks$. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes AES is distributed over.}
 \label{tab:AESversions}
 \end{table}
 #+END_EXPORT
-From the different implementations as shown in Table \ref{tab:AESversions} one can see something quite interesting. In Section \ref{AESopt} we described how we would assume the reasonably large lookup tables might be using up quite a lot of the FPGAs LUTs. This is, however, not the case as the naive version is using only 16500 LUTs comparing to the SHA256's 24300. Even more interesting is that splitting the calculations up into different processes does not increase the LUT usage. This suggests that the Vivado synthesizer recognizes the arrays from each process to be equivalent Read-Only Memory and thus can optimize it to a single table. Against the assumptions, this produces good results without having to use BRAM specifically. By making each round of AES its process, we get a four-fold increase in throughput from the naive TBox approach. We get no further improvement from reducing each process to only a half-round, suggesting that the overhead from signals is becoming the bottleneck.
+From the different implementations as shown in Table \ref{tab:AESversions} one can see quite interesting results. First and foremost, the TBox approach has merely 48 MBps higher throughput than the "standard" approach, and they each have their pros and cons. The standard (Naive) approach uses less power and uses fewer LUTs but at a little lower throughput. In Section \ref{AESopt} we described how we would assume the reasonably large lookup tables might be using up quite a lot of the FPGAs LUTs. This is, however, not the case as the naive version is using only 16500 LUTs comparing to the SHA256's 24300. Even more interesting is that splitting the calculations up into different processes does not increase the LUT usage. This suggests that the Vivado synthesizer recognizes the arrays from each process to be equivalent Read-Only Memory and thus can optimize it to a single table. Against the assumptions, this produces good results without having to use BRAM specifically. By making each round of AES its process, we get a four-fold increase in throughput from the naive TBox approach. We get no further improvement from reducing each process to only a half-round, suggesting that the overhead from signals is becoming the bottleneck.\\
 In Section \ref{AESnaive} we described how we rejected to make a solution that was flexible in its key size. The results shown in Table \ref{tab:AESversions} hint that this has a good impact on the performance. Comparing our solution to the solution presented in the SME GitHub repository, which is more flexible in the key size, our solution outperforms this by a factor of 1.66, as it is reported to have a throughput of 1.92Gbps(240MB/s)\cite{sme}. This shows that we can trade off some flexibility for a significant speedup.
 
 #+BEGIN_EXPORT latex
@@ -33,7 +32,7 @@ In Section \ref{AESnaive} we described how we rejected to make a solution that w
 \textbf{Version} & Naive & Proc$_{11}$ & C\# & C & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
 \hline
 \textbf{TP(MBps)} & 400 & 1963 &    70& 198 & 72  & 89\\
- &                &     &      & 1699 & 340 & 847 & 5722
+                  &     &      & 1699 & 340 & 847 & 5722
 \end{tabular}
 \caption[AES: FPGA and CPU comparisons]%
 {Performance comparison of the worst and best AES FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp aes-128-ecb}. Each of the CPU implementations has two values, the first being the Pi results and the second the I5 results.}

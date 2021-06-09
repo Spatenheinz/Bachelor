@@ -288,6 +288,7 @@ namespace opt1
                 Final.Valid = was_valid = true;
             } else {
                 Final.Valid = was_valid = was_valid && !axi_final.Ready;
+                Console.WriteLine($"last, {was_ready}, {was_valid}");
             }
             axi_I.Ready = was_ready = !was_valid;
         }

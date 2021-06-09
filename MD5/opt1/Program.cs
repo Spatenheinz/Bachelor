@@ -37,9 +37,9 @@ namespace opt1
                 sim.AddTopLevelInputs(tester.Message, tester.axi_Digest)
                        .AddTopLevelOutputs(combinator.Final, tester.axi_Message)
                         .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
-                        .BuildCSVFile()
-                        .BuildGraph()
-                        .BuildVHDL()
+                        // .BuildCSVFile()
+                        // .BuildGraph()
+                        // .BuildVHDL()
                         .Run();
             }
         }

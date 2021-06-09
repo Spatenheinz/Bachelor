@@ -23,7 +23,7 @@ From Figure \ref{fig:Merkle} one can see the construction of the hashing functio
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=11cm]{merkle.png}
+\includegraphics[width=10cm]{merkle.png}
 \caption{Merkle-Damgård construction}
 \label{fig:Merkle}
 \end{figure}
