@@ -16,9 +16,13 @@ We will, in this section, present some reflections on the tools used and listing
 Because we focused on creating a wider variety of cryptographic functions, the project has some shortcomings that could be fixed in future work.\\
 \\
 Firstly it is not ideal that SHA-2 and MD5 can only handle short inputs, and thus a pressing suggestion is to make them handle more than one block (448 bits) of data at a time. This could be done by introducing a bus to forward the result of the final stage back into the start stage. As shown previously, this will be effective for small messages, but due to the overhead and the data dependency of SHA-2 and MD5, it would not be better than the naive implementation.
-#+CAPTION: A visualization of the pipeline stages of MD5 (SHA-2 is similar). The proposed bus is the dotted line.
-#+LABEL: fig:MD5-pipe
-[[./graphics/MD5-pipeline.png]]
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=.4]{MD5-pipeline.png}
+\caption{A visualization of the pipeline stages of MD5 (SHA-2 is similar). The proposed bus is the dotted line.}
+\label{fig:MD5-pipe}
+\end{figure}
 
 # We also haven't made any pipelined versions of AES. Pipelining AES should be more doable and effective compared to SHA-2 and MD5.
 # We have a design in mind, but it will require us to store the lookup tables used in AES in Block RAM on the FPGA.

@@ -63,3 +63,12 @@
     \@starttoc{lot}}
 
 \makeatother
+%   Reduce the margin of the summary:
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist
+
+%   Generate the environment for the abstract:
+\newcommand\summaryname{Abstract}
+\newenvironment{Abstract}%
+    {\small\begin{center}%
+    \bfseries{\summaryname} \end{center}}
