@@ -1,8 +1,8 @@
 using System;
 using SME;
-using static AES.AESConfig;
+using static AES_Alt.AESConfig;
 
-namespace AES
+namespace AES_Alt
 {
     [ClockedProcess]
     class AESe : SimpleProcess {
@@ -31,7 +31,7 @@ namespace AES
                 }
                 Cipher.ValidBlock = was_valid = true;
             } else {
-                Cipher.ValidBlock = was_valid && !axi_Cipher.ready;
+                Cipher.ValidBlock = was_valid = was_valid && !axi_Cipher.ready;
             }
             axi_Text.ready = was_ready = !was_valid;
             Console.WriteLine($"proc {was_ready} {was_valid}");
@@ -84,22 +84,14 @@ namespace AES
             for (int i = 0; i < 16; i+=4) {
                 t = state[i];
                 tmp = (byte)(state[i] ^ state[i+1] ^ state[i+2] ^ state[i+3]);
-                tm = (byte)(state[i]   ^ state[i+1]); tm = xtime(tm); state[i] ^= (byte)(tm ^ tmp);
-                tm = (byte)(state[i+1] ^ state[i+2]); tm = xtime(tm); state[i+1] ^= (byte)(tm ^ tmp);
-                tm = (byte)(state[i+2] ^ state[i+3]); tm = xtime(tm); state[i+2] ^= (byte)(tm ^ tmp);
-                tm = (byte)(state[i+3] ^ t         ); tm = xtime(tm); state[i+3] ^= (byte)(tm ^ tmp);
+                tm = (byte)(state[i]   ^ state[i+1]); tm = xtime(tm); state[i] = (byte)(state[i] ^ (tm ^ tmp));
+                tm = (byte)(state[i+1] ^ state[i+2]); tm = xtime(tm); state[i+1] = (byte)(state[i+1] ^ tm ^ tmp);
+                tm = (byte)(state[i+2] ^ state[i+3]); tm = xtime(tm); state[i+2] = (byte)(state[i+2] ^ tm ^ tmp);
+                tm = (byte)(state[i+3] ^ t         ); tm = xtime(tm); state[i+3] = (byte)(state[i+3] ^ tm ^ tmp);
             }
         }
         private byte xtime(byte x) {
             return (byte)((x<<1) ^ (((x>>7) & 1) * 0x1b));
-        }
-        private void addroundkey(int r) {
-            for (int i = 0; i < 4; i++) {
-                state[4*i+0] ^= expandedKey128[(r*16)+(i * 4)+0];
-                state[4*i+1] ^= expandedKey128[(r*16)+(i * 4)+1];
-                state[4*i+2] ^= expandedKey128[(r*16)+(i * 4)+2];
-                state[4*i+3] ^= expandedKey128[(r*16)+(i * 4)+3];
-            }
         }
 
         private void Expand128(IFixedArray<byte> key) {
@@ -134,16 +126,35 @@ namespace AES
 
 
         private void Encrypt128() {
-            addroundkey(0);
+            // addroundkey(0);
+            // addroundkey 0
+            for (int i = 0; i < 4; i++) {
+                state[4*i+0] = (byte)(state[4*i+0] ^ expandedKey128[(i * 4)+0]);
+                state[4*i+1] = (byte)(state[4*i+1] ^ expandedKey128[(i * 4)+1]);
+                state[4*i+2] = (byte)(state[4*i+2] ^ expandedKey128[(i * 4)+2]);
+                state[4*i+3] = (byte)(state[4*i+3] ^ expandedKey128[(i * 4)+3]);
+            }
             for (int r = 1; r < NR; r++) {
                 SubBytes();
                 ShiftRows();
                 MixColumns();
-                addroundkey(r);
+                // addroundkey r
+                for (int i = 0; i < 4; i++) {
+                    state[4*i+0] = (byte)(state[4*i+0] ^ expandedKey128[(r*16)+(i * 4)+0]);
+                    state[4*i+1] = (byte)(state[4*i+1] ^ expandedKey128[(r*16)+(i * 4)+1]);
+                    state[4*i+2] = (byte)(state[4*i+2] ^ expandedKey128[(r*16)+(i * 4)+2]);
+                    state[4*i+3] = (byte)(state[4*i+3] ^ expandedKey128[(r*16)+(i * 4)+3]);
+                }
             }
                 SubBytes();
                 ShiftRows();
-                addroundkey(NR);
+                // addroundkey r
+                for (int i = 0; i < 4; i++) {
+                    state[4*i+0] = (byte)(state[4*i+0] ^ expandedKey128[(NR*16)+(i * 4)+0]);
+                    state[4*i+1] = (byte)(state[4*i+1] ^ expandedKey128[(NR*16)+(i * 4)+1]);
+                    state[4*i+2] = (byte)(state[4*i+2] ^ expandedKey128[(NR*16)+(i * 4)+2]);
+                    state[4*i+3] = (byte)(state[4*i+3] ^ expandedKey128[(NR*16)+(i * 4)+3]);
+                }
         }
 
 		static readonly byte[] S = new byte[] {

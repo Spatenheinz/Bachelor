@@ -10,7 +10,8 @@ The compression function itself is wholly contained in the single clocked proces
 
 For the bus interface between the simulation process and the MD5 process, we considered two overall approaches,
 Firstly, one could have 2 input buses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach unnecessary as the initialization vector is fixed for every hash, thus the alternative. Since we use the C# implementation of SME, we can easily store the Digest locally inside the process as a field. We will only require a single data bus with the message. We can define the Message bus as such:
-#+BEGIN_SRC csharp
+#+BEGIN_EXPORT latex
+\begin{Verbatim}[fontsize=\footnotesize]
 public interface IMessage : IBus {
     [InitialValue(false)] bool Valid { get; set; }
     [FixedArrayLength(MAX_BUFFER_SIZE)]
@@ -21,7 +22,8 @@ public interface IMessage : IBus {
     [InitialValue(true)] bool Head { get; set; }
     [InitialValue(false)] bool Set { get; set; }
 }
-#+END_SRC
+\end{Verbatim}
+#+END_EXPORT
 A byte array ~Message~ is used to store the message block itself. ~BufferSize~ will be updated for every iteration or tick, and denotes how many values in the buffer are set, essentially flag for when the message should be padded. ~MessageSize~ will be set in the initial tick and denote the length of the entire message used for the Merkle-Damgård strengthening.
 The last 3 flags are used to handle some "edge-cases".
 Head Denotes that the initialization vector should be reconstructed.

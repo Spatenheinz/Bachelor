@@ -1,7 +1,7 @@
 ﻿using System;
 using SME;
 
-namespace AES
+namespace AES_Alt
 {
     class Program
     {

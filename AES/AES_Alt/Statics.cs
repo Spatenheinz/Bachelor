@@ -1,5 +1,5 @@
 
-namespace AES
+namespace AES_Alt
 {
     public static class AESConfig {
         public const int BLOCK_SIZE_BITS = 128;

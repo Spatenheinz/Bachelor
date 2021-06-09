@@ -56,6 +56,11 @@ namespace ChaCha {
             QR(ref tmp[1], ref tmp[6], ref tmp[11], ref tmp[12]); // diagonal 2
             QR(ref tmp[2], ref tmp[7], ref tmp[ 8], ref tmp[13]); // diagonal 3
             QR(ref tmp[3], ref tmp[4], ref tmp[ 9], ref tmp[14]); // diagonal 4
+            for(int j = 0; j  < BLOCK_SIZE; j++) {
+                Console.WriteLine(tmp[j].ToString("x8"));
+            }
+            Console.WriteLine();
+
             }
 
             for(int i = 0; i < BLOCK_SIZE; i++)

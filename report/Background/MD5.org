@@ -5,7 +5,8 @@ Each partition of the message will then be fed into the compression ~f~ function
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=10cm]{MD5rounds.png}
+\captionsetup{width=.8\linewidth}
+\includegraphics[width=7cm]{MD5rounds.png}
 \caption[MD5 Rounds]%
 {Rounds of MD5. Each of the two outer circles, is what corresponds to the f-function in Figure \ref{fig:Merkle}. Each of f function consists of a set of functions which will hash the (A,B,C,D) vector and forward it to the next round. The last round of an application of f will forward the vector to the next application of f on the next block of the message.}
 \label{fig:MD5}
@@ -22,11 +23,12 @@ I(X, Y, Z) &= Y \oplus ( X \vee \neg Z)
 \end{align}
 In ~f~ a total number of 64 rounds will be computed, each of the functions 1-4 is applied a total of 16 times. Figure \ref{fig:MD5Rounds} shows each of the specific rounds, where\\
 ~[abcd k s i]~\\
-denotes ~a = b + (( a + round(b,c,d) + M[k] + K[i]) \lll s)~, and ~round~ denotes the function corresponding to one of the 4 functions corresponding to that round, ~M~ denotes the current 16-word buffer of the padded message and ~K[i]~ denotes the ~floor(2^32 * abs (sin(i + 1)))~.
+denotes \(a = b + (( a + round(b,c,d) + M[k] + K[i]) \lll s)\), and ~round~ denotes the function corresponding to one of the 4 functions corresponding to that round, ~M~ denotes the current 16-word buffer of the padded message and ~K[i]~ denotes\\
+floor(2^32 \cdot |sin(i + 1)|).
 #+BEGIN_EXPORT latex
 \begin{table}[H]
 \centering
-\begin{verbatim}
+\begin{BVerbatim}[fontsize=\tiny]
 round 1  :: F
 [ABCD  0  7  1] [DABC  1 12  2] [CDAB  2 17  3] [BCDA  3 22  4]
 [ABCD  4  7  5] [DABC  5 12  6] [CDAB  6 17  7] [BCDA  7 22  8]
@@ -47,7 +49,7 @@ Round 4 :: I
 [ABCD 12  6 53] [DABC  3 10 54] [CDAB 10 15 55] [BCDA  1 21 56]
 [ABCD  8  6 57] [DABC 15 10 58] [CDAB  6 15 59] [BCDA 13 21 60]
 [ABCD  4  6 61] [DABC 11 10 62] [CDAB  2 15 63] [BCDA  9 21 64]
-\end{verbatim}
+\end{BVerbatim}
 \caption{All rounds of a single MD5 iteration}
 \label{fig:MD5Rounds}
 \end{table}

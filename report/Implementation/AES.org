@@ -10,8 +10,8 @@ Furthermore, there are two-byte arrays with the size of ~BLOCK_SIZE~ = 128 as th
 
 Notice furthermore, the bus is named IPlainText but could just as well have been called IData or something similar as the same bus can be used for both the plaintext and the cipher as the algorithm is symmetrical. However, for the output bus, we do not have to output the key, assuming the result is sent back to the device that called the function.
 
-#+ATTR_LATEX: :options frame=single
-#+BEGIN_SRC csharp
+#+BEGIN_EXPORT latex
+\begin{Verbatim}[fontsize=\footnotesize]
     public interface IPlainText : IBus {
         [InitialValue(false)]
         bool ValidKey { get; set; }
@@ -22,7 +22,8 @@ Notice furthermore, the bus is named IPlainText but could just as well have been
         [FixedArrayLength(BLOCK_SIZE)]
         IFixedArray<byte> Data { get; set; }
     }
-#+END_SRC
+\end{Verbatim}
+#+END_EXPORT
 For the actual AES process, we have decided to only support full blocks of 128 bits because of the lack of a padding standard. We have decided to implement both the classic algorithm and the T-box approach described earlier to see if there actually was a significant performance difference.
 
 *** Optimisation 1

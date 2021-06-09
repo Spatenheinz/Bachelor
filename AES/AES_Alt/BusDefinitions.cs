@@ -1,7 +1,7 @@
 using SME;
-using static AES.AESConfig;
+using static AES_Alt.AESConfig;
 
-namespace AES
+namespace AES_Alt
 {
     public interface IPlainText : IBus {
         [InitialValue(false)]
@@ -16,11 +16,6 @@ namespace AES
         IFixedArray<byte> Key { get; set; }
     }
     public interface ICipher : IBus {
-        // [InitialValue(false)]
-        // bool ValidKey { get; set; }
-
-        // [FixedArrayLength(BLOCK_SIZE)]
-        // IFixedArray<byte> Key { get; set; }
 
         [InitialValue(false)]
         bool ValidBlock { get; set; }
@@ -29,19 +24,19 @@ namespace AES
 
     }
 
-    public interface IInter : IBus {
-        // [InitialValue(false)]
-        // bool ValidKey { get; set; }
+    // public interface IInter : IBus {
+    //     // [InitialValue(false)]
+    //     // bool ValidKey { get; set; }
 
-        // [FixedArrayLength(BLOCK_SIZE)]
-        // IFixedArray<byte> Key { get; set; }
+    //     // [FixedArrayLength(BLOCK_SIZE)]
+    //     // IFixedArray<byte> Key { get; set; }
 
-        [InitialValue(false)]
-        bool ValidBlock { get; set; }
-        [FixedArrayLength(BLOCK_SIZE)]
-        IFixedArray<byte> block { get; set; }
+    //     [InitialValue(false)]
+    //     bool ValidBlock { get; set; }
+    //     [FixedArrayLength(BLOCK_SIZE)]
+    //     IFixedArray<byte> block { get; set; }
 
-    }
+    // }
 
     public interface axi_r : IBus {
         [InitialValue(false)]

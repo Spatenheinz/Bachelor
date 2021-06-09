@@ -30,13 +30,13 @@ $(WORKDIR)/system_types.o: system_types.vhdl $(WORKDIR)
 $(WORKDIR)/Types_AES_Alt.o: Types_AES_Alt.vhdl $(WORKDIR)
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) Types_AES_Alt.vhdl
 
-$(WORKDIR)/AES_AESe.o: AES_AESe.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_Alt.o $(WORKDIR)
-	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) AES_AESe.vhdl
+$(WORKDIR)/AESe.o: AESe.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_Alt.o $(WORKDIR)
+	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) AESe.vhdl
 
 $(WORKDIR)/csv_util.o: csv_util.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_Alt.o $(WORKDIR)
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) csv_util.vhdl
 
-$(WORKDIR)/AES_Alt.o: AES_Alt.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_Alt.o $(WORKDIR)/AES_AESe.o $(WORKDIR)/csv_util.o 
+$(WORKDIR)/AES_Alt.o: AES_Alt.vhdl $(WORKDIR)/system_types.o $(WORKDIR)/Types_AES_Alt.o $(WORKDIR)/AESe.o $(WORKDIR)/csv_util.o 
 	ghdl -a --std=$(STD) --ieee=$(IEEE) --workdir=$(WORKDIR) $(FLAGS) AES_Alt.vhdl
 
 $(WORKDIR)/TestBench_AES_Alt.o: TestBench_AES_Alt.vhdl $(WORKDIR)/AES_Alt.o
