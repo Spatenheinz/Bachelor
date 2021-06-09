@@ -1,4 +1,4 @@
-The subject of running and optimizing hash functions on FPGAs isn't new. One work on this subject is "Improving SHA-2 Hardware Implementation", by R. Chaves, G. Kuzmanov, L. Sousa, and S. Vassiliadis.
+The subject of running and optimizing hash functions on FPGAs is not new. One work on this subject is "Improving SHA-2 Hardware Implementation", by R. Chaves, G. Kuzmanov, L. Sousa, and S. Vassiliadis.
 In their report, the biggest increase they documented was a throughput increase of 40% on the a VIRTEX II Pro FPGA(XC2P30-7) board.
 The increase comes from mesureing their own implementation against a commercial product (Helion) on the same board.
 

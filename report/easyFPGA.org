@@ -15,7 +15,8 @@ but it is comparetively not very much. SME also allows the user to write all the
 For us this was a big advantage, since we have worked in C\# before but had no knowledge working with VHDL.
 
 As mentioned the major problems we encountered was in using Vivado to synthesize our implementations.
-There are alternatives to Vivado, but we have not had time to explore if they are any easier, or what their advantages/disadvanteges are.
+There are alternatives to Vivado, however investigating other tools and determining what their advantages/disadvanteges are would have taken a significant amount of time.
+Given the scope of our project we thought that time was better spend on implementation and testing.
 
 An important thing to note is that even though it proved difficult to optimize SHA-2 and MD5 their naive implementations had a
 surprisingly large data-throughput and uses few resources. This is important since it was a fairly quick to get them implemented using SME.

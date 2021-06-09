@@ -36,11 +36,14 @@ So different sizes of the calculations stages in SHA-2 and MD5 might have some p
 Also we could test out similar projects that is already documented, such as the one mentioned later in this section.
 
 The next step after having finished the piplined versions will be creating a driver/interface to be able to communicate with the FPGA and call our functions in C.
-We would print our implementation on the Zynq zedboard FPGA, the same architecture as we've tested on in Vivado.
-Having the chip printed we would test it using a Raspberry Pi or similar low power ARM based controller.
+We have succesfully synthesized and tested our implementations through Vivado, so the next thing we would like is to lay the implementation on the Zynq zedboard FPGA,
+the same architecture as we've tested on in Vivado.
+Having written our implementation onto a physical FPGA the next step would be to test it against our CPU based implementations, preferably on a Raspberry Pi
+or similar low powered ARM based processor, since such a chip would be comparable to that on the Zynq board.
 The reason for this being that ARM doesn't have any accelerated instructions for any of the algorithms implemented\footnote{As an example, x86 has an instruction for AES, making it much faster than otherwise possible.}
-To communicate between the Raspberry Pi and our FPGA, we'd need to create in interface, or driver, for it.
-This driver should be determine signals used for communication and how data gets transfered between the two devices.
+The use case for our FPGA implementation would be to outsource all hashing/encryption calls from a CPU to our FPGA. To do this we would need to create
+an interface, or driver, for the FPGA.
+This driver should determine the signals used for communication and how data gets transfered between the two devices.
 # However we do not have any specifications for this driver implementation,
 # due to this being one of the final details for the project, and we do not have a finished implementation for our library.
 
