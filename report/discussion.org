@@ -1,7 +1,7 @@
 * Discussion
-SME has worked well for us as a tool for developing FPGAs, as the results show even naive implementations uses few resources
-and although they weren't as fast as their CPU counterparts they weren't far behind. The major problems we encountered using SME were not with SME itself,
-but were with Vivado. So is this an improvement to programming FPGAs using VHDL?
+We will, in this section, present some reflections on the tools used and listing work to be done in the future, and showing an example of some further improvements that can be implemented.
+# although they weren't as fast as their CPU counterparts they weren't far behind. The major problems we encountered using SME were not with SME itself,
+# but were with Vivado. So is this an improvement to programming FPGAs using VHDL?
 # - SME vs VHDL
 # - How easy is FPGA programming
 # - Future work
@@ -12,11 +12,10 @@ but were with Vivado. So is this an improvement to programming FPGAs using VHDL?
 # - How easy is FPGA programming
 #+INCLUDE: "easyFPGA.org"
 ** Future work
-Due to time limitations we didn't acomplish all we set out to do.
-If given more time we would enable the pipelined versions of SHA-2 and MD5 to handle more than one block (448 bits) of data at a time.
-This could be done by introducing a bus to forward the result of the final stage back into the start stage.
-As showed previously this will be effective for small messages, but due to the overhead and the data dependency of SHA-2 and MD5,
-it would not be better than the naive implementation.
+# Due to time limitations we didn't acomplish all we set out to do.
+Because we focused on creating a wider variety of cryptographic functions, the project has some shortcomings that could be fixed in future work.\\
+\\
+Firstly it is not ideal that SHA-2 and MD5 can only handle short inputs, and thus a pressing suggestion is to make them handle more than one block (448 bits) of data at a time. This could be done by introducing a bus to forward the result of the final stage back into the start stage. As shown previously, this will be effective for small messages, but due to the overhead and the data dependency of SHA-2 and MD5, it would not be better than the naive implementation.
 #+CAPTION: A visualization of the pipeline stages of MD5 (SHA-2 is similar). The proposed bus is the dotted line.
 #+LABEL: fig:MD5-pipe
 [[./graphics/MD5-pipeline.png]]
@@ -27,27 +26,36 @@ it would not be better than the naive implementation.
 # The design is ...
 
 # Måske er dette ikke nødvendigt
-Having pipelined all of the functions in our crypto-library we could also test different implementations to find the fastest configurations.
-As an example, our pipelined version of SHA-2 has it's 64 rounds split up into 4 stages with 16 rounds each.
-Here testing could determine whether it is faster to have more stages with fewer rounds or vice versa.
-As mentioned SHA-2 and MD5 are data dependant, so even our pipelined version needs to stall when the we are handling more than one block.
-When the data is being processed in stages F-I in Figure \ref{MD5-pipe}, pipeline stalls. So the only time save is from the pipelined stages before the actual calculations.
-So different sizes of the calculations stages in SHA-2 and MD5 might have some performance increases.
-Also we could test out similar projects that is already documented, such as the one mentioned later in this section.
+# Having pipelined all of the functions in our crypto-library we could also test different implementations to find the fastest configurations.
+# As an example, our pipelined version of SHA-2 has it's 64 rounds split up into 4 stages with 16 rounds each.
+# Here testing could determine whether it is faster to have more stages with fewer rounds or vice versa.
+# As mentioned SHA-2 and MD5 are data dependant, so even our pipelined version needs to stall when the we are handling more than one block.
+# When the data is being processed in stages F-I in Figure \ref{MD5-pipe}, pipeline stalls. So the only time save is from the pipelined stages before the actual calculations.
+# So different sizes of the calculations stages in SHA-2 and MD5 might have some performance increases.
+# Also we could test out similar projects that is already documented, such as the one mentioned later in this section.
+Secondly, we had no prospect of getting our hand on a physical FPGA, so we decided not to look into developing a device driver/interface to be able to communicate with the FPGA and call our functions in C. Such a driver would, however, be necessary to actually use the library.
 
-The next step after having finished the piplined versions will be creating a driver/interface to be able to communicate with the FPGA and call our functions in C.
-We have succesfully synthesized and tested our implementations through Vivado, so the next thing we would like is to lay the implementation on the Zynq zedboard FPGA,
-the same architecture as we've tested on in Vivado.
-Having written our implementation onto a physical FPGA the next step would be to test it against our CPU based implementations, preferably on a Raspberry Pi
-or similar low powered ARM based processor, since such a chip would be comparable to that on the Zynq board.
-The reason for this being that ARM doesn't have any accelerated instructions for any of the algorithms implemented\footnote{As an example, x86 has an instruction for AES, making it much faster than otherwise possible.}
-The use case for our FPGA implementation would be to outsource all hashing/encryption calls from a CPU to our FPGA. To do this we would need to create
-an interface, or driver, for the FPGA.
-This driver should determine the signals used for communication and how data gets transfered between the two devices.
+Furthermore, we have successfully synthesized and tested our implementations through Vivado, so it would be appropriate to test the actual performance instead of just relying on the theoretical limits once the driver, etc., was set up. The next thing we would like is to physically synthesize the implementation on the Zynq Zedboard FPGA.
+
+Thirdly, the library contains fundamental algorithms, but it would always be good with a more extensive library.
+
+Fourthly, in our research for the project, we have looked at multiple different FPGA implementations of the different functions, but most of the presented results in these papers are conducted on more expensive FPGAs, and it would be interesting to see how well our versions would do compared to versions written in an HDL.
+
+Lastly, our optimizations have mainly focused on the simple pipelining aspects, whereas there are known optimizations that could be implemented. For example, one such optimization is explained in Section \ref{sec:SHAimprovements}.
+# Furthermore, we have succesfully synthesized and tested our implementations through Vivado, so the next thing we would like is to lay the implementation on the Zynq zedboard FPGA,
+# the same architecture as we've tested on in Vivado.
+# Having written our implementation onto a physical FPGA the next step would be to test it against our CPU based implementations, preferably on a Raspberry Pi
+# or similar low powered ARM based processor, since such a chip would be comparable to that on the Zynq board.
+# The reason for this being that ARM doesn't have any accelerated instructions for any of the algorithms implemented\footnote{As an example, x86 has an instruction for AES, making it much faster than otherwise possible.}
+# The use case for our FPGA implementation would be to outsource all hashing/encryption calls from a CPU to our FPGA. To do this we would need to create
+# an interface, or driver, for the FPGA.
+# This driver should determine the signals used for communication and how data gets transfered between the two devices.
+# # However we do not have any specifications for this driver implementation,
 # However we do not have any specifications for this driver implementation,
 # due to this being one of the final details for the project, and we do not have a finished implementation for our library.
 
 # Teste om SHA skal opdeles yderligere?
 # (v) Done
 *** Known SHA256 improvements on FPGAs
+\label{sec:SHAimprovements}
 #+INCLUDE: "SHAimprovements.org"
