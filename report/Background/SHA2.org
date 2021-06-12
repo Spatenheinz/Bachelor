@@ -8,13 +8,13 @@ on chunks of 512 bits and then outputs a digest or hash of 256 bits.
 Other versions from the SHA2 family exist, like SHA512 and the truncated
 versions like SHA224 and SHA384. All of which are very similar.
 
-The SHA256 routine can be expressed as some initialization and then four computation stages.
-All of which works on the massage encoded in binary. All operations are also bitwise.
+The SHA256 routine can be expressed as some initialization and then 3 computation stages.
+All of which works on the message encoded in binary. All operations are also bitwise.
 
 Firstly all constants and variables get initialized. All members of the SHA family use some preset constants for their initial round of calculations.
 SHA256 uses an array of size 64, K, consisting of the first 32 bits of the fractional parts of the cube roots of the first 64 prime numbers.
-It also uses eight working variables $H_i$ with an initial value of the first 32 bits of the fractional parts of the square roots of the first 8 prime numbers.
-These H variables get updated with each round and contain the final hash after the final round.
+The IV of SHA256 uses eight variables (A-H) with an initial value of the first 32 bits of the fractional parts of the square roots of the first 8 prime numbers.
+The IV get updated with each round and contain the final hash after the final round.
 
 The message padding scheme is the same as that of MD5 with the exception of Big-Endian encoding of the message size at the end.
 # Then the message gets padded. In SHA256, the message bit-length needs to be a multiple of 512.
@@ -22,37 +22,36 @@ The message padding scheme is the same as that of MD5 with the exception of Big-
 # Finally, the length of the original message is appended as a big-endian 64-bit integer.
 # This also results in SHA256 not being able to handle messages that have a length of over $2^{64}$.
 
-For the first stage of the computation is to expand the message
+The first stage of the computation is to expand the message.
 # SHA2 works by first expanding the input and then compressing it with a one-way compression Davis-Meyers structure.
 As mentioned the input block is of 512 bits, so sixteen 32 bit words. These gets extended to 64 32 bit words.
 The extention of the input block works as follows:
-\begin{equation}
-  W[i] =
+\begin{align}\label{eq:W}
+  W[i] &=
   \begin{cases}
     M[i]  &\text{for } 0 \leq i \leq 15\\
     \sigma_1(W_{i-2}) + W[i-16] + \sigma_0(W_{i-15}) + W[i-7] &\text{for } 16 \leq i \leq 63
-  \end{cases}
-\end{equation}
+  \end{cases}\\
+  \sigma_0(x) &= (x \ggg 7) \oplus (x \ggg 18) \oplus (x \ggg 3)\\
+  \sigma_1(x) &= (x \ggg 17) \oplus (x \ggg 19) \oplus (x \ggg 10)
+\end{align}
 # Bla bla bla something smart. Samt et godt diagram eller noget..?
 
-The second stage is to update the H variables.
+In the compression function we need some intermediate values $Ch$, $Ma$, $\Sigma_0$ and $\Sigma_1$.
+\begin{align}\label{eq:SHAvar}
+ Ch &= (E \wedge F) \oplus ((\neg E) \wedge G)\\
+ Ma &= (A \wedge B) \oplus (A \wedge C) \oplus (B \wedge C)\\
+ \Sigma_0 &= (A \ggg 2) \oplus (A \ggg 13) \oplus (A \ggg 22)\\
+ \Sigma_1 &= (E \ggg 6) \oplus (E \ggg 11) \oplus (E \ggg 25)\label{eq:SHAvarl}
+\end{align}
 
-The third stage is to compute $ch$, $maj$, $temp_1$ and $temp_2$ for each of the 64 entries in the array K and the expanded message W.
-# \begin{equation}
-# ch &= (x \wedge y) \oplus (\neg x \wedge z)\\
-# maj &= (x \wedge y) \oplus (x \wedge z) \oplus (y \wedge z)\\
-# s_1 = (e >>> 6) \oplus (e >>> 11) \oplus (e >>> 25)\\
-# s_1 = (a >>> 2) \oplus (a >>> 13) \oplus (a >>> 22)\\
-# temp_1 = h + s_1 + ch + k[i] + w[i]\\
-# temp_2 = S_0 + maj
-# \end{equation}
-# See NIST-article
-
-For the last stage, the H variables get updated one last time, containing the final hash. Then they get appended together and returned.
-
+Each round, as shown in Figure \ref{fig:sha256round}, is performed a total of 64 times, which constitutes the second stage. Lastly the third stage, which is addition of the IV before and after the rounds can be performed and the digest for a block is complete and fed as IV for the hashing of the next block until the entire message is hashed.
 \begin{figure}[H]
 \centering
+\captionsetup{width=.8\linewidth}
 \includegraphics[width=8cm]{sha-2.png}
-\caption{A SHA256 round}
+\caption[A SHA256 round]%
+{A SHA256 round. Shows how the IV (A-H) gets modified over a single round, where a squares with a cross denotes addition, W is shown in equation \ref{eq:W}, Ch, Ma, $\Sigma_0$ and $\Sigma_1$ is presented in equations \ref{eq:SHAvar}-\ref{eq:SHAvarl}. K is the fractional of the ith cube root.\cite{wiki:sha}
+}
 \label{fig:sha256round}
 \end{figure}
