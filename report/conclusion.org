@@ -1,2 +1,13 @@
 * Conclusion
-We have in this report presented four known cryptographic functions and how we have implemented them using Synchronous Message Exchange (SME) for a library of cryptographic functions for FPGA. We have covered the advantages and disadvantages of using SME over a Hardware Description Language. In the process of making the library we have optimised these and gotten mixed results. The optimised version of MD5 and ChaCha20 have been able to compete with mid range CPU speeds, while using less power. The biggest improvement was seen in MD5 which ran at 3210 MBps around 4.5 times faster than the mid range CPU, where ChaCha20, was only able to run at around the same throughput as the CPU. Despite the promosing results we have also gotten results that werent as good. For instance it was difficult to gain significant improvement to SHA256 as its LUT usage was so high. Similarly was AES significantly faster than a CPU but failed to compete with hardware solutions such as the AES-NI ASIC. For all the functions however we did see some sort of improvement from pipelining them. Furthermore we have shown how our pipelined implementations increase in both size and power because of the increase in logic and frequency. One aspect that was interesting however was that the pipelined AES used far less power than the naive version. Another point we have covered is that it is initially difficult to tell how well a function algorithm designed for CPUs is going to perform on a FPGA.
+We have in this report presented four known cryptographic functions and how we have implemented them using SME
+for a library of cryptographic functions for FPGA. We have covered the advantages and disadvantages of using SME over a HDL.
+In the process of making the library, we have optimised the implementations and have gotten mixed results.
+The optimised version of MD5 and ChaCha20 have been able to compete with mid range CPU speeds, while using less power.
+The biggest improvement was seen in MD5 which ran at 3210 MBps around 4.5 times faster than the mid range CPU, where ChaCha20,
+was only able to run at around the same throughput as the CPU. Despite the promosing results we have also gotten results that werent as good.
+For instance it was difficult to gain significant improvement to SHA256 as its LUT usage was so high.
+Similarly, AES was significantly faster than the CPU but failed to compete with hardware solutions such as the AES-NI ASIC.
+For all the functions, however, we did see some sort of improvement from pipelining them.
+Furthermore, we have shown how our pipelined implementations increase in both size and power because of the increase in logic and frequency.
+One aspect that was interesting however, was that the pipelined AES used far less power than the naive version.
+Another point we have covered is that it is initially difficult to tell how well a function algorithm designed for CPUs is going to perform on a FPGA.
