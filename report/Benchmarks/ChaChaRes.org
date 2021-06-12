@@ -16,7 +16,7 @@ Proc$_{22}$ & 82 & $C(20)$ & 2557 & 17565 & 32420\\
 \label{tab:ChaChaversions}
 \end{table}
 #+END_EXPORT
-One would expect ChaCha to perform well because of the simplicity in computation, the fact it was designed for speed, and that the OpenSSL as reported in Table \ref{tab:ChaChacompare} is more than three times faster than AES as shown in Table \ref{tab:AEScompare}. Despite this, the naive ChaCha has an abysmal throughput of 80 MBps. However, when pipelining ChaCha, the performance increase to expected levels. Splitting the rounds into 11 processes (one process for an even and an odd-numbered round along with an XOR round), we can increase the throughput by 16 times. Even further splitting of the processes can yield a throughput of 2557 MBps. Comparing this to the OpenSSL results as shown in Table \ref{tab:ChaChacompare}, one can see it is still not quite enough to beat the throughput of an I5 but is far faster than a PI.
+One would expect ChaCha to perform well because of the simplicity in computation, the fact it was designed for speed, and that the OpenSSL as reported in Table \ref{tab:ChaChacompare} is more than three times faster than AES as shown in Table \ref{tab:AEScompare} when run on the Rasberry Pi. Despite this, the naive ChaCha has an abysmal throughput of 80 MBps. However, when pipelining ChaCha, the performance increase to expected levels. Splitting the rounds into 11 processes (one process for an even and an odd-numbered round along with an XOR round), we can increase the throughput by 16 times. Even further splitting of the processes can yield a throughput of 2557 MBps. Comparing this to the OpenSSL results as shown in Table \ref{tab:ChaChacompare}, one can see it is still not quite enough to beat the throughput of an i5 but is far faster than a PI.
 
 #+BEGIN_EXPORT latex
 \begin{table}[!htb]
@@ -30,14 +30,14 @@ One would expect ChaCha to perform well because of the simplicity in computation
                   &    &      & 388   & 3092
 \end{tabular}
 \caption[ChaCha20: FPGA and CPU comparisons]%
-{Performance comparison of the worst and best ChaCha FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp chacha20}. Each of the CPU implementations has two values, the first being the Pi results and the second the I5 results.}
+{Performance comparison of the worst and best ChaCha FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp chacha20}. Each of the CPU implementations has two values, the first being the Pi results and the second the i5 results.}
 \label{tab:ChaChacompare}
 \end{table}
 #+END_EXPORT
  # The culprit of ChaCha20's poor peformance is the high amount of nets. Nets is sythetic datapath in Vivado, which will be transformed into a wire when mapped to hardware. This suggests that we have too much data on the busses between the interlectual property (IP) and the register transfer level (RTL) of the design. This seems quite a reasonable argument as the input bus itself takes in 1152 bits and the output bus carries 544 bits to output the cipher.
  # To have a more concrete proof of this we also implemented a version which only generates the keystream, meaning it performs all the quaterrounds but without doing the XOR with the plaintext. This reduces the input and output busses to 610 and 513 bits respectively. When routing the keystream version in Vivado we get a reported frequency of 200 Mhz. Thus there is a huge difference.\footnote{possibly not this bad but who knows}
 *** Power Consumptions
-Figure \ref{fig:ChaCha_power} shows similarity to MD5 and SHA256. That is, the power is lower for the naive version is lower by using only 0.026 watts compared to Proc_22, which uses 236 watts. Thus the power usage is nine times higher, whereas the throughput difference is around 32 times, meaning Proc_22 is far more power-efficient but at a higher cost. Nevertheless, once again, the power should be far lower than for a CPU.
+Figure \ref{fig:ChaCha_power} shows similarity to MD5 and SHA256. That is, the power is lower for the naive version is lower by using only 0.026 watts compared to Proc_22, which uses 236 watts. Thus the power usage is nine times higher, whereas the throughput difference is around 32 times, meaning Proc_22 is far more power-efficient but at a higher cost. Nevertheless, once again, the power is lower than for common CPUs.
 
 \begin{figure}[H]
 \centering
