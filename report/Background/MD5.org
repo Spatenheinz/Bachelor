@@ -15,19 +15,17 @@ Each partition of the message will then be fed into the compression ~f~ function
 Figure \ref{fig:MD5} shows the expanded compression function ~f~. ~f~ will modify a 128-bit initialization vector (A, B, C, D), with the initial value:\\
 ~[~ ~A: 0x67542301~, ~B: 0xefcdab89~, ~C: 0x98badcfe~, ~D: 0x10325476~ ~]~\\
 ~f~ will use the following four functions, defined as such, to in "bitwise parallel" produce independent and unbiased bits in each of the rounds.
-\begin{align}
+\begin{align}\label{eq:MD5}
 F(X, Y, Z) &= (X \wedge Y) \vee (\neg X \wedge Z) \\
 G(X, Y, Z) &= (X \wedge Z) \vee (Y \wedge \neg Z) \\
 H(X, Y, Z) &= X \oplus Y \oplus Z \\
-I(X, Y, Z) &= Y \oplus ( X \vee \neg Z)
+I(X, Y, Z) &= Y \oplus ( X \vee \neg Z)\label{eq:MD5l}
 \end{align}
-In ~f~ a total number of 64 rounds will be computed, each of the functions 1-4 is applied a total of 16 times. Figure \ref{fig:MD5Rounds} shows each of the specific rounds, where\\
-~[abcd k s i]~\\
-denotes \(a = b + (( a + round(b,c,d) + M[k] + K[i]) \lll s)\), and ~round~ denotes the function corresponding to one of the 4 functions corresponding to that round, ~M~ denotes the current 16-word buffer of the padded message and ~K[i]~ denotes\\
-floor(2^32 \cdot |sin(i + 1)|).
+In ~f~ a total number of 64 rounds will be computed, each of the functions \ref{eq:MD5}-\ref{eq:MD5l} is applied a total of 16 times. Table \ref{fig:MD5Rounds} shows each of the specific rounds.
 #+BEGIN_EXPORT latex
 \begin{table}[H]
 \centering
+\captionsetup{width=.8\linewidth}
 \begin{BVerbatim}[fontsize=\tiny]
 round 1  :: F
 [ABCD  0  7  1] [DABC  1 12  2] [CDAB  2 17  3] [BCDA  3 22  4]
@@ -50,8 +48,11 @@ Round 4 :: I
 [ABCD  8  6 57] [DABC 15 10 58] [CDAB  6 15 59] [BCDA 13 21 60]
 [ABCD  4  6 61] [DABC 11 10 62] [CDAB  2 15 63] [BCDA  9 21 64]
 \end{BVerbatim}
-\caption{All rounds of a single MD5 iteration}
+\caption[All rounds of a single MD5 iteration]%
+{All rounds of a single MD5 iteration, where ~[abcd k s i]~\\
+denotes \(a = b + (( a + round(b,c,d) + M[k] + K[i]) \lll s)\), and ~round~ denotes the function corresponding to one of the 4 functions corresponding to that round, ~M~ denotes the current 16-word buffer of the padded message and ~K[i]~ denotes \(floor(2^{32} \cdot |sin(i + 1)|)\).
+}
 \label{fig:MD5Rounds}
 \end{table}
 #+END_EXPORT
-When all rounds are completed, the new vector (A_1 , B_1 , C_1 , D_1) added to the vector from before the rounds will store the digest of that block. This digest will then serve as the initial vector for the next block of the message. We can thus see there is a True Data Dependency (RAW) between the compression function on the block i depending on the result from the compression function on block i-1.
+When all rounds are completed, the new vector (A_1 , B_1 , C_1 , D_1) added to the vector from before the rounds will store the digest of that block. This digest will then serve as the initial vector for the next block of the message. We can thus see there is a Read After Write dependency (RAW) between the compression function on the block i depending on the result from the compression function on block i-1.

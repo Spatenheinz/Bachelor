@@ -49,9 +49,9 @@ One problem we have faced with this general approach is that MD5 is embarrassing
 
 #+BEGIN_EXPORT latex
 \begin{table}[H]
-\centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c c c c c}
+\centering
+\makebox[\linewidth]{\begin{tabular}{c c c c c c c c c c}
 \hline
 \multicolumn{10}{c}{Independent message blocks}\\
 \hline
@@ -60,9 +60,11 @@ One problem we have faced with this general approach is that MD5 is embarrassing
                & P$_1$ & M$_1$ & F$_1$ & G$_1$ & H$_1$  & I$_1$ & C$_1$ &  \\
                &       & P$_2$ & M$_2$ & F$_2$ & G$_2$ & H$_2$  & I$_2$ & C$_2$ \\
 \end{tabular}
+}
 \newline
 \vspace*{0.5cm}
 \newline
+\centering
 \begin{tabular}{c c c c c c c c c c c c c}
 \hline
 \multicolumn{13}{c}{Dependent message blocks}\\
@@ -79,4 +81,4 @@ One problem we have faced with this general approach is that MD5 is embarrassing
 #+END_EXPORT
 
 *** Further optimizations
-Because the initial optimization approach showed good promise we wanted to see how well a deeper pipeline performed. Hence we further chose to make versions that propagated the rounds into 8, 16, 32, and 64 processes. The results of this can be seen in Section \ref{sec:MD5performance}. As of now, each of our pipelined versions only work on messages <448 bits. Since we have not been able to fix the additional signal wirering.
+Because the initial optimization approach showed good promise, as shown in Section \ref{sec:MD5performance} we wanted to see how well a deeper pipeline performed. Hence we further chose to make versions that propagated the rounds into 8, 16, 32, and 64 processes. The results of this can be seen in Section \ref{sec:MD5performance}. As of now, each of our pipelined versions only work on messages <448 bits. Since we have not been able to fix the additional signal wirering.

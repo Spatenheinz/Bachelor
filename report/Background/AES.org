@@ -21,9 +21,8 @@ The Advanced Encryption Standard (AES) is a symmetric block cipher and specified
 3. SP - round: the rounds of the SP is performed by first doing a substitution which officially is called SubBytes\cite{Rijndael}, followed by the permutation, which consists of 2 functions ~ShiftRows~ and ~MixColumns~, which will ensure the 4x4 matrix is permuted and diffused. Lastly, the round-key is XORed with the result. This is done 9, 11, or 13 times depending on whether the key size is 128, 192, or 256 bits, respectively.
 4. The last round will work like the other, except it will only permute the rows and not the columns.
 *Subbytes* is a non-linear byte substitution and is usually implemented as a lookup table. It is calculated in 2 steps first by taking the multiplicative inverse in the Galois field GF(2^8) followed by an affine transformation over GF(2):
-\[b_i = b_i \oplus b_{(i+4) \% 8} \oplus b_{(i+5) \% 8} \oplus b_{(i+6) \% 8} \oplus b_{(i+7) \% 8} \oplus c_i \] with b_i denoting the i^th bit of the byte and c_i denoting the i^th bit of 0x63. Since these and mostly every calculation in AES operates on Galois fields, we can be certain the cipher also will be 128 bits. The lookup table can be seen in Appendix \ref{AESLUT}.
-\\~\\
-
+\[b_i = b_i \oplus b_{(i+4) \% 8} \oplus b_{(i+5) \% 8} \oplus b_{(i+6) \% 8} \oplus b_{(i+7) \% 8} \oplus c_i \] with b_i denoting the i^th bit of the byte and c_i denoting the i^th bit of 0x63. Since these and mostly every calculation in AES operates on Galois fields, we can be certain the cipher also will be 128 bits. The lookup table can be seen in Appendix \ref{AESLUT}.\\
+\\
 *ShiftRows* will transform the 4x4 input matrix by rotating the rows 0 to 3 bytes to the left, meaning the first row {b_0, b_4, b_8, b_12} will not be rotated, the second row will be rotated one bit to the left, i.e. {b_5, b_9, b_13, b_1} after the rotation. Likewise the 3rd row is shifted 2 and the last row is shifted 3 to the left (or 1 to the right). The transformation can be seen in Figure \ref{fig:ShiftRows}
 
 
