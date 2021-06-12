@@ -12,49 +12,49 @@ namespace AES_BRAM
         [OutputBus] public IState Out = Scope.CreateBus<IState>();
         [InputBus] public axi_r axi_out;
 
-        private readonly TrueDualPortMemory<uint> bramT0_1;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT0_1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT0a1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT0a1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT0b1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT0b1;
 
-        private readonly TrueDualPortMemory<uint> bramT0_2;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT0_2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT0a2;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT0a2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT0b2;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT0b2;
 
-        private readonly TrueDualPortMemory<uint> bramT1_1;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT1_1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT1a1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT1a1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT1b1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT1b1;
 
-        private readonly TrueDualPortMemory<uint> bramT1_2;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT1_2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT1a2;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT1a2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT1b2;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT1b2;
 
-        private readonly TrueDualPortMemory<uint> bramT2_1;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT2_1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT2a1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT2a1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT2b1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT2b1;
 
-        private readonly TrueDualPortMemory<uint> bramT2_2;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT2_2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT2a2;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT2a2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT2b2;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT2b2;
 
-        private readonly TrueDualPortMemory<uint> bramT3_1;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT3_1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT3a1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT3a1;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT3b1;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT3b1;
 
-        private readonly TrueDualPortMemory<uint> bramT3_2;
+        [Ignore] private readonly TrueDualPortMemory<uint> bramT3_2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT3a2;
         [InputBus] private readonly TrueDualPortMemory<uint>.IReadResult m_rrT3a2;
         [OutputBus] private readonly TrueDualPortMemory<uint>.IControl m_conT3b2;
