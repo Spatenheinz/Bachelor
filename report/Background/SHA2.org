@@ -16,10 +16,11 @@ SHA256 uses an array of size 64, K, consisting of the first 32 bits of the fract
 It also uses eight working variables $H_i$ with an initial value of the first 32 bits of the fractional parts of the square roots of the first 8 prime numbers.
 These H variables get updated with each round and contain the final hash after the final round.
 
-Then the message gets padded. In SHA256, the message bit-length needs to be a multiple of 512.
-The padding scheme consists of appending a 1 at the end of the message and then appending 0's until the message has a length of $x*512+448$.
-Finally, the length of the original message is appended as a big-endian 64-bit integer.
-This also results in SHA256 not being able to handle messages that have a length of over $2^{64}$.
+The message padding scheme is the same as that of MD5 with the exception of Big-Endian encoding of the message size at the end.
+# Then the message gets padded. In SHA256, the message bit-length needs to be a multiple of 512.
+# The padding scheme consists of appending a 1 at the end of the message and then appending 0's until the message has a length of $x*512+448$.
+# Finally, the length of the original message is appended as a big-endian 64-bit integer.
+# This also results in SHA256 not being able to handle messages that have a length of over $2^{64}$.
 
 For the first stage of the computation is to expand the message
 # SHA2 works by first expanding the input and then compressing it with a one-way compression Davis-Meyers structure.

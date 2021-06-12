@@ -10,8 +10,10 @@
 \maketitle
 
 \begin{abstact}
-abstrct
+We will in this report present MD5, SHA256, AES and ChaCha20 and the implementation of these for our cryptographic library for FPGAs written ~using~ (pun intended) Sychronous Message Exchange in C#. We have succesfully applied optimisation approaches in an attempt to make the performance comparable to CPU implementations.
 \end{abstract}
+
+\newpage
 
 \tableofcontents
 \listofillustrations
@@ -29,7 +31,7 @@ abstrct
 #+INCLUDE: "conclusion.org"
 
 # #bibliography
-\bibliographystyle{unsrt}
+\bibliographystyle{unsrturl}
 \bibliography{ref}
 
 \begin{appendix}

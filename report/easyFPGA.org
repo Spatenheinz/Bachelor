@@ -1,8 +1,7 @@
-VHDL is a hardware description language that is commonly used for FPGA programming.
-It being a hardware description language makes it an abstraction to physically connecting signals together.
+SME has worked well as a tool for FPGA development. As shown in the previous section shown our implementations use few resources, and we have been able to gain some significant speedup that can compete with modern CPU alternatives without knowing how to actually write in a Hardware Description Language (HDL). VHDL being one such hardware description language makes it an abstraction to physically connecting signals together.
 Abstractions like this are usually created to make tasks easier for humans to write and read,
-but since VHDL is a "first-level" abstraction from hardware, it can be difficult for untrained people to use.
-SME is another level of abstraction from VHDL, since SME is a framework for C\# it should be easier for a lot of software programmers to use.
+but since VHDL is a "first-level" abstraction from hardware, it can be difficult for untrained people to use. In many ways, it is similar to how C for CPU programming in that the user has a lot more control over every little aspect of the program at the cost of additional logic that the developer has to take into account.
+In a similar mindset, SME is another level of abstraction from VHDL as C#, for instance, would be to C. Since SME is a framework for C#, it should be easier for a lot of software programmers to use.
 
 \begin{figure}[H]
   \centering
@@ -10,14 +9,14 @@ SME is another level of abstraction from VHDL, since SME is a framework for C\# 
   \caption{Levels of hardware abstraction, note that SME is the top level.}
 \end{figure}
 
-Since SME compiles to VHDL, it still has some of the same quirks. SME also requires the user to set up input and output busses and define certain processes,
-but it is comparetively not very much. SME also allows the user to write all the logic in C\#.
-For us this was a big advantage, since we have worked in C\# before but had no knowledge working with VHDL.
+However, one thing to be aware of is that SME needs to compile to an HDL, and hence using SME must necessarily follow the same quirks, such as everything to have a fixed size. As shown, busses, etc., must be user specified. If the data flow of a program is complex, it will still be using SME, but it is comparatively not very much. Besides the dataflow, SME is definitely a lot easier to use than an HDL since one simply writes (a restricted subset) C# instead of defining specific types, etc.
+For us, this was a big advantage since we have worked in C\# before but had no knowledge of working with VHDL.
 
-As mentioned the major problems we encountered was in using Vivado to synthesize our implementations.
-There are alternatives to Vivado, but we have not had time to explore if they are any easier, or what their advantages/disadvanteges are.
+In the process of developing this library, we have helped to find some bugs and identified parts of C# which we found missing from in SME's allowed subset, such as pass by reference, methods which take 0 parameters and work directly on fields. As these have now been taken into account in SME, it should be even more accessible to users in the future.
 
-An important thing to note is that even though it proved difficult to optimize SHA-2 and MD5 their naive implementations had a
-surprisingly large data-throughput and uses few resources. This is important since it was a fairly quick to get them implemented using SME.
-If we look past the Vivado problems we could have a prototype ready to use relatively quickly.
-Of course we had access to expert guidence, given that our supervisor helped create SME, however SME has still proved to be a usefull tool for FPGA programming.
+The major problems we encountered was using Vivado to synthesize our implementations.
+There are alternatives to Vivado; however, investigating and determining what their advantages/disadvantages are would have taken a significant amount of time.
+Given the scope of our project, we thought that time was better spend on implementation and testing. The usage of synthesis tools is, however, an inevitable part of FPGA programming and will likely require some time to familiarise with. An important thing to note is that even though it proved difficult to optimize SHA-2 and MD5, their naive implementations had a
+reasonably large data throughput and uses few resources. This is important since it was fairly quick to get them implemented using SME.
+If we look past the Vivado problems, we could have a prototype ready to use relatively quickly.
+Of course, we had access to expert guidance, given that our supervisor helped create SME; however, SME has still proved to be a useful tool for FPGA programming.
