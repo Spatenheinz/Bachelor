@@ -26,5 +26,5 @@
 !data2.txt
 !Makefile
 !global.json
-!/hdl/*.vhd
-!*.cs
+!*.vhd
+!*.bd
