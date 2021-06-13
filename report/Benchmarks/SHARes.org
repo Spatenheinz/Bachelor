@@ -1,5 +1,6 @@
 ** SHA256
 \label{sec:SHAperformance}
+This section will cover the results achieved from our benchmarking. We will look at the throughput and power consumption of our SHA256 implementations.
 *** Throughput
 #+BEGIN_EXPORT latex
 \begin{table}[!htb]
@@ -18,7 +19,11 @@ Proc_{8} & 8.0 & hi(10) & 223.8 & lo(10) & 51.2 & 24756 & 14066\\
 \label{tab:SHAversions}
 \end{table}
 #+END_EXPORT
-Looking at the statistics in Table \ref{tab:SHAversions} one can see there is no real difference in Mhz between Proc$_4$ and Proc$_8$. This, in turn, means there is a negligible performance difference in a best-case scenario, where many small hashes are calculated. On the other hand, the performance in a worst-case scenario is in favor of Proc$_4$, since the pipeline of Proc$_8$ is longer and provides no additional speed because of the serialness. Thus in this case the pipeline Proc$_4$ should be considered over any deeper pipeline for boards of similar size to the Zynq, in cases where there are dependencies. With further analysis in vivado to see which parts of the program is the costly bit the solution could potentially be improved by reducing this cost. We assume the cost happens in the expanding of the message, and that this is reason SHA cannot meet the same magnitude of improvement as MD5. This isalso reflected by the high usage of LUTs. Compared to MD5, SHA uses around 2.3 times as many LUTs (24466/10350), which makes the routing of the design harder. The additional LUT usage comes from the expanding of the input block from 512 bits to 2048 bits. In any case, the pipelined versions do perform better than the naive version in an optimal scenario, by a 66.5 pct. However, in a worst-case scenario, the naive version is 55.6 pct faster than Proc$_4$. Thus just as for MD5, the best-suited version will be application-specific.
+Looking at the statistics in Table \ref{tab:SHAversions} one can see there is no real difference in Mhz between Proc$_4$ and Proc$_8$. This, in turn, means there is a negligible performance difference in a best-case scenario, where many small hashes are calculated. On the other hand, the performance in a worst-case scenario is in favor of Proc$_4$, since the pipeline of Proc$_8$ is longer and provides no additional speed because of the serialness. Thus in this case the pipeline Proc$_4$ should be considered over any deeper pipeline for boards of similar size to the Zynq, in cases where there are dependencies.
+
+With further analysis in Vivado to see which parts of the program is the costly bit the solution could potentially be improved by reducing this cost. We assume the cost happens in the expanding of the message, and that this is reason SHA cannot meet the same magnitude of improvement as MD5. This is also reflected by the high usage of LUTs. Compared to MD5, SHA uses around 2.3 times as many LUTs (24466/10350), which makes the routing of the design harder. The additional LUT usage comes from the expanding of the input block from 512 bits to 2048 bits.
+
+In any case, the pipelined versions do perform better than the naive version in an optimal scenario, by a 66.5 pct. However, in a worst-case scenario, the naive version is 55.6 pct faster than Proc$_4$. Thus just as for MD5, the best-suited version will be application-specific.
 #+BEGIN_EXPORT latex
 \begin{table}[!htb]
 \centering
@@ -37,8 +42,12 @@ i5 & 134 & 224 & 438 & 61 & 461
 #+END_EXPORT
 Just as with MD5, the throughput of the naive SHA version is slower than the CPU versions. For the naive SHA version, the naive version is only 30 MBps slower than the CPU versions on the Raspberry Pi, whereas MD5 was only half as fast (difference of 141 MBps). Likewise, the pipelined version performs reasonably well compare to the Pi, with an overall increase of 35.7 pct. Comparing to the i5, the results are not as promising. The pipelined version is only about half as fast as the CPU versions.
 *** Power Consumptions
-Figure \ref{fig:SHA_power} shows the power consumption of the naive version and Proc$_4$. Once again, the results are very similar to those of MD5. The SHA version consumes only about 0.02 watts more than the naive MD5 version. This additional cost is attributed to additional signals and more logic required to compute SHA. Similarly, the pipelined version is a little more power-hungry than MD5. The thing to remember is that the throughput does not follow the same trend.
-Interestingly, most of the power consumption of the pipelined MD5 goes towards the clocks, whereas the power consumed by SHA is mainly placed in the computations. This might be because the pipeline is far deeper in MD5. The actual power usage for the two SHA versions is 0.036 watts for the naive version and 0.202 watts for Proc$_4$, meaning the Proc$_4$ uses 5.6 times more power, but it only gives a 2-time speedup. Hence, the naive version is more power-efficient than the pipelined version.
+Figure \ref{fig:SHA_power} shows the power consumption of the naive version and Proc$_4$. Once again, the results are very similar to those of MD5. The SHA version consumes only about 0.02 watts more than the naive MD5 version. This additional cost is attributed to additional signals and more logic required to compute SHA.
+
+Similarly, the pipelined version is a little more power-hungry than MD5. The thing to remember is that the throughput does not follow the same trend.
+Interestingly, most of the power consumption of the pipelined MD5 goes towards the clocks, whereas the power consumed by SHA is mainly placed in the computations. This might be because the pipeline is far deeper in MD5.
+
+The actual power usage for the two SHA versions is 0.036 watts for the naive version and 0.202 watts for Proc$_4$, meaning the Proc$_4$ uses 5.6 times more power, but it only gives a 2-time speedup. Hence, the naive version is more power-efficient than the pipelined version.
 \begin{figure}[H]
 \centering
 \subfloat[Naive version]{\includegraphics[width=6cm]{SHApower.png}}

@@ -2,6 +2,7 @@
 We have in this report presented four known cryptographic functions and how we have implemented them using SME
 for a library of cryptographic functions for FPGA. We have covered the advantages and disadvantages of using SME over a HDL.
 In the process of making the library, we have optimised the implementations and have gotten mixed results.
+
 The optimised version of MD5 and ChaCha20 have been able to compete with mid range CPU speeds, while using less power.
 The biggest improvement was seen in MD5 which ran at 3210 MBps around 4.5 times faster than the mid range CPU, where ChaCha20,
 was only able to run at around the same throughput as the CPU. Despite the promosing results we have also gotten results that werent as good.

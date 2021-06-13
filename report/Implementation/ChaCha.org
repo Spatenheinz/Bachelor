@@ -1,11 +1,11 @@
 * ChaCha
-
+In this section we will go over our implementation of ChaCha using SME. First we will cover our naive approach. Then we will go into the optimizations we have made to the implementation.
 ** Naive
 :PROPERTIES:
 :UNNUMBERED: nil
 :CUSTOM_ID: ChaChaNaive
 :END:
-Just like AES, ChaCha will work in two phases. The initial phase will be to set up the seed. After the initial setup, the only modification to the initial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. Every iteration will perform ChaCha described in \ref{ChaChaalg}. Like the other algorithms, we have opted for a total solution, meaning the FPGA solution should be as independent as possible. Such that our chacha20 version will not merely produce the keystream but will produce the cipher itself. Thus the input bus should look like this:
+Just like AES, ChaCha will work in two phases. The initial phase will be to set up the seed. After the initial setup, the only modification to the initial seed will be the block counter. We will thus have a similar bus to that of AES. The only difference is that we also need to give the nonce with the input bus. Every iteration will perform ChaCha described in \ref{ChaChaalg}. Like the other algorithms, we have opted for a total solution, meaning the FPGA solution should be as independent as possible. Such that our ChaCha version will not merely produce the keystream but will produce the cipher itself. Thus the input bus should look like this:
 #+BEGIN_EXPORT latex
 \begin{Verbatim}[fontsize=\footnotesize]
 public interface IState : IBus {
@@ -27,4 +27,4 @@ Where ~BLOCK_SIZE = 16~ and ~TEXT_SIZE = 64~.
 :UNNUMBERED: nil
 :CUSTOM_ID: ChaCha1
 :END:
-ChaCha encourages concurrency and parallelism, as each chunk of the keystream can be computed entirely independently of each other in a similar fashion to AES. Thus a pipelined version is easy to implement compared to the has functions. We can very easily split the 20 rounds into 20 processes, and even if the FPGAs limitations allow for it, we can reduce down to each quarter round (QR) to its own process.
+ChaCha encourages concurrency and parallelism, as each chunk of the keystream can be computed entirely independently of each other in a similar fashion to AES. Thus a pipelined version is easy to implement compared to the hash functions. We can very easily split the 20 rounds into 20 processes, and even if the FPGAs limitations allow for it, we can reduce down to each quarter round (QR) to its own process.

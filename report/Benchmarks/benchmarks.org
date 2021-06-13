@@ -2,13 +2,13 @@
 This chapter will go over the performance of the implementations described in the previous chapter.
 The main focus for our benchmarks has been Throughput and power usage. For comparisons, we settled on similar CPU implementations.
 The different implementations have been tested against the C# standard library equivalent algorithms and ensure that the results are correct.
-The only exception for this ~ChaCha~ as it still is a quite uncommon cipher.
+The only exception for this is ~ChaCha~ as it still is a quite uncommon cipher.
 All implementations is synthesized and implemented using Xilinx Vivado on a Zynq Zedboard, which is a low-end FPGA.
 For comparisons, we have chosen to include different implementations, in C, C#, and OpenSSL, using ~openssl speed -evp "algorithm"~.
 Unfortunately, we have not been able to get our hands on the board in time, and we stand with some limitations on the benchmarking results.
 The reported frequency is the results synthesizing and doing place & route on the design through Xilinx Vivado. For comparisons, we settled for a Raspberry pi 4B.
 The reason being, this having a low-end processor similar to the one on the Zedboard, a Broadcom BCM2711, Quad-core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5GHz.
-Because of promising results, we further compare our results with an Intel i5-7500. For specific details about waht hardware and software is used see Appendix \ref{benchmarksetup}.
+Because of promising results, we further compare our results with an Intel i5-7500. For specific details about what hardware and software is used see Appendix \ref{benchmarksetup}.
 
 #+INCLUDE: "MD5Res.org"
 #+INCLUDE: "SHARes.org"

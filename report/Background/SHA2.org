@@ -9,10 +9,10 @@ Other versions from the SHA2 family exist, like SHA512 and the truncated
 versions like SHA224 and SHA384. All of which are very similar.
 
 The SHA256 routine can be expressed as some initialization and then 3 computation stages.
-All of which works on the message encoded in binary. All operations are also bitwise.
+All of which works on the message encoded in binary. All operations are bitwise.
 
-Firstly all constants and variables get initialized. All members of the SHA family use some preset constants for their initial round of calculations.
-SHA256 uses an array of size 64, K, consisting of the first 32 bits of the fractional parts of the cube roots of the first 64 prime numbers.
+Firstly all constants and variables get initialized. All members of the SHA2 family use some preset constants for their initial round of calculations.
+SHA256 uses an array, K, of size 64 consisting of the first 32 bits of the fractional parts of the cube roots of the first 64 prime numbers.
 The IV of SHA256 uses eight variables (A-H) with an initial value of the first 32 bits of the fractional parts of the square roots of the first 8 prime numbers.
 The IV get updated with each round and contain the final hash after the final round.
 
@@ -24,7 +24,7 @@ The message padding scheme is the same as that of MD5 with the exception of Big-
 
 The first stage of the computation is to expand the message.
 # SHA2 works by first expanding the input and then compressing it with a one-way compression Davis-Meyers structure.
-As mentioned the input block is of 512 bits, so sixteen 32 bit words. These gets extended to 64 32 bit words.
+As mentioned the input block is of 512 bits, so sixteen 32-bit words. These gets extended to 64 32-bit words.
 The extention of the input block works as follows:
 \begin{align}\label{eq:W}
   W[i] &=
@@ -45,7 +45,7 @@ In the compression function we need some intermediate values $Ch$, $Ma$, $\Sigma
  \Sigma_1 &= (E \ggg 6) \oplus (E \ggg 11) \oplus (E \ggg 25)\label{eq:SHAvarl}
 \end{align}
 
-Each round, as shown in Figure \ref{fig:sha256round}, is performed a total of 64 times, which constitutes the second stage. Lastly the third stage, which is addition of the IV before and after the rounds can be performed and the digest for a block is complete and fed as IV for the hashing of the next block until the entire message is hashed.
+Each round, as shown in Figure \ref{fig:sha256round}, is performed a total of 64 times, which constitutes the second stage. Lastly the third stage, which is addition of the IV and the computed values for (A-H). The resulting values are fed as the IV for the hashing of the next block until the entire message is hashed.
 \begin{figure}[H]
 \centering
 \captionsetup{width=.8\linewidth}

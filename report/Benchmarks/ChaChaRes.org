@@ -1,5 +1,7 @@
 ** ChaCha20
 #+BEGIN_EXPORT latex
+This section will cover the results achieved from our benchmarking. We will look at the throughput and power consumption of our ChaCha implementations.
+*** Throughput
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}

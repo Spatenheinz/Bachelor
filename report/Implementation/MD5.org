@@ -1,4 +1,5 @@
 ** MD5
+In this section we will go over our implementation of MD5 using SME. First we will cover a naive approach. Then we will go into the optimizations made to the implementation.
 *** naive
 :PROPERTIES:
 :UNNUMBERED: nil
@@ -9,7 +10,7 @@ As explained in Section \ref{sec:SME}, SME consists of busses and processes. We 
 The compression function itself is wholly contained in the single clocked process and works as described in \ref{MD5alg}. The significant difference comes in the data flow. Since our program will be mapped to hardware, we cannot have variable sizes; everything must be static. Thus we have opted for an approach that will receive 512 bits, corresponding to a single message block of the entire message, over the ~Message~ which we describe later. The process will both handle the padding and the compression and thus stand as an "independent" bus having no dependency on external computations.
 
 For the bus interface between the simulation process and the MD5 process, we considered two overall approaches,
-Firstly, one could have 2 input buses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach unnecessary as the initialization vector is fixed for every hash, thus the alternative. Since we use the C# implementation of SME, we can easily store the Digest locally inside the process as a field. We will only require a single data bus with the message. We can define the Message bus as such:
+Firstly, we could have 2 input buses to the process, one which would contain the message and one which would contain the IV to modify. However, we find this approach unnecessary as the initialization vector is fixed for every hash, thus the alternative. Since we use the C# implementation of SME, we can easily store the Digest locally inside the process as a field. We will only require a single data bus with the message. We can define the Message bus as such:
 #+BEGIN_EXPORT latex
 \begin{Verbatim}[fontsize=\footnotesize]
 public interface IMessage : IBus {

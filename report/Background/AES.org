@@ -33,7 +33,7 @@ The Advanced Encryption Standard (AES) is a symmetric block cipher and specified
 \label{fig:ShiftRows}
 \end{figure}
 
-*MixColumns* takes each column as a polynomial over the GF(2^8) and is multiplied (mod x^4 +1,as it is a finite field) by \(a(x) = 3x^3 + x^2 + x + 2\), which can be written as a matrix as:
+*MixColumns* takes each column as a polynomial over the GF(2^8) and is multiplied (mod $x^4+1$, as it is a finite field) by \(a(x) = 3x^3 + x^2 + x + 2\), which can be written as a matrix as:
 #+attr_latex: :mode math :environment bmatrix :math-suffix =
 | s_{0,c}' |
 | s_{1,c}' |
