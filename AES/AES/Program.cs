@@ -17,9 +17,9 @@ namespace AES
                     sim.AddTopLevelInputs(aes.PlainText, aes.axi_Cipher)
                         .AddTopLevelOutputs(aes.Cipher, aes.axi_Text)
                         .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
-                        // .BuildCSVFile()
-                        // .BuildGraph()
-                        // .BuildVHDL()
+                        .BuildCSVFile()
+                        .BuildGraph()
+                        .BuildVHDL()
                         .Run();
             }
         }
