@@ -6,7 +6,7 @@ Each partition of the message will then be fed into the compression ~f~ function
 \begin{figure}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\includegraphics[width=7cm]{MD5rounds.png}
+\includegraphics[width=8cm]{RoundsMD5.png}
 \caption[MD5 Rounds]%
 {Rounds of MD5. Each of the two outer circles, is what corresponds to the f-function in Figure \ref{fig:Merkle}. Each of f function consists of a set of functions which will hash the (A,B,C,D) vector and forward it to the next round. The last round of an application of f will forward the vector to the next application of f on the next block of the message.}
 \label{fig:MD5}
