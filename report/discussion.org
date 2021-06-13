@@ -19,6 +19,7 @@ Firstly it is not ideal that SHA-2 and MD5 can only handle short inputs, and thu
 
 \begin{figure}[H]
 \centering
+\captionsetup{width=.8\linewidth}
 \includegraphics[scale=.4]{MD5-pipeline.png}
 \caption{A visualization of the pipeline stages of MD5 (SHA-2 is similar). The proposed bus is the dotted line.}
 \label{fig:MD5-pipe}
@@ -37,9 +38,7 @@ Firstly it is not ideal that SHA-2 and MD5 can only handle short inputs, and thu
 # When the data is being processed in stages F-I in Figure \ref{MD5-pipe}, pipeline stalls. So the only time save is from the pipelined stages before the actual calculations.
 # So different sizes of the calculations stages in SHA-2 and MD5 might have some performance increases.
 # Also we could test out similar projects that is already documented, such as the one mentioned later in this section.
-Secondly, we had no prospect of getting our hand on a physical FPGA, so we decided not to look into developing a device driver/interface to be able to communicate with the FPGA and call our functions in C. Such a driver would, however, be necessary to actually use the library.
-
-Furthermore, we have successfully implemented and tested our implementations through Vivado, so it would be appropriate to test the actual performance instead of just relying on the theoretical limits once the driver, etc., was set up. The next thing we would like is to physically synthesize the implementation on the Zynq Zedboard FPGA.
+Secondly, we had no prospect of getting our hand on a physical FPGA, so we decided not to look into developing a device driver/interface to be able to communicate with the FPGA and call our functions in C. Such a driver would, however, be necessary to actually use the library. Furthermore, we have successfully implemented and tested our implementations through Vivado, so it would be appropriate to test the actual performance instead of just relying on the theoretical limits once the driver, etc., was set up. The next thing we would like is to physically synthesize the implementation on the Zynq Zedboard FPGA. In this context, it would also be interesting to compare with how well these versions compare to GPU accelerated solutions as this is an obvious first choice in many branches of computer science when trying to accelerate the performance of an algorithm.
 
 Thirdly, the library contains fundamental algorithms, but it would always be good with a more extensive library.
 

@@ -5,34 +5,33 @@
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c}
+\begin{tabular}{l r l r l r r r}
 \hline
-Version & f$_{max}$(Mhz) & clocks$_{hi/lo}$ & TP(MBps)$_{hi/lo}$ & LUT & FF\\
+Version & f$_{max}$(Mhz) & clocks$_{hi}$ & TP(MBps)$_{hi}$ &clocks$_{lo}$ & TP(MBps)$_{lo}$ & LUT & FF\\
 \hline
-Naive & 2.1 & b & 134.4 & 24330 & 2560\\
-Proc_{4} & 8 &   hi(6)/lo(6) & 223.9/85.3 & 24466 & 8938\\
-Proc_{8} & 8 &   hi(10)/lo(10) & 223.8/51.2 & 24756 & 14066\\
+Naive    & 2.1 & b & 134.4 & b & 134.4 & 24330 & 2560\\
+Proc_{4} & 8.0 & hi(6) & 223.9 & lo(6) & 85.3 & 24466 & 8938\\
+Proc_{8} & 8.0 & hi(10) & 223.8 & lo(10) & 51.2 & 24756 & 14066\\
 \end{tabular}
 \caption[SHA256: FPGA Versions]%
-{Performance and statistics over the different SHA implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $hi(x) = x+2 \cdot blocks$ and $lo(x) = 2 + 6 \cdot blocks$ describe a best and worst-case scenario, respectively. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
+{Performance and statistics over the different SHA implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $hi(x) = x+2 \cdot blocks$ and $lo(x) = 2 + 6 \cdot blocks$ describe a best and worst-case scenario, respectively and is calculated by a similar pipelining schema as MD5. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes the 64 rounds are distributed over.}
 \label{tab:SHAversions}
 \end{table}
 #+END_EXPORT
-Looking at the statistics in Table \ref{tab:SHAversions} one can see there is no real difference in Mhz between Proc$_4$ and Proc$_8$. This, in turn, means there is a negligible performance difference in a best-case scenario, where many small hashes are calculated. On the other hand, the performance in a worst-case scenario is in favor of Proc$_4$, since the pipeline of Proc$_8$ is longer and provides no additional speed because of the serialness. Thus the shorter pipeline Proc$_4$ should always be considered over any deeper pipeline for boards of similar size to the Zynq, in cases where there are dependencies.
-The reason SHA cannot meet the same magnitude of improvement as MD5 is caused by the high usage of LUTs. Compared to MD5, SHA uses around 2.3 times as many LUTs (24466/10350), which makes the routing of the design harder. The additional LUT usage comes from the expanding of the input block from 512 bits to 2048 bits. In any case, the pipelined versions do perform better than the naive version in an optimal scenario, by a 66.5 pct. However, in a worst-case scenario, the naive version is 55.6 pct faster than Proc$_4$. Thus just as for MD5, the best-suited version will be application-specific.
+Looking at the statistics in Table \ref{tab:SHAversions} one can see there is no real difference in Mhz between Proc$_4$ and Proc$_8$. This, in turn, means there is a negligible performance difference in a best-case scenario, where many small hashes are calculated. On the other hand, the performance in a worst-case scenario is in favor of Proc$_4$, since the pipeline of Proc$_8$ is longer and provides no additional speed because of the serialness. Thus in this case the pipeline Proc$_4$ should be considered over any deeper pipeline for boards of similar size to the Zynq, in cases where there are dependencies. With further analysis in vivado to see which parts of the program is the costly bit the solution could potentially be improved by reducing this cost. We assume the cost happens in the expanding of the message, and that this is reason SHA cannot meet the same magnitude of improvement as MD5. This isalso reflected by the high usage of LUTs. Compared to MD5, SHA uses around 2.3 times as many LUTs (24466/10350), which makes the routing of the design harder. The additional LUT usage comes from the expanding of the input block from 512 bits to 2048 bits. In any case, the pipelined versions do perform better than the naive version in an optimal scenario, by a 66.5 pct. However, in a worst-case scenario, the naive version is 55.6 pct faster than Proc$_4$. Thus just as for MD5, the best-suited version will be application-specific.
 #+BEGIN_EXPORT latex
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c}
+\begin{tabular}{l r r r r r}
 \hline
 \textbf{Version} & Naive & Proc$_{4}$ & C\# & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
 \hline
-\textbf{TP(MBps)} & 134 & 224 & 163 & 42 & 165\\
- & & & 438 & 61 & 461
+Pi & 134 & 224 & 163 & 42 & 165\\
+i5 & 134 & 224 & 438 & 61 & 461
 \end{tabular}
 \caption[SHA256: FPGA and CPU comparisons]%
-{Performance comparison of the worst and best SHA FPGA implementations and the various CPU versions. The C\# uses the \texttt{System.Security.Cryptography.SHA256}. The OpenSSL is from \texttt{openssl speed -evp sha256}. Each of the CPU implementations has two values, the first being the Pi results and the second the i5 results.}
+{Performance comparison of the worst and best SHA FPGA implementations and the various CPU versions. The C\# uses the \texttt{System.Security.Cryptography.SHA256}. The OpenSSL is from \texttt{openssl speed -evp sha256}, where high and low corresponds to the lowest reported throughput and high is the highest reported throughput.}
 \label{tab:SHAcompare}
 \end{table}
 #+END_EXPORT

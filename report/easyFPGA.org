@@ -16,7 +16,7 @@ In the process of developing this library, we have helped to find some bugs and 
 
 The major problems we encountered was using Vivado to synthesize our implementations.
 If we wanted alternatives to Vivado we would need to switch to another FPGA than the Xilinx, however, investigating and determining what the advantages/disadvantages are of the different hardware/software would have taken a significant amount of time.
-Given the scope of our project, we thought that time was better spend on implementation and testing. The usage of synthesis tools is, however, an inevitable part of FPGA programming and will likely require some time to familiarise with. An important thing to note is that even though it proved difficult to optimize SHA-2 and MD5, their naive implementations had a
+Given the scope of our project, we thought that time was better spend on implementation and testing. The usage of synthesis tools is, however, an inevitable part of FPGA programming and will likely require some time to familiarise with. This process can especially be tedious because of how long it takes to run it through the synthesis tool, ranging all from 20 minutes to multiple hours in extreme cases. An important thing to note is that even though it proved difficult to optimize SHA-2 and MD5, their naive implementations had a
 reasonably large data throughput and uses few resources. This is important since it was fairly quick to get them implemented using SME.
 If we look past the Vivado problems, we could have a prototype ready to use relatively quickly.
-Of course, we had access to expert guidance, given that our supervisor helped create SME; however, SME has still proved to be a useful tool for FPGA programming.
+Of course, we had access to expert guidance, given that our supervisor helped create SME; however, SME has still proved to be a useful tool for FPGA programming and was quite manageable to familiarize oneself with.

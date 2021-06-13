@@ -1,1 +1,63 @@
-* AES look-up table
+* Requirements & How to run
+* Setup used in benchmarking
+\label{benchmarksetup}
+#+BEGIN_EXPORT latex
+\begin{minipage}{0.4\textwidth}
+\subsection{Hardware}
+\subsubsection{Raspberry Pi 4 - 8GB}
+
+\subsubsection{CPU: i5-7500}
+\begin{itemize}
+\itemsep0em
+\item Cores: 4\\
+\item Threads: 4\\
+\item Base Freq: 3.4GHz\\
+\item Max Freq: 3.8GHz\\
+\item TDP: 65W
+\end{itemize}
+\subsubsection{RAM:}
+\begin{itemize}
+\itemsep0em
+\item Size: 2x4GB\\
+\item Type: DDR4\\
+\item Speed: 2133 MTps\\
+\end{itemize}
+\subsubsection{Disk: Kingston SA400S372}
+\begin{itemize}
+\itemsep0em
+\item Size: 240GB\\
+\item Form Factor: 2.5\\
+\item Interface: SATA Rev 3.0\\
+\item Read: 500MB/s\\
+\item Write: 350MB/s\\
+\end{itemize}
+\subsubsection{Motherboard}
+\begin{itemize}
+\itemsep0em
+\item Model: MSI H110I PRO\\
+\end{itemize}
+\end{minipage}
+\hspace{2cm}
+\begin{minipage}{0.4\textwidth}
+\subsection{Software}
+\subsubsection{Operating System:}
+\begin{itemize}
+\itemsep0em
+\item Pi: Raspberry PI OS - buster\\
+\item i5: .NET 5.0 & .NET 3.1\\
+\end{itemize}
+Linux 5.9.16-1-MANJARO
+\subsubsection{Compiler:}
+\begin{itemize}
+\itemsep0em
+\item C: gcc 10.2.0\\
+\item C#: .NET 5.0 & .NET 3.1\\
+\end{itemize}
+\subsubsection{Other Tools:}
+\begin{itemize}
+\itemsep0em
+\item OpenSSL 1.1.1k\\
+\item Xilinx Vivado v2020.2\\
+\end{itemize}
+\end{minipage}
+#+END_EXPORT

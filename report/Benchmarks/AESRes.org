@@ -5,43 +5,42 @@
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c}
+\begin{tabular}{l r l r r r r}
 \hline
-Version & f$_{max}$(Mhz) & clocks & TP(MBps) & LUT & FF\\
+Version & f$_{max}$(Mhz) & clocks & TP(MBps) & LUT & FF & BRAM\\
 \hline
-Naive      &   22 & b          & 352    & 10612     &  3195\\
-TBox       &  25 & b           & 400 & 16458 & 3195\\
-Proc$_{4}$  &  68 & $C(3)$ & 544 & 16474 & 2817\\
-Proc$_{11}$ & 208 & $C(10)$ & 1663 & 15659 & 4383\\
-Proc$_{22}$ & 217 & $C(24)$ & 1662 & 15454 & 7401\\
+Naive      &   22 & b          & 352    & 10612     &  3195 & 0\\
+TBox       &  25 & b           & 400 & 16458 & 3195 & 0\\
+Proc$_{4}$  &  68 & $C(3)$ & 544 & 16474 & 2817 & 0\\
+Proc$_{11}$ & 208 & $C(12)$ & 1663 & 15659 & 4383 & 0\\
+Proc$_{22}$ & 217 & $C(24)$ & 1662 & 15454 & 7401 & 0\\
+BRAM$_{11}$ & 195 & $C(31) & 1556 & 10012 & 10398 & 72
 \end{tabular}
 \caption[AES: FPGA Versions]%
-{Performance and statistics over the different AES implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $C(x) = x+2 \cdot blocks$. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes AES is distributed over.}
+{Performance and statistics over the different AES implementations. f$_{max}$ is the clock rate reported from Vivado. Clocks describe how many clock cycles it takes to calculate \texttt{b} blocks, where $C(x) = x+2 \cdot blocks$, since there is no dependency high and low should be the same. The throughput (TP) is calculated as \((b_{bits}\cdot f_{max})/(clocks \cdot 8)\). LUT is the number of Look-Up Tables used in the design. FF is the reported amount of Flip Flops used. Proc$_{i}$ denotes how many ~i~ processes AES is distributed over.}
 \label{tab:AESversions}
 \end{table}
 #+END_EXPORT
-From the different implementations as shown in Table \ref{tab:AESversions} one can see quite interesting results. First and foremost, the TBox approach has merely 48 MBps higher throughput than the naive approach, and they each have their pros and cons. The naive approach uses less power and uses fewer LUTs but at a little lower throughput. In Section \ref{AESopt} we described how we would assume the reasonably large lookup tables might be using up quite a lot of the FPGAs LUTs. This is, however, not the case as the naive version is using only 16500 LUTs comparing to the SHA256's 24300. Even more interesting is that splitting the calculations up into different processes does not increase the LUT usage. This suggests that the Vivado synthesizer recognizes the arrays from each process to be equivalent Read-Only Memory and thus can optimize it to a single table. Against the assumptions, this produces good results without having to use BRAM specifically. By making each round of AES its process, we get a four-fold increase in throughput from the naive TBox approach. We get no further improvement from reducing each process to only a half-round, suggesting that the overhead from signals is becoming the bottleneck.\\
+From the different implementations as shown in Table \ref{tab:AESversions} one can see quite interesting results. First and foremost, the TBox approach has merely 48 MBps higher throughput than the naive approach, and they each have their pros and cons. The naive approach uses less power and uses fewer LUTs but at a little lower throughput. In Section \ref{AESopt} we described how we would assume the reasonably large lookup tables might be using up quite a lot of the FPGAs LUTs. This is, however, not the case as the naive version is using only 16500 LUTs comparing to the SHA256's 24300. Even more interesting is that splitting the calculations up into different processes does not increase the LUT usage. This suggests that the Vivado synthesizer recognizes the arrays from each process to be equivalent Read-Only Memory and thus can optimize it to a single table. Against the assumptions, this produces good results without having to use BRAM specifically. By making each round of AES its process, we get a four-fold increase in throughput from the naive TBox approach. We get no further improvement from reducing each process to only a half-round, suggesting that the overhead from signals is becoming the bottleneck. Furthermore we can see the BRAM version is actually slower than our pipelined version which simply uses LUTs. We might not use the BRAM correctly as all the articles we have found using the TBOX approach for FPGAs uses BRAM. Hence it suggests that using the more intrinsic parts of FPGA programming is not as straight forward even with a high level model.\\
 In Section \ref{AESnaive} we described how we rejected to make a solution that was flexible in its key size. The results shown in Table \ref{tab:AESversions} hint that this has a good impact on the performance. Comparing our solution to the solution presented in the SME GitHub repository\cite{sme}, which is more flexible in the key size, our solution outperforms this by a factor of 1.66, as it is reported to have a throughput of 1.92Gbps(240MB/s)\cite{sme}. This shows that we can trade off some flexibility for a significant speedup.
 
 #+BEGIN_EXPORT latex
 \begin{table}[H]
 \centering
 \captionsetup{width=.8\linewidth}
-\begin{tabular}{c c c c c c c c}
+\begin{tabular}{l r r r r r r r}
 \hline
 \textbf{Version} & Naive & Proc$_{11}$ & C\# & C & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
 \hline
-\textbf{TP(MBps)} & 400 & 1963 &    70& 198 & 72  & 89\\
-                  &     &      & 1699 & 340 & 847 & 5722
+Pi & 400 & 1963 &    70& 198 & 72  & 89\\
+i5 & 400 & 1963 & 1699 & 340 & 847 & 5722
 \end{tabular}
 \caption[AES: FPGA and CPU comparisons]%
-{Performance comparison of the worst and best AES FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp aes-128-ecb}. Each of the CPU implementations has two values, the first being the Pi results and the second the i5 results.}
+{Performance comparison of the worst and best AES FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp aes-128-ecb}, }
 \label{tab:AEScompare}
 \end{table}
 #+END_EXPORT
-The results of AES are interesting compared to our other implementations in the sense that even the naive FPGA version is outperforming the CPU on the Pi. One can notice that our naive version has a throughput of 400 MB/s which is around 4.49 times as much as OpenSSL on its peak performance and that it likewise outperforms C# and our C-version with 5.7 and 6.2 times, respectively. The i5, on the other hand, is quite a lot faster than the naive implementation, where only our C version is slower. The pipelined version *Proc*$_{11}$ is almost as fast as the C# version and faster than OpenSSL at its lowest performance. However, OpenSSL at its full capacity still has around 3.4 times higher throughput. These results emphasize the results presented from the previous sections, that an FPGA is faster at performing specific tasks than a CPU and shows how an ASIC, such as the AES-NI device in intel CPUs, is even better doing a specific task than an FPGA. One aspect to consider is that a Zynq board and an i5-7500 have about the same cost. Hence a Zynq is cheaper than the i5 since it also needs all the other computer components, such as Motherboard, RAM, etc.
-Even for high-end FPGAs, a "comparable" CPU can achieve similar performance.
-An article from 2020 which compares both pipelined and non-pipelined versions of AES on FPGA's shows that a pipelined version on a Virtex-5 (costing 103000 DKK)\cite{virtex5} has a throughput of 14.9 GBps\cite{Zodpe}, whereas an AMD ThreadRipper 3970x (16000DKK)\cite{threadPrice} can achieve 12.9 GBps \cite{threadripper}, which clearly shows how effective ASICs can be. So with this in mind, our results might not seem as bad.
+The results of AES are interesting compared to our other implementations in the sense that even the naive FPGA version is outperforming the CPU on the Pi. One can notice that our naive version has a throughput of 400 MB/s which is around 4.49 times as much as OpenSSL on its peak performance and that it likewise outperforms C# and our C-version with 5.7 and 6.2 times, respectively. The i5, on the other hand, is quite a lot faster than the naive implementation, where only our C version is slower. The pipelined version Proc$_{11}$ is almost as fast as the C# version and faster than OpenSSL at its lowest performance. However, OpenSSL at its full capacity still has around 3.4 times higher throughput. These results emphasize the results presented from the previous sections, that an FPGA is faster at performing specific tasks than a CPU and shows how an ASIC, such as the AES-NI device in intel CPUs, is even better doing a specific task than an FPGA. One aspect to consider is that a Zynq board and an i5-7500 have about the same cost\cite{pynq}\cite{i5price}. Hence a Zynq is cheaper than the i5 since it also needs all the other computer components, such as Motherboard, RAM, etc. All things considered, our solution is not achieving the hoped throughput, as Xilinx own AES\cite{aesxilinx} should be able to run at 16GBps on boards with a cost of around 1100\$\cite{highfpgaprice} whereas an AMD ThreadRipper 3970X (2600\$\cite{threadPrice}) can only achieve 12.9GBps \cite{threadripper}. Thus we would assume it to be possible for an FPGA to be faster than even an ASIC accelerate CPU of equivalent price. There might, however, be some difference in specific architecture for FPGAs in different price ranges that might disallow such generalization, and the AES version provided by Xilinx is most definitely developed by a larger team with more experience than us. Still, our version to be more than three times as slow is not ideal.
 
 *** Power Consumptions
 Figure \ref{fig:AES_power} shows the power usage of the TBox version vs. the power usage of the fastest pipelined version Proc$_{11}$, which shows that the naive Tbox version is using a lot more power than the Proc$_{11}$. Thus we can easily say Proc$_{11}$ is to prefer over the Tbox version. It is, however, possible that there is something wrong with the reported power consumption (or at least we cannot pinpoint why it is so high) since the power usage of Proc$_{11}$ is more closely related to the power usage of MD5 and SHA, whereas the Tbox version has an abnormally high power usage.

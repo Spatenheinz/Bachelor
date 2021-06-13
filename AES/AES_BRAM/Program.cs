@@ -47,9 +47,9 @@ namespace AES_BRAM
                     sim.AddTopLevelInputs(tester.PlainText, round11.axi_out)
                         .AddTopLevelOutputs(round11.Out, tester.axi_Text)
                         .AddTicker(s => Console.WriteLine($"Ticks {Scope.Current.Clock.Ticks}"))
-                        .BuildCSVFile()
-                        .BuildGraph()
-                        .BuildVHDL()
+                        // .BuildCSVFile()
+                        // .BuildGraph()
+                        // .BuildVHDL()
                         .Run();
             }
         }

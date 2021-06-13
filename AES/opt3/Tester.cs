@@ -21,7 +21,7 @@ namespace opt3
 
         private readonly string[] MESSAGES;
 
-        private static int testsize = 3;
+        private static int testsize = 2;
         private string[] randomStrings = new string[testsize];
         private static Random random = new Random();
 
