@@ -1,4 +1,4 @@
-% Created 2021-06-13 Sun 15:35
+% Created 2021-06-13 Sun 17:55
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper, openany]{book}
 \usepackage[utf8]{inputenc}
@@ -22,10 +22,10 @@
 
 \maketitle
 
-\pagenumbering{roman}
 \chapter*{\begin{center}\begin{normalsize}Abstract\end{normalsize}\end{center}}
 \begin{changemargin}{1.5cm}{1.5cm}
-Computer security and cryptography is ubiquitous and is a critical aspect of computer science. Often cryptography is handled in the CPU as with the general majority of computing. Still, in some cases, CPUs might be a suboptimal solution, for instance, when low power consumption is critical. In such a case, a Field Programmable Gate Array (FPGA) is a good alternative. This report will present a library of four cryptographic functions designed for FPGA devices: MD5, SHA256, AES, and ChaCha20. We will present the underlying algorithm of the four functions and how we have implemented these using a high-level programming model Synchronous Message Exchange (SME) in C\# instead of the usual approach of using a Hardware Description Language(HDL). We will further present how we, by pipelining, have achieved performance comparable to a CPU of a similar price range at much lower power consumption. In the process, we have tried investigating different parts of FPGA programming and how this can be applied in SME to see if it would further improve performance. We were, however, not able to achieve this and hence included some reflection on how approachable FPGA programming is using a high-level model such as SME.
+Computer security and cryptography is ubiquitous and is a critical aspect of computer science. Often cryptography is handled in the CPU as with the general majority of computing. Still, in some cases, CPUs might be a suboptimal solution, for instance, when low power consumption is critical. In such a case, a Field Programmable Gate Array (FPGA) is a good alternative. This report will present a library of four cryptographic functions designed for FPGA devices: MD5, SHA256, AES, and ChaCha20. We will present the underlying algorithm of the four functions and how we have implemented these using a high-level programming model Synchronous Message Exchange (SME) in C\# instead of the usual approach of using a Hardware Description Language(HDL). We will further present how we, by pipelining, have achieved performance comparable to a CPU of a similar price range at much lower power consumption. In the process, we have tried investigating different parts of FPGA programming and how this can be applied in SME to see if it would further improve performance. We were, however, not able to achieve this and hence included some reflection on how approachable FPGA programming is using a high-level model such as SME. Code for the project can be found at:\\
+\url{https://github.com/Spatenheinz/Bachelor}
 \end{changemargin}
 
 \newpage
@@ -34,29 +34,29 @@ Computer security and cryptography is ubiquitous and is a critical aspect of com
 \listofillustrations
 
 \chapter{Introduction}
-\label{sec:org1da14ef}
+\label{sec:org6afb9bc}
 Cryptography is an essential branch of both mathematics and computer science. It is used in wast variety of fields, from security to compression and data validation. Because of their widespread use, cryptographic algorithms should be fast and efficient without exposing vulnerabilities. With this in mind, algorithms are often developed with hardware as a major consideration. With hardware in focus, cryptographic functions are appropriate for a wider variety of devices since the generality of a CPU is not critical. Some examples include low-resource devices, Field Programmable Gate Arrays (FPGAs), and Application Specific Integrated Circuits (ASICs). Devices such as the latter two are similar in that they are designed to compute a specific task instead of doing general computations. This allows the devices to do faster computations at a lower resource cost since the need for generality is omitted. The advantage of an FPGA over an ASIC is that it is generally more approachable for private users and academics and that they can be field programmed, meaning the specific computational ``purpose'' can be changed, whereas ASICs are ``soldered'' to its purpose. Based on this, we wanted to explore how accessible FPGA programming is, and i our case using a high level programming model to achieve this, and if it would be possible to get any competitive advantage from an FPGA over CPUs without prior experience with FPGA development.
 
 \subsection{Project Objective}
-\label{sec:orgd67d1e4}
+\label{sec:org1b3f4b8}
 This project's main objective is to implement a cryptographic library that can be synthesized on an FPGA; hence a secondary objective explores the area of FPGA development. This is done using a high-level programming model, Synchronous Message Exchange (SME) intended for FPGA development. This approach is chosen rather than using a Hardware Description Language (HDL), as it allows for easier implementation and focuses on the algorithmic aspect, omitting the low-level focus. Hence, no need for us to know how to write HDL. The library consists of four cryptographic functions, which cover various cryptographic purposes and their peculiarities in the specific implementation. We have implemented each cryptographic function naively and then tried to improve these by pipelining the computation. Lastly, we have made comparisons of how well a naive version compares to a pipelined one and how well it compares with its CPU alternative.
 
 \subsection{Report Structure}
-\label{sec:orga005b61}
+\label{sec:org3769dd2}
 Chapter 2 presents some background knowledge about the target device, Synchronous Message Exchange, and cryptography. Chapter 3 will present the four cryptographic functions in the library in the following order: MD5, SHA256, AES, ChaCha20. Chapter 4 revolves around the implementation of the functions, focusing on SME and how the design corresponds to FPGAs rather than the actual C\# code used in the project. Chapter 5 presents the performance of the functions and the proposed optimizations. Chapter 6 will serve as a discussion on SME as a tool for FPGA development and proposals for future work. Finally, we conclude in Chapter 7.
 
 \subsection{Requirements for the reader}
-\label{sec:org3204cce}
+\label{sec:org6c54334}
 It is assumed the reader of this report has a knowledge equivalent to that of a 6th semester bachelor student in computer science or higher.
 
 \chapter{Background}
-\label{sec:org5a511d7}
+\label{sec:org4c5cd61}
 This chapter will present the theoretical aspect applied in implementing our cryptographic library. Firstly, we will briefly give a high-level overview of the target device, FPGA, followed by an introduction to the programming model which has enabled us to implement the cryptographic functions included in the library. A review of the different cryptographic terms and constructs used in the library is presented for good measure.
 
 The algorithm of the four cryptographic functions in the library is presented in detail in the following order: MD5, SHA256, AES, and ChaCha20.
 
 \section{Field Programmable Gate Arrays}
-\label{sec:orgc620f98}
+\label{sec:orgb72a249}
 An FPGA is an integrated circuit that can be reconfigured in the ``field''. It stands as the opposite of an ASIC, which will have a single purpose, whereas FPGA's can be reprogrammed to have different purposes. It means that an FPGA can be configured to work as a CPU, a GPU, or something else entirely. This can be done in an HDL, such as Verilog or Very High-Speed Integrated Circuit Hardware Description Language (VHDL), and is typically run through a program to synthesize/implement the design on the FPGA.
 FPGA's consist of a set of Configurable Logic Blocks (CLBs) and interconnects between these. CLBs and their interconnects are the reason FPGA's are reprogrammable. They differ from classic logic gates as NAND and such, used in a CPU, since they are constructed by look up tables, which can be reprogrammed, instead of fixed gates. Since these lookup tables can be built for specific purposes, an FPGA can be programmed to do one thing and do it well. This lack of generality is often suitable for both performance and power consumption, compared to a CPU, which needs to be able to do general processing and thus, in general, has more waste.
 
@@ -74,7 +74,7 @@ SME has a similar notion of processes. There exist two types of SME processes, \
 For the communications channels, SME extends the concepts from CSP by using buses. Instead of using explicit naming for sources and destinations, each process will consist of a set of input and output busses that it can read and write to, respectively. Furthermore, these buses use broadcasting as means of synchronization instead of the blocking non-buffered approach.  The broadcasting happens every clock cycle on the internal clock.
 A bus is essentially just a collection of fields that can be read and written depending on the process's access, merely a data transfer object. Thus a simple (and pointless) process that adds two numbers might have two input busses X\{valid,x\} and Y\{valid,y\}, where X and Y are unique bus identifiers, valid, x and y are fields, with denoting whether there is any data on the bus and x and y is the data. Inside the \texttt{onTick} function, which will be run every tick of the internal clock of SME, could then add the two values x and y if their valid fields were set to true and write the result to a bus RES\{valid, res\}. It is worth noting that a process should not necessarily have one, or possibly multiple, ``valid''-flags which shows if there is any data on the bus, but this is common in cases where the processes communicate using the ready/valid handshake, for instance, the one specified by the AXI protocols, which is the process communications protocol we will be using. It is easy to see how an SME model can be transformed into a dependency graph with processes being nodes and buses the edges. From the dependency graph, it is possible to create an Abstract Syntax Tree (AST) which can be translated into VHDL code\cite{sme}, thus creating the bridge from the high-level model to the low-level hardware implementation. This, in turn, can be fed into a tool such as Xilinx Vivado to synthesize the implementation to actual hardware. For the cryptographic library covered in this report, we will be using the C\# implementation of SME by the models creators\cite{sme}.
 \section{A crypto library}
-\label{sec:org89aedb4}
+\label{sec:orgbad6785}
 Cryptographic functions are used by developers across most branches, whether communicating securely over a network or hashing programs to do version control.
 So there is a motive for having a crypto library for FPGA's. Such a processor has been made before. IBM created their own ``IBM 4758 Secure Coprocessor''\cite{IBM4758}. Another point is modern Hardware Security Modules (HSM) which also does this.
 However, the problem with the existing solutions is that many of them require setting up a royalty-based licensing deal, making it difficult to use for experimental development, small projects, research, and academics.
@@ -86,7 +86,7 @@ It should also have an API allowing users to utilize these functions in their pr
 These implementations should also be optimized in terms of speed to compete with the existing software solutions.
 
 \subsection{Hashing}
-\label{sec:org3a9ed00}
+\label{sec:org7dcf2a1}
 Hashing is a mathematical concept referring to using a hash function to map some data of arbitrary size to a value of a fixed size. Cryptographic hash functions are a subset of all hash functions.
 The reason for this is that for a hash function to be a cryptographic hash function, it needs to uphold several properties to ensure it is secure, such as ensuring that it is hard to find collisions. Computers also have limited space in memory which limits the implementation of hash functions. Lastly and most importantly, computers can't do true randomness.
 If a hash function can be implemented with a limited input space, it is pseudo-random, and upholds specific properties listed below, it can be categorized as a ``Cryptographic Hash Function''.
@@ -102,13 +102,14 @@ From Figure \ref{fig:Merkle} one can see the construction of the hashing functio
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=10cm]{merkle.png}
+\captionsetup{width=.8\linewidth}
+\includegraphics[width=12cm]{merkle1.png}
 \caption[Merkle-Damgård construction]%
 {Merkle-Damgård construction. Each rectangle presents data, where the messages will be divided into n blocks, of which the size depends on the specific algorithm. Similarly, the IV and the Digest also will have variable lengths, but these will have the same size. The circles \texttt{f} denotes the compression function, and the finalization function is optional (depending on the specific algorithm). Each arrow shows the flow of data. }
 \label{fig:Merkle}
 \end{figure}
 \subsection{Cipher}
-\label{sec:orga5cc752}
+\label{sec:orgd354128}
 \label{sec:cipher}
 Ciphers are algorithms used for symmetric encryption and decryption of data. This means that rather than generating a fixed-sized output like most (if not all) hash functions, a cipher should always output as many bits as its input. There are generally two types of ciphers: block ciphers and stream ciphers. They a similar in that they always have to be a bijective mapping from key/plaintext to ciphertext, such that no two plaintexts can map to the same ciphertext. Furthermore, Claude Shannon defined\cite{Shannon} that secures ciphers should have confusion and diffusion. Confusion meaning a bit of the ciphertext should depend on the key in multiple ways, such that no connection between those two is easily observable. Diffusion meaning a single change of bit in the plaintext should change most bits in the ciphertext. For their internal workings, the two types of ciphers are, however, vastly different.\\
 
@@ -118,7 +119,7 @@ Block ciphers are defined to work on a fixed-sized block of bits, which often, a
 \textbf{Stream ciphers}\\
 A stream cipher, as the name suggests, works using stream and is thus independent of size. Stream ciphers generate a pseudorandom keystream, which will be combined with the plaintext. Most often, this combination will be by XOR, such that bit 0th of the plaintext will be XORed with the 0th bit of the keystream.
 \chapter{Library functions}
-\label{sec:org4a5acba}
+\label{sec:org20a6e40}
 \section{MD5}
 \label{MD5alg}
 The Message-Digest algorithm MD5 is a reasonably simple one-way hashing function that produces a 128-bit digest specified in 1992 in RFC 1321\cite{rfc1321}.
@@ -129,7 +130,7 @@ Each partition of the message will then be fed into the compression \texttt{f} f
 \begin{figure}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
-\includegraphics[width=7cm]{MD5rounds.png}
+\includegraphics[width=8cm]{RoundsMD5.png}
 \caption[MD5 Rounds]%
 {Rounds of MD5. Each of the two outer circles, is what corresponds to the f-function in Figure \ref{fig:Merkle}. Each of f function consists of a set of functions which will hash the (A,B,C,D) vector and forward it to the next round. The last round of an application of f will forward the vector to the next application of f on the next block of the message.}
 \label{fig:MD5}
@@ -383,12 +384,12 @@ ChaCha will perform 20 rounds consisting of 4 quarter rounds. For a quarter-roun
 Lastly, when the 20 rounds have been computed, the initial seed and the modified version are index-wise added, giving a resulting block of 16 words of the stream, and this stream can then be XORed with the plaintext to get the plaintext cipher.
 
 \chapter{Implementation}
-\label{sec:orgbad8cfb}
+\label{sec:org341b71c}
 This chapter will go over the implementation-specific details of the algorithms described in the previous chapter. The implementation details will mainly be focused on the usage of SME and how we can structure the algorithms using the different components of SME, to get a working FPGA solution. We describe these implementations first by its naive model, followed by how we can structure a pipeline to improve the performance of each algorithm. We do not explain how the generated VHDL code gets routed to hardware, and we do not describe any interface to use the FPGA from an actual program.
 
 We will be using the streaming AXI protocol\cite{AMBAaxi} (from hereon, just called AXI) for all implementations. AXI is a lightweight protocol for synchronizing data transactions between hardware components. It specifies some standards for a ready/valid handshake between components. This means that whenever a Master component is ready (the valid flag is set) to send data over a bus, and the slave is ready to receive data simultaneously, a transaction is completed. This should ensure that the FPGA version should work with a potential callable interface.
 \section{MD5}
-\label{sec:orgb0473d8}
+\label{sec:org62230f7}
 \subsection{naive}
 \label{MD5naive}
 As explained in Section \ref{sec:SME}, SME consists of busses and processes. We can define the MD5 algorithm naively using 4 busses and one simple process.\\
@@ -420,7 +421,7 @@ Since we also need to receive the digest from the process, we also need an outpu
 Lastly, we want 2 additional busses to make our design comply with the AXI protocol. This bus will be the most basic of all busses and contain only a single flag to show if the process is ready to receive data. It will thus be wired such that the MD5 process will have an in-going bus to know when it is safe to send the digest to the simulation and an out-going ready bus to let the simulation know when to send the message values.
 
 \subsection{First optimization approach}
-\label{sec:org8c81e38}
+\label{sec:org1b35b99}
 To make the algorithm more efficient, the length of the circuit produced in the VHDL code should be reduced. Meaning we want the simple process to do less. For the initial approach, we can notice that the compression function in MD5 works in rounds. Figure \ref{fig:MD5opt1} shows how the hash function as a whole up can be split up into 5 smaller processes and build a pipeline from this. One process for message formatting and one for each of the 4 rounds. In our actual implementation, we further added 2 processes:
 \begin{itemize}
 \item A message-converter process between the message formatting and \texttt{round 1 (f)} to convert the message from bytes to unsigned integers.
@@ -467,10 +468,10 @@ One problem we have faced with this general approach is that MD5 is embarrassing
 \end{table}
 
 \subsection{Further optimizations}
-\label{sec:orgf3fa15b}
+\label{sec:orgd5fda55}
 Because the initial optimization approach showed good promise, as shown in Section \ref{sec:MD5performance} we wanted to see how well a deeper pipeline performed. Hence we further chose to make versions that propagated the rounds into 8, 16, 32, and 64 processes. The results of this can be seen in Section \ref{sec:MD5performance}. As of now, each of our pipelined versions only work on messages <448 bits. Since we have not been able to fix the additional signal wirering.
 \section{SHA256}
-\label{sec:org8fc7a19}
+\label{sec:orgc1c5209}
 The implementation of SHA256 is very similar to that of the implementation of MD5,
 since they both are hashing algorithms of the Merkle-Damgård construction.
 The significant difference is that SHA uses big-endian encodings while MD5 uses little-endian.
@@ -488,10 +489,10 @@ The SHA256 algorithm is implemented as described in Section \ref{SHAalg}. That i
 The calculations for ch, maj, s1, and s0 could be their own functions, but they have been left as written out since they are simple and shouldn't significantly affect performance.
 
 \subsection{Optimizations}
-\label{sec:orgbf86ad2}
+\label{sec:orgbe7c175}
 Since SHA256 is so similar to MD5, we can apply the same pipeline approaches as we did for MD5. One difference, however, is the block expansion, which likewise can be pipelined. Thus we should theoretically be able to create an even deeper pipeline for SHA256. Because the target FPGA runs out of resources even before pipelining the rounds, we have not looked into this. The problem and the resource usage will be explained further in Section \ref{sec:SHAperformance}.
 \section{AES}
-\label{sec:org447cad4}
+\label{sec:orga1be07d}
 
 \subsection{Naive}
 \label{AESnaive}
@@ -518,7 +519,7 @@ For the actual AES process, we have decided to only support full blocks of 128 b
 \label{AESopt}
 AES has shown to be quite fast even in the naive implementation (see Section \ref{sec:AESperformance}); however, it should still be a reasonably slow approach compared to a pipelined solution, as long as the FPGA can handle the additional logic. Exactly as the other algorithms. We notice that AES likewise uses rounds, and the single naive process from before can be divided such that each round of AES can be contained in its own process. This is easily implemented compared to MD5 and SHA, which have a round dependency. This approach initially seems to have a flaw that might underutilize the LUT's of the FPGA, leading to worse performance. Section \ref{sec:SME} described how there is no sharing between processes, and henceforth they can not have access to the same lookup tables/T-boxes. Corollary, every process that needs access to one of the lookup tables will have to have it defined for itself. Arguably this is a wasteful approach as the size of lookup tables will be 36 KB instead of 4 KB. This should then be more LUTs used, leading to harder routing, which results in lower performance. This showed not to be a problem (elaborated in Section \ref{sec:AESperformance}). Another approach we tried was to use Block RAM (BRAM), which is enabled through \texttt{Components} in SME. The initial idea was to enable 8 of these in each process, such that we would have two copies of each of the T boxes, one in each BRAM. We need two copies of each because using a True Dual Port Memory component only allows for two lookups at a time.
 \section{ChaCha}
-\label{sec:orga73e03b}
+\label{sec:orgb2fe460}
 
 \subsection{Naive}
 \label{ChaChaNaive}
@@ -542,7 +543,7 @@ Where \texttt{BLOCK\_SIZE = 16} and \texttt{TEXT\_SIZE = 64}.
 ChaCha encourages concurrency and parallelism, as each chunk of the keystream can be computed entirely independently of each other in a similar fashion to AES. Thus a pipelined version is easy to implement compared to the has functions. We can very easily split the 20 rounds into 20 processes, and even if the FPGAs limitations allow for it, we can reduce down to each quarter round (QR) to its own process.
 
 \chapter{Results}
-\label{sec:org594a7ee}
+\label{sec:org9511f90}
 This chapter will go over the performance of the implementations described in the previous chapter.
 The main focus for our benchmarks has been Throughput and power usage. For comparisons, we settled on similar CPU implementations.
 The different implementations have been tested against the C\# standard library equivalent algorithms and ensure that the results are correct.
@@ -555,10 +556,10 @@ The reason being, this having a low-end processor similar to the one on the Zedb
 Because of promising results, we further compare our results with an Intel i5-7500. For specific details about waht hardware and software is used see Appendix \ref{benchmarksetup}.
 
 \section{MD5}
-\label{sec:orgd68d1cd}
+\label{sec:org0e226c6}
 \label{sec:MD5performance}
 \subsection{Throughput}
-\label{sec:org5b2998d}
+\label{sec:org215b748}
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
@@ -597,7 +598,7 @@ Compared to all the other CPU versions, the naive version performs poorly, espec
 One thing to note is that according to the specifications for the Xilinx Zedboard\cite{ZedSpec}, then we see that the bus size is 32-bit and the memory controller operates at 533 MHz,
 so on a perfectly utilized Zedboard we would get a throughput of 533 \(\cdot\) 32 = 17056 Mbps = 2132 MBps, so CPU speeds are theoretically reachable for specific usecases. It however also means the highest perfoming version is bottlenecked by the memory bus.
 \subsection{Power Consumptions}
-\label{sec:org8d573d6}
+\label{sec:org4a845e0}
 \label{sec:md5power}
 From the previous section, we showed that our FPGA solution could outperform not only low-end CPUs but also mid-end CPUs by quite a margin. But, not only is the FPGA able to achieve high throughput it also does it at very low power consumption. Figure \ref{fig:md5_naive_power} shows the TDP power consumption as reported by Vivado. The power consumption of the naive version sums up to 0.016 watts without including the processing system, which is almost 11 times less than the optimized version using 0.189 watts. Thus, we can see that one needs only 11 times as much power to get a speed increase of 20 times. Interestingly the most of the power usage can be attributed to the clocking.
 In any case, we can assume this to be very power efficient compared to the power used by a CPU, since the Pi has a TDP of 7.5 W and the i5 has an TDP of 65 W. We can further see the processing system (PS7) uses at least 88 percent of the power.
@@ -610,13 +611,13 @@ In any case, we can assume this to be very power efficient compared to the power
 \label{fig:md5_naive_power}
 \end{figure}
 \subsection{Takeaways}
-\label{sec:org809022e}
+\label{sec:orgd9e4098}
 The takeaway from these results is that if one needs to hash long strings, one might as well choose a CPU implementation over our versions, and is one to use our implementations for such one should use the naive version, whereas the pipelined version will be a lot faster (or at least not be the bottleneck). If the power consumption by the computations, on the other hand, is more important than throughput, our naive version is a good alternative over the other implementations presented in the previous sections.
 \section{SHA256}
-\label{sec:orgc52023d}
+\label{sec:org7c8fd1f}
 \label{sec:SHAperformance}
 \subsection{Throughput}
-\label{sec:org988ff9a}
+\label{sec:org4119b2c}
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
@@ -649,7 +650,7 @@ i5 & 134 & 224 & 438 & 61 & 461
 \end{table}
 Just as with MD5, the throughput of the naive SHA version is slower than the CPU versions. For the naive SHA version, the naive version is only 30 MBps slower than the CPU versions on the Raspberry Pi, whereas MD5 was only half as fast (difference of 141 MBps). Likewise, the pipelined version performs reasonably well compare to the Pi, with an overall increase of 35.7 pct. Comparing to the i5, the results are not as promising. The pipelined version is only about half as fast as the CPU versions.
 \subsection{Power Consumptions}
-\label{sec:org4774b11}
+\label{sec:org418f887}
 Figure \ref{fig:SHA_power} shows the power consumption of the naive version and Proc\(_4\). Once again, the results are very similar to those of MD5. The SHA version consumes only about 0.02 watts more than the naive MD5 version. This additional cost is attributed to additional signals and more logic required to compute SHA. Similarly, the pipelined version is a little more power-hungry than MD5. The thing to remember is that the throughput does not follow the same trend.
 Interestingly, most of the power consumption of the pipelined MD5 goes towards the clocks, whereas the power consumed by SHA is mainly placed in the computations. This might be because the pipeline is far deeper in MD5. The actual power usage for the two SHA versions is 0.036 watts for the naive version and 0.202 watts for Proc\(_4\), meaning the Proc\(_4\) uses 5.6 times more power, but it only gives a 2-time speedup. Hence, the naive version is more power-efficient than the pipelined version.
 \begin{figure}[H]
@@ -661,13 +662,13 @@ Interestingly, most of the power consumption of the pipelined MD5 goes towards t
 \label{fig:SHA_power}
 \end{figure}
 \subsection{Takeaways}
-\label{sec:org8d6d8e8}
+\label{sec:org20c2385}
 The overall results for SHA are inferior to MD5. The pipelined version could compete with the Raspberry Pi but is still slower than an i5 processor. If power consumption is of concern, the naive version should always be chosen over the pipelined as the throughput increase does not match the increase in power usage.
 \section{AES}
-\label{sec:org9c6e087}
+\label{sec:org935054a}
 \label{sec:AESperformance}
 \subsection{Throughput}
-\label{sec:org4b29ca2}
+\label{sec:orgcf1f922}
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
@@ -703,10 +704,10 @@ i5 & 400 & 1963 & 1699 & 340 & 847 & 5722
 {Performance comparison of the worst and best AES FPGA implementations and the various CPU versions. The OpenSSL is from \texttt{openssl speed -evp aes-128-ecb}, }
 \label{tab:AEScompare}
 \end{table}
-The results of AES are interesting compared to our other implementations in the sense that even the naive FPGA version is outperforming the CPU on the Pi. One can notice that our naive version has a throughput of 400 MB/s which is around 4.49 times as much as OpenSSL on its peak performance and that it likewise outperforms C\# and our C-version with 5.7 and 6.2 times, respectively. The i5, on the other hand, is quite a lot faster than the naive implementation, where only our C version is slower. The pipelined version Proc\(_{11}\) is almost as fast as the C\# version and faster than OpenSSL at its lowest performance. However, OpenSSL at its full capacity still has around 3.4 times higher throughput. These results emphasize the results presented from the previous sections, that an FPGA is faster at performing specific tasks than a CPU and shows how an ASIC, such as the AES-NI device in intel CPUs, is even better doing a specific task than an FPGA. One aspect to consider is that a Zynq board and an i5-7500 have about the same cost\cite{pynq}\cite{i5price}. Hence a Zynq is cheaper than the i5 since it also needs all the other computer components, such as Motherboard, RAM, etc. All things considered, our solution is not achieving the hoped throughput, as Xilinx own AES\cite{aesxilinx} should be able to run at 16GBps on boards with a cost of around 1100$\backslash$$\cite{highfpgaprice} whereas an AMD ThreadRipper 3970X (2600$\backslash$$\cite{threadPrice}) can only achieve 12.9GBps \cite{threadripper}. Thus we would assume it to be possible for an FPGA to be faster than even an ASIC accelerate CPU of equivalent price. There might, however, be some difference in specific architecture for FPGAs in different price ranges that might disallow such generalization, and the AES version provided by Xilinx is most definitely developed by a larger team with more experience than us. Still, our version to be more than three times as slow is not ideal.
+The results of AES are interesting compared to our other implementations in the sense that even the naive FPGA version is outperforming the CPU on the Pi. One can notice that our naive version has a throughput of 400 MB/s which is around 4.49 times as much as OpenSSL on its peak performance and that it likewise outperforms C\# and our C-version with 5.7 and 6.2 times, respectively. The i5, on the other hand, is quite a lot faster than the naive implementation, where only our C version is slower. The pipelined version Proc\(_{11}\) is almost as fast as the C\# version and faster than OpenSSL at its lowest performance. However, OpenSSL at its full capacity still has around 3.4 times higher throughput. These results emphasize the results presented from the previous sections, that an FPGA is faster at performing specific tasks than a CPU and shows how an ASIC, such as the AES-NI device in intel CPUs, is even better doing a specific task than an FPGA. One aspect to consider is that a Zynq board and an i5-7500 have about the same cost\cite{pynq}\cite{i5price}. Hence a Zynq is cheaper than the i5 since it also needs all the other computer components, such as Motherboard, RAM, etc. All things considered, our solution is not achieving the hoped throughput, as Xilinx own AES\cite{aesxilinx} should be able to run at 16GBps on boards with a cost of around 1100 USD\cite{highfpgaprice} whereas an AMD ThreadRipper 3970X (2600 USD\cite{threadPrice}) can only achieve 12.9GBps \cite{threadripper}. Thus we would assume it to be possible for an FPGA to be faster than even an ASIC accelerate CPU of equivalent price. There might, however, be some difference in specific architecture for FPGAs in different price ranges that might disallow such generalization, and the AES version provided by Xilinx is most definitely developed by a larger team with more experience than us. Still, our version to be more than three times as slow is not ideal.
 
 \subsection{Power Consumptions}
-\label{sec:orgf920971}
+\label{sec:orgb08fb7f}
 Figure \ref{fig:AES_power} shows the power usage of the TBox version vs. the power usage of the fastest pipelined version Proc\(_{11}\), which shows that the naive Tbox version is using a lot more power than the Proc\(_{11}\). Thus we can easily say Proc\(_{11}\) is to prefer over the Tbox version. It is, however, possible that there is something wrong with the reported power consumption (or at least we cannot pinpoint why it is so high) since the power usage of Proc\(_{11}\) is more closely related to the power usage of MD5 and SHA, whereas the Tbox version has an abnormally high power usage.
 
 \begin{figure}[H]
@@ -719,10 +720,10 @@ Figure \ref{fig:AES_power} shows the power usage of the TBox version vs. the pow
 \end{figure}
 
 \subsection{Takeaways}
-\label{sec:org9c4b32b}
+\label{sec:orga39ae1b}
 Just like for MD5, we have been able to gain some good performance improvement from pipelining. However, the improvements have not been significant enough to compete with CPUs with AES-NI. Interestingly enough, it seems like the pipelined version is more power-efficient and uses less power and hence should always be preferred over the naive Tbox version.
 \section{ChaCha20}
-\label{sec:orgb47ce17}
+\label{sec:org275d08d}
 \begin{table}[!htb]
 \centering
 \captionsetup{width=.8\linewidth}
@@ -755,7 +756,7 @@ i5 &  80  &  2557    & 388   & 3092
 \label{tab:ChaChacompare}
 \end{table}
 \subsection{Power Consumptions}
-\label{sec:org8fe6773}
+\label{sec:orgcb2710d}
 Figure \ref{fig:ChaCha_power} shows similarity to MD5 and SHA256. That is, the power is lower for the naive version is lower by using only 0.026 watts compared to Proc\textsubscript{22}, which uses 236 watts. Thus the power usage is nine times higher, whereas the throughput difference is around 32 times, meaning Proc\textsubscript{22} is far more power-efficient but at a higher cost. Nevertheless, once again, the power is lower than for common CPUs as described in Section \ref{sec:md5power}.
 
 \begin{figure}[H]
@@ -767,15 +768,15 @@ Figure \ref{fig:ChaCha_power} shows similarity to MD5 and SHA256. That is, the p
 \label{fig:ChaCha_power}
 \end{figure}
 \subsection{Takeaways}
-\label{sec:org161dcf7}
+\label{sec:org6a59270}
 From pipelining, we can significantly increase the performance of ChaCha, but not enough to perform as well as a mid-range CPU, and thus if speed is critical, one might be better of with a CPU, whereas the FPGA still can provide decent throughput at a lower cost.
 
 \chapter{Discussion}
-\label{sec:org92ba65b}
+\label{sec:org650e979}
 We will, in this section, present some reflections on the tools used and listing work to be done in the future, and showing an example of some further improvements that can be implemented.
 
 \section{SME as a tool for Software developers}
-\label{sec:org1536be2}
+\label{sec:orgbc22f03}
 SME has worked well as a tool for FPGA development. As shown in the previous section shown our implementations use few resources, and we have been able to gain some significant speedup that can compete with modern CPU alternatives without knowing how to actually write in a HDL. VHDL being one such hardware description language makes it an abstraction to physically connecting signals together.
 Abstractions like this are usually created to make tasks easier for humans to write and read,
 but since VHDL is a ``first-level'' abstraction from hardware, it can be difficult for untrained people to use. In many ways, it is similar to how C for CPU programming in that the user has a lot more control over every little aspect of the program at the cost of additional logic that the developer has to take into account.
@@ -799,7 +800,7 @@ reasonably large data throughput and uses few resources. This is important since
 If we look past the Vivado problems, we could have a prototype ready to use relatively quickly.
 Of course, we had access to expert guidance, given that our supervisor helped create SME; however, SME has still proved to be a useful tool for FPGA programming and was quite manageable to familiarize oneself with.
 \section{Future work}
-\label{sec:org795de0b}
+\label{sec:org7ddd6b0}
 Because we focused on creating a wider variety of cryptographic functions, the project has some shortcomings that could be fixed in future work.\\
 
 Firstly it is not ideal that SHA-2 and MD5 can only handle short inputs, and thus a pressing suggestion is to make them handle more than one block (448 bits) of data at a time. This could be done by introducing a bus to forward the result of the final stage back into the start stage. As shown previously, this will be effective for small messages, but due to the overhead and the data dependency of SHA-2 and MD5, it would not be better than the naive implementation.
@@ -821,7 +822,7 @@ Fourthly, in our research for the project, we have looked at multiple different 
 Lastly, our optimizations have mainly focused on the simple pipelining aspects, whereas there are known optimizations that could be implemented.
 For example, one such optimization is explained in the following subsection.
 \subsection{Known SHA256 improvements on FPGAs}
-\label{sec:org68373ad}
+\label{sec:org528ff35}
 \label{sec:SHAimprovements}
 The subject of running and optimizing hash functions on FPGAs is not new. One work on this subject is ``Improving SHA-2 Hardware Implementation'', by R. Chaves, G. Kuzmanov, L. Sousa, and S. Vassiliadis.
 The most significant increase they documented in their report was a throughput increase of 40\% on a VIRTEX II Pro FPGA(XC2P30-7) board\footnote{This is an article and FPGA, however, the optimizations are still interesting and might still be worth investigating.}.
@@ -849,7 +850,7 @@ DM(j)_i &= A_{t-3+j} + DM(j)_{i-1}\qquad \text{for } 1\leq j \leq 3
 \end{align}
 
 \chapter{Conclusion}
-\label{sec:orgccd3dbf}
+\label{sec:org509d06b}
 We have in this report presented four known cryptographic functions and how we have implemented them using SME
 for a library of cryptographic functions for FPGA. We have covered the advantages and disadvantages of using SME over a HDL.
 In the process of making the library, we have optimised the implementations and have gotten mixed results.
@@ -868,9 +869,10 @@ Another point we have covered is that it is initially difficult to tell how well
 
 \begin{appendix}
 \chapter{Requirements \& How to run}
-\label{sec:org860f893}
+\label{sec:orgb9e7828}
+To run the C\# code one nneds the .NET core 3.1 compiler and then every project can be run by running \texttt{dotnet run} from within the folder. To reproduce the FPGA design should be able to this from the files for the IP which is located in the HDL folders and by the specific versions .bd file using Xilinx Vivado. The code is located at: \url{https://github.com/Spatenheinz/Bachelor}
 \chapter{Setup used in benchmarking}
-\label{sec:orge26dc9e}
+\label{sec:org0d9b46c}
 \label{benchmarksetup}
 \begin{minipage}{0.4\textwidth}
 \subsection{Hardware}
@@ -914,10 +916,9 @@ Another point we have covered is that it is initially difficult to tell how well
 \begin{itemize}
 \itemsep0em
 \item Pi: Raspberry PI OS - buster\\
-\item i5: .NET 5.0 & .NET 3.1\\
+\item i5: Linux 5.9.16-1-MANJARO
 \end{itemize}
-Linux 5.9.16-1-MANJARO
-\subsubsection{Compiler:}
+\subsubsection{Compilers:}
 \begin{itemize}
 \itemsep0em
 \item C: gcc 10.2.0\\

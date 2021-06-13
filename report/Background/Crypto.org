@@ -23,7 +23,8 @@ From Figure \ref{fig:Merkle} one can see the construction of the hashing functio
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=10cm]{merkle.png}
+\captionsetup{width=.8\linewidth}
+\includegraphics[width=12cm]{merkle1.png}
 \caption[Merkle-Damgård construction]%
 {Merkle-Damgård construction. Each rectangle presents data, where the messages will be divided into n blocks, of which the size depends on the specific algorithm. Similarly, the IV and the Digest also will have variable lengths, but these will have the same size. The circles \texttt{f} denotes the compression function, and the finalization function is optional (depending on the specific algorithm). Each arrow shows the flow of data. }
 \label{fig:Merkle}

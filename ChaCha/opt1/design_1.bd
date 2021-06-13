@@ -1,0 +1,3063 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x97D426D09BF121C2",
+      "device": "xc7z020clg484-1",
+      "gen_directory": "../../../../chacha_opt2.gen/sources_1/bd/design_1",
+      "name": "design_1",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2020.2",
+      "validated": "true"
+    },
+    "design_tree": {
+      "ffs_0": "",
+      "opt1_export_0": "",
+      "xlconstant_0": "",
+      "processing_system7_0": "",
+      "ps7_0_axi_periph": {
+        "s00_couplers": {
+          "auto_cc": "",
+          "auto_pc": ""
+        }
+      },
+      "clk_wiz": "",
+      "rst_ps7_0_100M": "",
+      "rst_clk_wiz_100M": ""
+    },
+    "interface_ports": {
+      "DDR": {
+        "mode": "Master",
+        "vlnv": "xilinx.com:interface:ddrx_rtl:1.0",
+        "parameters": {
+          "AXI_ARBITRATION_SCHEME": {
+            "value": "TDM",
+            "value_src": "default"
+          },
+          "BURST_LENGTH": {
+            "value": "8",
+            "value_src": "default"
+          },
+          "CAN_DEBUG": {
+            "value": "false",
+            "value_src": "default"
+          },
+          "CAS_LATENCY": {
+            "value": "11",
+            "value_src": "default"
+          },
+          "CAS_WRITE_LATENCY": {
+            "value": "11",
+            "value_src": "default"
+          },
+          "CS_ENABLED": {
+            "value": "true",
+            "value_src": "default"
+          },
+          "DATA_MASK_ENABLED": {
+            "value": "true",
+            "value_src": "default"
+          },
+          "DATA_WIDTH": {
+            "value": "8",
+            "value_src": "default"
+          },
+          "MEMORY_TYPE": {
+            "value": "COMPONENTS",
+            "value_src": "default"
+          },
+          "MEM_ADDR_MAP": {
+            "value": "ROW_COLUMN_BANK",
+            "value_src": "default"
+          },
+          "SLOT": {
+            "value": "Single",
+            "value_src": "default"
+          },
+          "TIMEPERIOD_PS": {
+            "value": "1250",
+            "value_src": "default"
+          }
+        }
+      },
+      "FIXED_IO": {
+        "mode": "Master",
+        "vlnv": "xilinx.com:display_processing_system7:fixedio_rtl:1.0",
+        "parameters": {
+          "CAN_DEBUG": {
+            "value": "false",
+            "value_src": "default"
+          }
+        }
+      }
+    },
+    "ports": {
+      "FIN_0": {
+        "direction": "O"
+      },
+      "reset_0": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_HIGH"
+          }
+        }
+      }
+    },
+    "components": {
+      "ffs_0": {
+        "vlnv": "user.org:user:ffs:1.0",
+        "xci_name": "design_1_ffs_0_0",
+        "xci_path": "ip/design_1_ffs_0_0/design_1_ffs_0_0.xci",
+        "inst_hier_path": "ffs_0"
+      },
+      "opt1_export_0": {
+        "vlnv": "xilinx.com:module_ref:opt1_export:1.0",
+        "xci_name": "design_1_opt1_export_0_0",
+        "xci_path": "ip/design_1_opt1_export_0_0/design_1_opt1_export_0_0.xci",
+        "inst_hier_path": "opt1_export_0",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "opt1_export",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "IState_ValidSeed": {
+            "direction": "I"
+          },
+          "IState_ValidT": {
+            "direction": "I"
+          },
+          "IState_Nonce0": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Nonce1": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Nonce2": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key0": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key1": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key2": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key3": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key4": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key5": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key6": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Key7": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "IState_Text0": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text1": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text2": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text3": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text4": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text5": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text6": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text7": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text8": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text9": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text10": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text11": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text12": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text13": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text14": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text15": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text16": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text17": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text18": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text19": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text20": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text21": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text22": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text23": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text24": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text25": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text26": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text27": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text28": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text29": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text30": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text31": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text32": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text33": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text34": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text35": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text36": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text37": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text38": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text39": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text40": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text41": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text42": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text43": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text44": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text45": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text46": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text47": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text48": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text49": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text50": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text51": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text52": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text53": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text54": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text55": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text56": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text57": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text58": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text59": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text60": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text61": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text62": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "IState_Text63": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "axi_r_1_ready": {
+            "direction": "O"
+          },
+          "axi_r_0_ready": {
+            "direction": "I"
+          },
+          "IStream_Valid": {
+            "direction": "O"
+          },
+          "IStream_Values0": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values1": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values2": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values3": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values4": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values5": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values6": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values7": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values8": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values9": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values10": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values11": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values12": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values13": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values14": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values15": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values16": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values17": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values18": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values19": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values20": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values21": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values22": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values23": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values24": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values25": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values26": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values27": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values28": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values29": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values30": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values31": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values32": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values33": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values34": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values35": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values36": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values37": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values38": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values39": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values40": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values41": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values42": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values43": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values44": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values45": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values46": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values47": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values48": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values49": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values50": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values51": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values52": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values53": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values54": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values55": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values56": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values57": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values58": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values59": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values60": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values61": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values62": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "IStream_Values63": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "ENB": {
+            "direction": "I"
+          },
+          "RST": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "const_prop"
+              }
+            }
+          },
+          "FIN": {
+            "direction": "O"
+          },
+          "CLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "RST",
+                "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "40000000",
+                "value_src": "ip_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "/clk_wiz_clk_out1",
+                "value_src": "ip_prop"
+              }
+            }
+          }
+        }
+      },
+      "xlconstant_0": {
+        "vlnv": "xilinx.com:ip:xlconstant:1.1",
+        "xci_name": "design_1_xlconstant_0_0",
+        "xci_path": "ip/design_1_xlconstant_0_0/design_1_xlconstant_0_0.xci",
+        "inst_hier_path": "xlconstant_0"
+      },
+      "processing_system7_0": {
+        "vlnv": "xilinx.com:ip:processing_system7:5.5",
+        "xci_name": "design_1_processing_system7_0_0",
+        "xci_path": "ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0.xci",
+        "inst_hier_path": "processing_system7_0",
+        "parameters": {
+          "PCW_ACT_APU_PERIPHERAL_FREQMHZ": {
+            "value": "666.666687"
+          },
+          "PCW_ACT_CAN_PERIPHERAL_FREQMHZ": {
+            "value": "10.000000"
+          },
+          "PCW_ACT_DCI_PERIPHERAL_FREQMHZ": {
+            "value": "10.158730"
+          },
+          "PCW_ACT_ENET0_PERIPHERAL_FREQMHZ": {
+            "value": "125.000000"
+          },
+          "PCW_ACT_ENET1_PERIPHERAL_FREQMHZ": {
+            "value": "10.000000"
+          },
+          "PCW_ACT_FPGA0_PERIPHERAL_FREQMHZ": {
+            "value": "100.000000"
+          },
+          "PCW_ACT_FPGA1_PERIPHERAL_FREQMHZ": {
+            "value": "10.000000"
+          },
+          "PCW_ACT_FPGA2_PERIPHERAL_FREQMHZ": {
+            "value": "10.000000"
+          },
+          "PCW_ACT_FPGA3_PERIPHERAL_FREQMHZ": {
+            "value": "10.000000"
+          },
+          "PCW_ACT_PCAP_PERIPHERAL_FREQMHZ": {
+            "value": "200.000000"
+          },
+          "PCW_ACT_QSPI_PERIPHERAL_FREQMHZ": {
+            "value": "200.000000"
+          },
+          "PCW_ACT_SDIO_PERIPHERAL_FREQMHZ": {
+            "value": "50.000000"
+          },
+          "PCW_ACT_SMC_PERIPHERAL_FREQMHZ": {
+            "value": "10.000000"
+          },
+          "PCW_ACT_SPI_PERIPHERAL_FREQMHZ": {
+            "value": "10.000000"
+          },
+          "PCW_ACT_TPIU_PERIPHERAL_FREQMHZ": {
+            "value": "200.000000"
+          },
+          "PCW_ACT_TTC0_CLK0_PERIPHERAL_FREQMHZ": {
+            "value": "111.111115"
+          },
+          "PCW_ACT_TTC0_CLK1_PERIPHERAL_FREQMHZ": {
+            "value": "111.111115"
+          },
+          "PCW_ACT_TTC0_CLK2_PERIPHERAL_FREQMHZ": {
+            "value": "111.111115"
+          },
+          "PCW_ACT_TTC1_CLK0_PERIPHERAL_FREQMHZ": {
+            "value": "111.111115"
+          },
+          "PCW_ACT_TTC1_CLK1_PERIPHERAL_FREQMHZ": {
+            "value": "111.111115"
+          },
+          "PCW_ACT_TTC1_CLK2_PERIPHERAL_FREQMHZ": {
+            "value": "111.111115"
+          },
+          "PCW_ACT_UART_PERIPHERAL_FREQMHZ": {
+            "value": "50.000000"
+          },
+          "PCW_ACT_WDT_PERIPHERAL_FREQMHZ": {
+            "value": "111.111115"
+          },
+          "PCW_APU_PERIPHERAL_FREQMHZ": {
+            "value": "666.666667"
+          },
+          "PCW_CLK0_FREQ": {
+            "value": "100000000"
+          },
+          "PCW_CLK1_FREQ": {
+            "value": "10000000"
+          },
+          "PCW_CLK2_FREQ": {
+            "value": "10000000"
+          },
+          "PCW_CLK3_FREQ": {
+            "value": "10000000"
+          },
+          "PCW_DDR_RAM_HIGHADDR": {
+            "value": "0x1FFFFFFF"
+          },
+          "PCW_ENET0_ENET0_IO": {
+            "value": "MIO 16 .. 27"
+          },
+          "PCW_ENET0_GRP_MDIO_ENABLE": {
+            "value": "1"
+          },
+          "PCW_ENET0_GRP_MDIO_IO": {
+            "value": "MIO 52 .. 53"
+          },
+          "PCW_ENET0_PERIPHERAL_ENABLE": {
+            "value": "1"
+          },
+          "PCW_ENET0_PERIPHERAL_FREQMHZ": {
+            "value": "1000 Mbps"
+          },
+          "PCW_ENET0_RESET_ENABLE": {
+            "value": "0"
+          },
+          "PCW_ENET_RESET_ENABLE": {
+            "value": "1"
+          },
+          "PCW_ENET_RESET_SELECT": {
+            "value": "Share reset pin"
+          },
+          "PCW_EN_EMIO_TTC0": {
+            "value": "1"
+          },
+          "PCW_EN_ENET0": {
+            "value": "1"
+          },
+          "PCW_EN_GPIO": {
+            "value": "1"
+          },
+          "PCW_EN_QSPI": {
+            "value": "1"
+          },
+          "PCW_EN_SDIO0": {
+            "value": "1"
+          },
+          "PCW_EN_TTC0": {
+            "value": "1"
+          },
+          "PCW_EN_UART1": {
+            "value": "1"
+          },
+          "PCW_EN_USB0": {
+            "value": "1"
+          },
+          "PCW_FPGA0_PERIPHERAL_FREQMHZ": {
+            "value": "100.000000"
+          },
+          "PCW_FPGA1_PERIPHERAL_FREQMHZ": {
+            "value": "150.000000"
+          },
+          "PCW_FPGA2_PERIPHERAL_FREQMHZ": {
+            "value": "50.000000"
+          },
+          "PCW_FPGA_FCLK0_ENABLE": {
+            "value": "1"
+          },
+          "PCW_GPIO_MIO_GPIO_ENABLE": {
+            "value": "1"
+          },
+          "PCW_GPIO_MIO_GPIO_IO": {
+            "value": "MIO"
+          },
+          "PCW_I2C0_PERIPHERAL_ENABLE": {
+            "value": "0"
+          },
+          "PCW_I2C_RESET_ENABLE": {
+            "value": "1"
+          },
+          "PCW_MIO_0_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_0_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_0_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_10_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_10_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_10_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_11_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_11_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_11_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_12_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_12_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_12_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_13_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_13_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_13_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_14_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_14_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_14_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_15_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_15_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_15_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_16_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_16_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_16_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_17_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_17_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_17_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_18_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_18_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_18_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_19_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_19_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_19_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_1_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_1_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_1_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_20_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_20_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_20_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_21_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_21_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_21_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_22_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_22_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_22_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_23_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_23_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_23_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_24_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_24_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_24_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_25_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_25_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_25_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_26_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_26_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_26_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_27_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_27_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_27_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_28_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_28_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_28_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_29_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_29_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_29_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_2_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_2_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_30_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_30_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_30_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_31_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_31_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_31_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_32_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_32_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_32_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_33_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_33_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_33_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_34_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_34_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_34_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_35_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_35_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_35_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_36_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_36_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_36_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_37_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_37_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_37_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_38_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_38_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_38_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_39_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_39_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_39_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_3_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_3_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_40_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_40_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_40_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_41_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_41_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_41_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_42_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_42_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_42_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_43_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_43_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_43_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_44_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_44_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_44_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_45_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_45_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_45_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_46_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_46_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_46_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_47_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_47_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_47_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_48_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_48_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_48_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_49_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_49_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_49_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_4_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_4_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_50_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_50_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_50_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_51_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_51_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_51_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_52_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_52_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_52_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_53_IOTYPE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_MIO_53_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_53_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_5_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_5_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_6_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_6_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_7_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_7_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_8_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_8_SLEW": {
+            "value": "fast"
+          },
+          "PCW_MIO_9_IOTYPE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_MIO_9_PULLUP": {
+            "value": "disabled"
+          },
+          "PCW_MIO_9_SLEW": {
+            "value": "slow"
+          },
+          "PCW_MIO_TREE_PERIPHERALS": {
+            "value": "GPIO#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#SD 0#SD 0#SD 0#SD 0#SD 0#SD 0#SD 0#SD 0#UART 1#UART 1#GPIO#GPIO#Enet 0#Enet 0"
+          },
+          "PCW_MIO_TREE_SIGNALS": {
+            "value": "gpio[0]#qspi0_ss_b#qspi0_io[0]#qspi0_io[1]#qspi0_io[2]#qspi0_io[3]/HOLD_B#qspi0_sclk#gpio[7]#gpio[8]#gpio[9]#gpio[10]#gpio[11]#gpio[12]#gpio[13]#gpio[14]#gpio[15]#tx_clk#txd[0]#txd[1]#txd[2]#txd[3]#tx_ctl#rx_clk#rxd[0]#rxd[1]#rxd[2]#rxd[3]#rx_ctl#data[4]#dir#stp#nxt#data[0]#data[1]#data[2]#data[3]#clk#data[5]#data[6]#data[7]#clk#cmd#data[0]#data[1]#data[2]#data[3]#wp#cd#tx#rx#gpio[50]#gpio[51]#mdc#mdio"
+          },
+          "PCW_PJTAG_PERIPHERAL_ENABLE": {
+            "value": "0"
+          },
+          "PCW_PRESET_BANK0_VOLTAGE": {
+            "value": "LVCMOS 3.3V"
+          },
+          "PCW_PRESET_BANK1_VOLTAGE": {
+            "value": "LVCMOS 1.8V"
+          },
+          "PCW_QSPI_GRP_FBCLK_ENABLE": {
+            "value": "0"
+          },
+          "PCW_QSPI_GRP_IO1_ENABLE": {
+            "value": "0"
+          },
+          "PCW_QSPI_GRP_SINGLE_SS_ENABLE": {
+            "value": "1"
+          },
+          "PCW_QSPI_GRP_SINGLE_SS_IO": {
+            "value": "MIO 1 .. 6"
+          },
+          "PCW_QSPI_GRP_SS1_ENABLE": {
+            "value": "0"
+          },
+          "PCW_QSPI_PERIPHERAL_ENABLE": {
+            "value": "1"
+          },
+          "PCW_QSPI_PERIPHERAL_FREQMHZ": {
+            "value": "200.000000"
+          },
+          "PCW_QSPI_QSPI_IO": {
+            "value": "MIO 1 .. 6"
+          },
+          "PCW_SD0_GRP_CD_ENABLE": {
+            "value": "1"
+          },
+          "PCW_SD0_GRP_CD_IO": {
+            "value": "MIO 47"
+          },
+          "PCW_SD0_GRP_POW_ENABLE": {
+            "value": "0"
+          },
+          "PCW_SD0_GRP_WP_ENABLE": {
+            "value": "1"
+          },
+          "PCW_SD0_GRP_WP_IO": {
+            "value": "MIO 46"
+          },
+          "PCW_SD0_PERIPHERAL_ENABLE": {
+            "value": "1"
+          },
+          "PCW_SD0_SD0_IO": {
+            "value": "MIO 40 .. 45"
+          },
+          "PCW_SDIO_PERIPHERAL_FREQMHZ": {
+            "value": "50"
+          },
+          "PCW_SDIO_PERIPHERAL_VALID": {
+            "value": "1"
+          },
+          "PCW_SINGLE_QSPI_DATA_MODE": {
+            "value": "x4"
+          },
+          "PCW_TTC0_PERIPHERAL_ENABLE": {
+            "value": "1"
+          },
+          "PCW_TTC0_TTC0_IO": {
+            "value": "EMIO"
+          },
+          "PCW_TTC_PERIPHERAL_FREQMHZ": {
+            "value": "50"
+          },
+          "PCW_UART1_GRP_FULL_ENABLE": {
+            "value": "0"
+          },
+          "PCW_UART1_PERIPHERAL_ENABLE": {
+            "value": "1"
+          },
+          "PCW_UART1_UART1_IO": {
+            "value": "MIO 48 .. 49"
+          },
+          "PCW_UART_PERIPHERAL_FREQMHZ": {
+            "value": "50"
+          },
+          "PCW_UART_PERIPHERAL_VALID": {
+            "value": "1"
+          },
+          "PCW_UIPARAM_ACT_DDR_FREQ_MHZ": {
+            "value": "533.333374"
+          },
+          "PCW_UIPARAM_DDR_BL": {
+            "value": "8"
+          },
+          "PCW_UIPARAM_DDR_BOARD_DELAY0": {
+            "value": "0.41"
+          },
+          "PCW_UIPARAM_DDR_BOARD_DELAY1": {
+            "value": "0.411"
+          },
+          "PCW_UIPARAM_DDR_BOARD_DELAY2": {
+            "value": "0.341"
+          },
+          "PCW_UIPARAM_DDR_BOARD_DELAY3": {
+            "value": "0.358"
+          },
+          "PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_0": {
+            "value": "0.025"
+          },
+          "PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_1": {
+            "value": "0.028"
+          },
+          "PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_2": {
+            "value": "0.001"
+          },
+          "PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_3": {
+            "value": "0.001"
+          },
+          "PCW_UIPARAM_DDR_FREQ_MHZ": {
+            "value": "533.333313"
+          },
+          "PCW_UIPARAM_DDR_MEMORY_TYPE": {
+            "value": "DDR 3"
+          },
+          "PCW_UIPARAM_DDR_PARTNO": {
+            "value": "MT41J128M16 HA-15E"
+          },
+          "PCW_UIPARAM_DDR_TRAIN_DATA_EYE": {
+            "value": "1"
+          },
+          "PCW_UIPARAM_DDR_TRAIN_READ_GATE": {
+            "value": "1"
+          },
+          "PCW_UIPARAM_DDR_TRAIN_WRITE_LEVEL": {
+            "value": "1"
+          },
+          "PCW_UIPARAM_DDR_USE_INTERNAL_VREF": {
+            "value": "1"
+          },
+          "PCW_USB0_PERIPHERAL_ENABLE": {
+            "value": "1"
+          },
+          "PCW_USB0_RESET_ENABLE": {
+            "value": "0"
+          },
+          "PCW_USB0_USB0_IO": {
+            "value": "MIO 28 .. 39"
+          },
+          "PCW_USB_RESET_ENABLE": {
+            "value": "1"
+          },
+          "PCW_USB_RESET_SELECT": {
+            "value": "Share reset pin"
+          },
+          "preset": {
+            "value": "ZedBoard"
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Data": {
+              "range": "4G",
+              "width": "32",
+              "local_memory_map": {
+                "name": "Data",
+                "description": "Address Space Segments",
+                "address_blocks": {
+                  "address_block": {
+                    "name": "segment1",
+                    "display_name": "segment1",
+                    "base_address": "0x00000000",
+                    "range": "256K",
+                    "width": "18",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "segment2",
+                    "display_name": "segment2",
+                    "base_address": "0x00040000",
+                    "range": "256K",
+                    "width": "19",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "segment3",
+                    "display_name": "segment3",
+                    "base_address": "0x00080000",
+                    "range": "512K",
+                    "width": "20",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "segment4",
+                    "display_name": "segment4",
+                    "base_address": "0x00100000",
+                    "range": "1023M",
+                    "width": "30",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_GP0",
+                    "display_name": "M_AXI_GP0",
+                    "base_address": "0x40000000",
+                    "range": "1G",
+                    "width": "31",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_GP1",
+                    "display_name": "M_AXI_GP1",
+                    "base_address": "0x80000000",
+                    "range": "1G",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "IO_Peripheral_Registers",
+                    "display_name": "IO Peripheral Registers",
+                    "base_address": "0xE0000000",
+                    "range": "3M",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "SMC_Memories",
+                    "display_name": "SMC Memories",
+                    "base_address": "0xE1000000",
+                    "range": "80M",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "SLCR_Registers",
+                    "display_name": "SLCR Registers",
+                    "base_address": "0xF8000000",
+                    "range": "3K",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "PS_System_Registers",
+                    "display_name": "PS System Registers",
+                    "base_address": "0xF8001000",
+                    "range": "8252K",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "CPU_Private_Registers",
+                    "display_name": "CPU Private Registers",
+                    "base_address": "0xF8900000",
+                    "range": "6156K",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "segment5",
+                    "display_name": "segment5",
+                    "base_address": "0xFC000000",
+                    "range": "32M",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "segment6",
+                    "display_name": "segment6",
+                    "base_address": "0xFFFC0000",
+                    "range": "256K",
+                    "width": "32",
+                    "usage": "register"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "interface_ports": {
+          "M_AXI_GP0": {
+            "mode": "Master",
+            "address_space_ref": "Data",
+            "base_address": {
+              "minimum": "0x40000000",
+              "maximum": "0x7FFFFFFF",
+              "width": "32"
+            }
+          }
+        }
+      },
+      "ps7_0_axi_periph": {
+        "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
+        "xci_path": "ip/design_1_ps7_0_axi_periph_0/design_1_ps7_0_axi_periph_0.xci",
+        "inst_hier_path": "ps7_0_axi_periph",
+        "xci_name": "design_1_ps7_0_axi_periph_0",
+        "parameters": {
+          "NUM_MI": {
+            "value": "1"
+          }
+        },
+        "interface_ports": {
+          "S00_AXI": {
+            "mode": "Slave",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+          },
+          "M00_AXI": {
+            "mode": "Master",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+          }
+        },
+        "ports": {
+          "ACLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "ARESETN"
+              }
+            }
+          },
+          "ARESETN": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "S00_ACLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_BUSIF": {
+                "value": "S00_AXI"
+              },
+              "ASSOCIATED_RESET": {
+                "value": "S00_ARESETN"
+              }
+            }
+          },
+          "S00_ARESETN": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "M00_ACLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_BUSIF": {
+                "value": "M00_AXI"
+              },
+              "ASSOCIATED_RESET": {
+                "value": "M00_ARESETN"
+              }
+            }
+          },
+          "M00_ARESETN": {
+            "type": "rst",
+            "direction": "I"
+          }
+        },
+        "components": {
+          "s00_couplers": {
+            "interface_ports": {
+              "M_AXI": {
+                "mode": "Master",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              },
+              "S_AXI": {
+                "mode": "Slave",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              }
+            },
+            "ports": {
+              "M_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "M_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "M_ARESETN"
+                  }
+                }
+              },
+              "M_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              },
+              "S_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "S_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "S_ARESETN"
+                  }
+                }
+              },
+              "S_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              }
+            },
+            "components": {
+              "auto_cc": {
+                "vlnv": "xilinx.com:ip:axi_clock_converter:2.1",
+                "xci_name": "design_1_auto_cc_0",
+                "xci_path": "ip/design_1_auto_cc_0/design_1_auto_cc_0.xci",
+                "inst_hier_path": "ps7_0_axi_periph/s00_couplers/auto_cc",
+                "interface_ports": {
+                  "S_AXI": {
+                    "mode": "Slave",
+                    "bridges": [
+                      "M_AXI"
+                    ]
+                  }
+                }
+              },
+              "auto_pc": {
+                "vlnv": "xilinx.com:ip:axi_protocol_converter:2.1",
+                "xci_name": "design_1_auto_pc_0",
+                "xci_path": "ip/design_1_auto_pc_0/design_1_auto_pc_0.xci",
+                "inst_hier_path": "ps7_0_axi_periph/s00_couplers/auto_pc",
+                "parameters": {
+                  "MI_PROTOCOL": {
+                    "value": "AXI4LITE"
+                  },
+                  "SI_PROTOCOL": {
+                    "value": "AXI3"
+                  }
+                },
+                "interface_ports": {
+                  "S_AXI": {
+                    "mode": "Slave",
+                    "bridges": [
+                      "M_AXI"
+                    ]
+                  }
+                }
+              }
+            },
+            "interface_nets": {
+              "s00_couplers_to_auto_cc": {
+                "interface_ports": [
+                  "S_AXI",
+                  "auto_cc/S_AXI"
+                ]
+              },
+              "auto_cc_to_auto_pc": {
+                "interface_ports": [
+                  "auto_cc/M_AXI",
+                  "auto_pc/S_AXI"
+                ]
+              },
+              "auto_pc_to_s00_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "auto_pc/M_AXI"
+                ]
+              }
+            },
+            "nets": {
+              "M_ACLK_1": {
+                "ports": [
+                  "M_ACLK",
+                  "auto_cc/m_axi_aclk",
+                  "auto_pc/aclk"
+                ]
+              },
+              "S_ACLK_1": {
+                "ports": [
+                  "S_ACLK",
+                  "auto_cc/s_axi_aclk"
+                ]
+              },
+              "M_ARESETN_1": {
+                "ports": [
+                  "M_ARESETN",
+                  "auto_cc/m_axi_aresetn",
+                  "auto_pc/aresetn"
+                ]
+              },
+              "S_ARESETN_1": {
+                "ports": [
+                  "S_ARESETN",
+                  "auto_cc/s_axi_aresetn"
+                ]
+              }
+            }
+          }
+        },
+        "interface_nets": {
+          "s00_couplers_to_ps7_0_axi_periph": {
+            "interface_ports": [
+              "M00_AXI",
+              "s00_couplers/M_AXI"
+            ]
+          },
+          "ps7_0_axi_periph_to_s00_couplers": {
+            "interface_ports": [
+              "S00_AXI",
+              "s00_couplers/S_AXI"
+            ]
+          }
+        },
+        "nets": {
+          "ps7_0_axi_periph_ACLK_net": {
+            "ports": [
+              "M00_ACLK",
+              "s00_couplers/M_ACLK"
+            ]
+          },
+          "ps7_0_axi_periph_ARESETN_net": {
+            "ports": [
+              "M00_ARESETN",
+              "s00_couplers/M_ARESETN"
+            ]
+          },
+          "S00_ACLK_1": {
+            "ports": [
+              "S00_ACLK",
+              "s00_couplers/S_ACLK"
+            ]
+          },
+          "S00_ARESETN_1": {
+            "ports": [
+              "S00_ARESETN",
+              "s00_couplers/S_ARESETN"
+            ]
+          }
+        }
+      },
+      "clk_wiz": {
+        "vlnv": "xilinx.com:ip:clk_wiz:6.0",
+        "xci_name": "design_1_clk_wiz_0",
+        "xci_path": "ip/design_1_clk_wiz_0/design_1_clk_wiz_0.xci",
+        "inst_hier_path": "clk_wiz",
+        "parameters": {
+          "CLKOUT1_JITTER": {
+            "value": "159.371"
+          },
+          "CLKOUT1_PHASE_ERROR": {
+            "value": "98.575"
+          },
+          "CLKOUT1_REQUESTED_OUT_FREQ": {
+            "value": "40"
+          },
+          "MMCM_CLKFBOUT_MULT_F": {
+            "value": "10.000"
+          },
+          "MMCM_CLKOUT0_DIVIDE_F": {
+            "value": "25.000"
+          },
+          "MMCM_DIVCLK_DIVIDE": {
+            "value": "1"
+          }
+        }
+      },
+      "rst_ps7_0_100M": {
+        "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
+        "xci_name": "design_1_rst_ps7_0_100M_0",
+        "xci_path": "ip/design_1_rst_ps7_0_100M_0/design_1_rst_ps7_0_100M_0.xci",
+        "inst_hier_path": "rst_ps7_0_100M"
+      },
+      "rst_clk_wiz_100M": {
+        "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
+        "xci_name": "design_1_rst_clk_wiz_100M_0",
+        "xci_path": "ip/design_1_rst_clk_wiz_100M_0/design_1_rst_clk_wiz_100M_0.xci",
+        "inst_hier_path": "rst_clk_wiz_100M"
+      }
+    },
+    "interface_nets": {
+      "processing_system7_0_FIXED_IO": {
+        "interface_ports": [
+          "FIXED_IO",
+          "processing_system7_0/FIXED_IO"
+        ]
+      },
+      "processing_system7_0_DDR": {
+        "interface_ports": [
+          "DDR",
+          "processing_system7_0/DDR"
+        ]
+      },
+      "processing_system7_0_M_AXI_GP0": {
+        "interface_ports": [
+          "processing_system7_0/M_AXI_GP0",
+          "ps7_0_axi_periph/S00_AXI"
+        ]
+      },
+      "ps7_0_axi_periph_M00_AXI": {
+        "interface_ports": [
+          "ps7_0_axi_periph/M00_AXI",
+          "ffs_0/S00_AXI"
+        ]
+      }
+    },
+    "nets": {
+      "ffs_0_axi_r_0_ready": {
+        "ports": [
+          "ffs_0/axi_r_0_ready",
+          "opt1_export_0/axi_r_0_ready"
+        ]
+      },
+      "opt1_export_0_IStream_Valid": {
+        "ports": [
+          "opt1_export_0/IStream_Valid",
+          "ffs_0/IStream_Valid"
+        ]
+      },
+      "opt1_export_0_IStream_Values0": {
+        "ports": [
+          "opt1_export_0/IStream_Values0",
+          "ffs_0/IStream_Values0"
+        ]
+      },
+      "opt1_export_0_IStream_Values1": {
+        "ports": [
+          "opt1_export_0/IStream_Values1",
+          "ffs_0/IStream_Values1"
+        ]
+      },
+      "opt1_export_0_IStream_Values2": {
+        "ports": [
+          "opt1_export_0/IStream_Values2",
+          "ffs_0/IStream_Values2"
+        ]
+      },
+      "opt1_export_0_IStream_Values3": {
+        "ports": [
+          "opt1_export_0/IStream_Values3",
+          "ffs_0/IStream_Values3"
+        ]
+      },
+      "opt1_export_0_IStream_Values4": {
+        "ports": [
+          "opt1_export_0/IStream_Values4",
+          "ffs_0/IStream_Values4"
+        ]
+      },
+      "opt1_export_0_IStream_Values5": {
+        "ports": [
+          "opt1_export_0/IStream_Values5",
+          "ffs_0/IStream_Values5"
+        ]
+      },
+      "opt1_export_0_IStream_Values6": {
+        "ports": [
+          "opt1_export_0/IStream_Values6",
+          "ffs_0/IStream_Values6"
+        ]
+      },
+      "opt1_export_0_IStream_Values7": {
+        "ports": [
+          "opt1_export_0/IStream_Values7",
+          "ffs_0/IStream_Values7"
+        ]
+      },
+      "opt1_export_0_IStream_Values8": {
+        "ports": [
+          "opt1_export_0/IStream_Values8",
+          "ffs_0/IStream_Values8"
+        ]
+      },
+      "opt1_export_0_IStream_Values9": {
+        "ports": [
+          "opt1_export_0/IStream_Values9",
+          "ffs_0/IStream_Values9"
+        ]
+      },
+      "opt1_export_0_IStream_Values10": {
+        "ports": [
+          "opt1_export_0/IStream_Values10",
+          "ffs_0/IStream_Values10"
+        ]
+      },
+      "opt1_export_0_IStream_Values11": {
+        "ports": [
+          "opt1_export_0/IStream_Values11",
+          "ffs_0/IStream_Values11"
+        ]
+      },
+      "opt1_export_0_IStream_Values12": {
+        "ports": [
+          "opt1_export_0/IStream_Values12",
+          "ffs_0/IStream_Values12"
+        ]
+      },
+      "opt1_export_0_IStream_Values13": {
+        "ports": [
+          "opt1_export_0/IStream_Values13",
+          "ffs_0/IStream_Values13"
+        ]
+      },
+      "opt1_export_0_IStream_Values14": {
+        "ports": [
+          "opt1_export_0/IStream_Values14",
+          "ffs_0/IStream_Values14"
+        ]
+      },
+      "opt1_export_0_IStream_Values15": {
+        "ports": [
+          "opt1_export_0/IStream_Values15",
+          "ffs_0/IStream_Values15"
+        ]
+      },
+      "opt1_export_0_IStream_Values16": {
+        "ports": [
+          "opt1_export_0/IStream_Values16",
+          "ffs_0/IStream_Values16"
+        ]
+      },
+      "opt1_export_0_IStream_Values17": {
+        "ports": [
+          "opt1_export_0/IStream_Values17",
+          "ffs_0/IStream_Values17"
+        ]
+      },
+      "opt1_export_0_IStream_Values18": {
+        "ports": [
+          "opt1_export_0/IStream_Values18",
+          "ffs_0/IStream_Values18"
+        ]
+      },
+      "opt1_export_0_IStream_Values19": {
+        "ports": [
+          "opt1_export_0/IStream_Values19",
+          "ffs_0/IStream_Values19"
+        ]
+      },
+      "opt1_export_0_IStream_Values20": {
+        "ports": [
+          "opt1_export_0/IStream_Values20",
+          "ffs_0/IStream_Values20"
+        ]
+      },
+      "opt1_export_0_IStream_Values21": {
+        "ports": [
+          "opt1_export_0/IStream_Values21",
+          "ffs_0/IStream_Values21"
+        ]
+      },
+      "opt1_export_0_IStream_Values22": {
+        "ports": [
+          "opt1_export_0/IStream_Values22",
+          "ffs_0/IStream_Values22"
+        ]
+      },
+      "opt1_export_0_IStream_Values23": {
+        "ports": [
+          "opt1_export_0/IStream_Values23",
+          "ffs_0/IStream_Values23"
+        ]
+      },
+      "opt1_export_0_IStream_Values24": {
+        "ports": [
+          "opt1_export_0/IStream_Values24",
+          "ffs_0/IStream_Values24"
+        ]
+      },
+      "opt1_export_0_IStream_Values25": {
+        "ports": [
+          "opt1_export_0/IStream_Values25",
+          "ffs_0/IStream_Values25"
+        ]
+      },
+      "opt1_export_0_IStream_Values26": {
+        "ports": [
+          "opt1_export_0/IStream_Values26",
+          "ffs_0/IStream_Values26"
+        ]
+      },
+      "opt1_export_0_IStream_Values27": {
+        "ports": [
+          "opt1_export_0/IStream_Values27",
+          "ffs_0/IStream_Values27"
+        ]
+      },
+      "opt1_export_0_IStream_Values28": {
+        "ports": [
+          "opt1_export_0/IStream_Values28",
+          "ffs_0/IStream_Values28"
+        ]
+      },
+      "opt1_export_0_IStream_Values29": {
+        "ports": [
+          "opt1_export_0/IStream_Values29",
+          "ffs_0/IStream_Values29"
+        ]
+      },
+      "opt1_export_0_IStream_Values30": {
+        "ports": [
+          "opt1_export_0/IStream_Values30",
+          "ffs_0/IStream_Values30"
+        ]
+      },
+      "opt1_export_0_IStream_Values31": {
+        "ports": [
+          "opt1_export_0/IStream_Values31",
+          "ffs_0/IStream_Values31"
+        ]
+      },
+      "opt1_export_0_IStream_Values32": {
+        "ports": [
+          "opt1_export_0/IStream_Values32",
+          "ffs_0/IStream_Values32"
+        ]
+      },
+      "opt1_export_0_IStream_Values33": {
+        "ports": [
+          "opt1_export_0/IStream_Values33",
+          "ffs_0/IStream_Values33"
+        ]
+      },
+      "opt1_export_0_IStream_Values34": {
+        "ports": [
+          "opt1_export_0/IStream_Values34",
+          "ffs_0/IStream_Values34"
+        ]
+      },
+      "opt1_export_0_IStream_Values35": {
+        "ports": [
+          "opt1_export_0/IStream_Values35",
+          "ffs_0/IStream_Values35"
+        ]
+      },
+      "opt1_export_0_IStream_Values36": {
+        "ports": [
+          "opt1_export_0/IStream_Values36",
+          "ffs_0/IStream_Values36"
+        ]
+      },
+      "opt1_export_0_IStream_Values37": {
+        "ports": [
+          "opt1_export_0/IStream_Values37",
+          "ffs_0/IStream_Values37"
+        ]
+      },
+      "opt1_export_0_IStream_Values38": {
+        "ports": [
+          "opt1_export_0/IStream_Values38",
+          "ffs_0/IStream_Values38"
+        ]
+      },
+      "opt1_export_0_IStream_Values39": {
+        "ports": [
+          "opt1_export_0/IStream_Values39",
+          "ffs_0/IStream_Values39"
+        ]
+      },
+      "opt1_export_0_IStream_Values40": {
+        "ports": [
+          "opt1_export_0/IStream_Values40",
+          "ffs_0/IStream_Values40"
+        ]
+      },
+      "opt1_export_0_IStream_Values41": {
+        "ports": [
+          "opt1_export_0/IStream_Values41",
+          "ffs_0/IStream_Values41"
+        ]
+      },
+      "opt1_export_0_IStream_Values42": {
+        "ports": [
+          "opt1_export_0/IStream_Values42",
+          "ffs_0/IStream_Values42"
+        ]
+      },
+      "opt1_export_0_IStream_Values43": {
+        "ports": [
+          "opt1_export_0/IStream_Values43",
+          "ffs_0/IStream_Values43"
+        ]
+      },
+      "opt1_export_0_IStream_Values44": {
+        "ports": [
+          "opt1_export_0/IStream_Values44",
+          "ffs_0/IStream_Values44"
+        ]
+      },
+      "opt1_export_0_IStream_Values45": {
+        "ports": [
+          "opt1_export_0/IStream_Values45",
+          "ffs_0/IStream_Values45"
+        ]
+      },
+      "opt1_export_0_IStream_Values46": {
+        "ports": [
+          "opt1_export_0/IStream_Values46",
+          "ffs_0/IStream_Values46"
+        ]
+      },
+      "opt1_export_0_IStream_Values47": {
+        "ports": [
+          "opt1_export_0/IStream_Values47",
+          "ffs_0/IStream_Values47"
+        ]
+      },
+      "opt1_export_0_IStream_Values48": {
+        "ports": [
+          "opt1_export_0/IStream_Values48",
+          "ffs_0/IStream_Values48"
+        ]
+      },
+      "opt1_export_0_IStream_Values49": {
+        "ports": [
+          "opt1_export_0/IStream_Values49",
+          "ffs_0/IStream_Values49"
+        ]
+      },
+      "opt1_export_0_IStream_Values50": {
+        "ports": [
+          "opt1_export_0/IStream_Values50",
+          "ffs_0/IStream_Values50"
+        ]
+      },
+      "opt1_export_0_IStream_Values51": {
+        "ports": [
+          "opt1_export_0/IStream_Values51",
+          "ffs_0/IStream_Values51"
+        ]
+      },
+      "opt1_export_0_IStream_Values52": {
+        "ports": [
+          "opt1_export_0/IStream_Values52",
+          "ffs_0/IStream_Values52"
+        ]
+      },
+      "opt1_export_0_IStream_Values53": {
+        "ports": [
+          "opt1_export_0/IStream_Values53",
+          "ffs_0/IStream_Values53"
+        ]
+      },
+      "opt1_export_0_IStream_Values54": {
+        "ports": [
+          "opt1_export_0/IStream_Values54",
+          "ffs_0/IStream_Values54"
+        ]
+      },
+      "opt1_export_0_IStream_Values55": {
+        "ports": [
+          "opt1_export_0/IStream_Values55",
+          "ffs_0/IStream_Values55"
+        ]
+      },
+      "opt1_export_0_IStream_Values56": {
+        "ports": [
+          "opt1_export_0/IStream_Values56",
+          "ffs_0/IStream_Values56"
+        ]
+      },
+      "opt1_export_0_IStream_Values57": {
+        "ports": [
+          "opt1_export_0/IStream_Values57",
+          "ffs_0/IStream_Values57"
+        ]
+      },
+      "opt1_export_0_IStream_Values58": {
+        "ports": [
+          "opt1_export_0/IStream_Values58",
+          "ffs_0/IStream_Values58"
+        ]
+      },
+      "opt1_export_0_IStream_Values59": {
+        "ports": [
+          "opt1_export_0/IStream_Values59",
+          "ffs_0/IStream_Values59"
+        ]
+      },
+      "opt1_export_0_IStream_Values60": {
+        "ports": [
+          "opt1_export_0/IStream_Values60",
+          "ffs_0/IStream_Values60"
+        ]
+      },
+      "opt1_export_0_IStream_Values61": {
+        "ports": [
+          "opt1_export_0/IStream_Values61",
+          "ffs_0/IStream_Values61"
+        ]
+      },
+      "opt1_export_0_IStream_Values62": {
+        "ports": [
+          "opt1_export_0/IStream_Values62",
+          "ffs_0/IStream_Values62"
+        ]
+      },
+      "opt1_export_0_IStream_Values63": {
+        "ports": [
+          "opt1_export_0/IStream_Values63",
+          "ffs_0/IStream_Values63"
+        ]
+      },
+      "ffs_0_IState_ValidSeed": {
+        "ports": [
+          "ffs_0/IState_ValidSeed",
+          "opt1_export_0/IState_ValidSeed"
+        ]
+      },
+      "ffs_0_IState_ValidT": {
+        "ports": [
+          "ffs_0/IState_ValidT",
+          "opt1_export_0/IState_ValidT"
+        ]
+      },
+      "ffs_0_IState_Nonce0": {
+        "ports": [
+          "ffs_0/IState_Nonce0",
+          "opt1_export_0/IState_Nonce0"
+        ]
+      },
+      "ffs_0_IState_Nonce1": {
+        "ports": [
+          "ffs_0/IState_Nonce1",
+          "opt1_export_0/IState_Nonce1"
+        ]
+      },
+      "ffs_0_IState_Nonce2": {
+        "ports": [
+          "ffs_0/IState_Nonce2",
+          "opt1_export_0/IState_Nonce2"
+        ]
+      },
+      "ffs_0_IState_Key0": {
+        "ports": [
+          "ffs_0/IState_Key0",
+          "opt1_export_0/IState_Key0"
+        ]
+      },
+      "ffs_0_IState_Key1": {
+        "ports": [
+          "ffs_0/IState_Key1",
+          "opt1_export_0/IState_Key1"
+        ]
+      },
+      "ffs_0_IState_Key2": {
+        "ports": [
+          "ffs_0/IState_Key2",
+          "opt1_export_0/IState_Key2"
+        ]
+      },
+      "ffs_0_IState_Key3": {
+        "ports": [
+          "ffs_0/IState_Key3",
+          "opt1_export_0/IState_Key3"
+        ]
+      },
+      "ffs_0_IState_Key4": {
+        "ports": [
+          "ffs_0/IState_Key4",
+          "opt1_export_0/IState_Key4"
+        ]
+      },
+      "ffs_0_IState_Key5": {
+        "ports": [
+          "ffs_0/IState_Key5",
+          "opt1_export_0/IState_Key5"
+        ]
+      },
+      "ffs_0_IState_Key6": {
+        "ports": [
+          "ffs_0/IState_Key6",
+          "opt1_export_0/IState_Key6"
+        ]
+      },
+      "ffs_0_IState_Key7": {
+        "ports": [
+          "ffs_0/IState_Key7",
+          "opt1_export_0/IState_Key7"
+        ]
+      },
+      "ffs_0_IState_Text0": {
+        "ports": [
+          "ffs_0/IState_Text0",
+          "opt1_export_0/IState_Text0"
+        ]
+      },
+      "ffs_0_IState_Text1": {
+        "ports": [
+          "ffs_0/IState_Text1",
+          "opt1_export_0/IState_Text1"
+        ]
+      },
+      "ffs_0_IState_Text2": {
+        "ports": [
+          "ffs_0/IState_Text2",
+          "opt1_export_0/IState_Text2"
+        ]
+      },
+      "ffs_0_IState_Text3": {
+        "ports": [
+          "ffs_0/IState_Text3",
+          "opt1_export_0/IState_Text3"
+        ]
+      },
+      "ffs_0_IState_Text4": {
+        "ports": [
+          "ffs_0/IState_Text4",
+          "opt1_export_0/IState_Text4"
+        ]
+      },
+      "ffs_0_IState_Text5": {
+        "ports": [
+          "ffs_0/IState_Text5",
+          "opt1_export_0/IState_Text5"
+        ]
+      },
+      "ffs_0_IState_Text6": {
+        "ports": [
+          "ffs_0/IState_Text6",
+          "opt1_export_0/IState_Text6"
+        ]
+      },
+      "ffs_0_IState_Text7": {
+        "ports": [
+          "ffs_0/IState_Text7",
+          "opt1_export_0/IState_Text7"
+        ]
+      },
+      "ffs_0_IState_Text8": {
+        "ports": [
+          "ffs_0/IState_Text8",
+          "opt1_export_0/IState_Text8"
+        ]
+      },
+      "ffs_0_IState_Text9": {
+        "ports": [
+          "ffs_0/IState_Text9",
+          "opt1_export_0/IState_Text9"
+        ]
+      },
+      "ffs_0_IState_Text10": {
+        "ports": [
+          "ffs_0/IState_Text10",
+          "opt1_export_0/IState_Text10"
+        ]
+      },
+      "ffs_0_IState_Text11": {
+        "ports": [
+          "ffs_0/IState_Text11",
+          "opt1_export_0/IState_Text11"
+        ]
+      },
+      "ffs_0_IState_Text12": {
+        "ports": [
+          "ffs_0/IState_Text12",
+          "opt1_export_0/IState_Text12"
+        ]
+      },
+      "ffs_0_IState_Text13": {
+        "ports": [
+          "ffs_0/IState_Text13",
+          "opt1_export_0/IState_Text13"
+        ]
+      },
+      "ffs_0_IState_Text14": {
+        "ports": [
+          "ffs_0/IState_Text14",
+          "opt1_export_0/IState_Text14"
+        ]
+      },
+      "ffs_0_IState_Text15": {
+        "ports": [
+          "ffs_0/IState_Text15",
+          "opt1_export_0/IState_Text15"
+        ]
+      },
+      "ffs_0_IState_Text16": {
+        "ports": [
+          "ffs_0/IState_Text16",
+          "opt1_export_0/IState_Text16"
+        ]
+      },
+      "ffs_0_IState_Text17": {
+        "ports": [
+          "ffs_0/IState_Text17",
+          "opt1_export_0/IState_Text17"
+        ]
+      },
+      "ffs_0_IState_Text18": {
+        "ports": [
+          "ffs_0/IState_Text18",
+          "opt1_export_0/IState_Text18"
+        ]
+      },
+      "ffs_0_IState_Text19": {
+        "ports": [
+          "ffs_0/IState_Text19",
+          "opt1_export_0/IState_Text19"
+        ]
+      },
+      "ffs_0_IState_Text20": {
+        "ports": [
+          "ffs_0/IState_Text20",
+          "opt1_export_0/IState_Text20"
+        ]
+      },
+      "ffs_0_IState_Text21": {
+        "ports": [
+          "ffs_0/IState_Text21",
+          "opt1_export_0/IState_Text21"
+        ]
+      },
+      "ffs_0_IState_Text22": {
+        "ports": [
+          "ffs_0/IState_Text22",
+          "opt1_export_0/IState_Text22"
+        ]
+      },
+      "ffs_0_IState_Text23": {
+        "ports": [
+          "ffs_0/IState_Text23",
+          "opt1_export_0/IState_Text23"
+        ]
+      },
+      "ffs_0_IState_Text24": {
+        "ports": [
+          "ffs_0/IState_Text24",
+          "opt1_export_0/IState_Text24"
+        ]
+      },
+      "ffs_0_IState_Text25": {
+        "ports": [
+          "ffs_0/IState_Text25",
+          "opt1_export_0/IState_Text25"
+        ]
+      },
+      "ffs_0_IState_Text26": {
+        "ports": [
+          "ffs_0/IState_Text26",
+          "opt1_export_0/IState_Text26"
+        ]
+      },
+      "ffs_0_IState_Text27": {
+        "ports": [
+          "ffs_0/IState_Text27",
+          "opt1_export_0/IState_Text27"
+        ]
+      },
+      "ffs_0_IState_Text28": {
+        "ports": [
+          "ffs_0/IState_Text28",
+          "opt1_export_0/IState_Text28"
+        ]
+      },
+      "ffs_0_IState_Text29": {
+        "ports": [
+          "ffs_0/IState_Text29",
+          "opt1_export_0/IState_Text29"
+        ]
+      },
+      "ffs_0_IState_Text30": {
+        "ports": [
+          "ffs_0/IState_Text30",
+          "opt1_export_0/IState_Text30"
+        ]
+      },
+      "ffs_0_IState_Text31": {
+        "ports": [
+          "ffs_0/IState_Text31",
+          "opt1_export_0/IState_Text31"
+        ]
+      },
+      "ffs_0_IState_Text32": {
+        "ports": [
+          "ffs_0/IState_Text32",
+          "opt1_export_0/IState_Text32"
+        ]
+      },
+      "ffs_0_IState_Text33": {
+        "ports": [
+          "ffs_0/IState_Text33",
+          "opt1_export_0/IState_Text33"
+        ]
+      },
+      "ffs_0_IState_Text34": {
+        "ports": [
+          "ffs_0/IState_Text34",
+          "opt1_export_0/IState_Text34"
+        ]
+      },
+      "ffs_0_IState_Text35": {
+        "ports": [
+          "ffs_0/IState_Text35",
+          "opt1_export_0/IState_Text35"
+        ]
+      },
+      "ffs_0_IState_Text36": {
+        "ports": [
+          "ffs_0/IState_Text36",
+          "opt1_export_0/IState_Text36"
+        ]
+      },
+      "ffs_0_IState_Text37": {
+        "ports": [
+          "ffs_0/IState_Text37",
+          "opt1_export_0/IState_Text37"
+        ]
+      },
+      "ffs_0_IState_Text38": {
+        "ports": [
+          "ffs_0/IState_Text38",
+          "opt1_export_0/IState_Text38"
+        ]
+      },
+      "ffs_0_IState_Text39": {
+        "ports": [
+          "ffs_0/IState_Text39",
+          "opt1_export_0/IState_Text39"
+        ]
+      },
+      "ffs_0_IState_Text40": {
+        "ports": [
+          "ffs_0/IState_Text40",
+          "opt1_export_0/IState_Text40"
+        ]
+      },
+      "ffs_0_IState_Text41": {
+        "ports": [
+          "ffs_0/IState_Text41",
+          "opt1_export_0/IState_Text41"
+        ]
+      },
+      "ffs_0_IState_Text42": {
+        "ports": [
+          "ffs_0/IState_Text42",
+          "opt1_export_0/IState_Text42"
+        ]
+      },
+      "ffs_0_IState_Text43": {
+        "ports": [
+          "ffs_0/IState_Text43",
+          "opt1_export_0/IState_Text43"
+        ]
+      },
+      "ffs_0_IState_Text44": {
+        "ports": [
+          "ffs_0/IState_Text44",
+          "opt1_export_0/IState_Text44"
+        ]
+      },
+      "ffs_0_IState_Text45": {
+        "ports": [
+          "ffs_0/IState_Text45",
+          "opt1_export_0/IState_Text45"
+        ]
+      },
+      "ffs_0_IState_Text46": {
+        "ports": [
+          "ffs_0/IState_Text46",
+          "opt1_export_0/IState_Text46"
+        ]
+      },
+      "ffs_0_IState_Text47": {
+        "ports": [
+          "ffs_0/IState_Text47",
+          "opt1_export_0/IState_Text47"
+        ]
+      },
+      "ffs_0_IState_Text48": {
+        "ports": [
+          "ffs_0/IState_Text48",
+          "opt1_export_0/IState_Text48"
+        ]
+      },
+      "ffs_0_IState_Text49": {
+        "ports": [
+          "ffs_0/IState_Text49",
+          "opt1_export_0/IState_Text49"
+        ]
+      },
+      "ffs_0_IState_Text50": {
+        "ports": [
+          "ffs_0/IState_Text50",
+          "opt1_export_0/IState_Text50"
+        ]
+      },
+      "ffs_0_IState_Text51": {
+        "ports": [
+          "ffs_0/IState_Text51",
+          "opt1_export_0/IState_Text51"
+        ]
+      },
+      "ffs_0_IState_Text52": {
+        "ports": [
+          "ffs_0/IState_Text52",
+          "opt1_export_0/IState_Text52"
+        ]
+      },
+      "ffs_0_IState_Text53": {
+        "ports": [
+          "ffs_0/IState_Text53",
+          "opt1_export_0/IState_Text53"
+        ]
+      },
+      "ffs_0_IState_Text54": {
+        "ports": [
+          "ffs_0/IState_Text54",
+          "opt1_export_0/IState_Text54"
+        ]
+      },
+      "ffs_0_IState_Text55": {
+        "ports": [
+          "ffs_0/IState_Text55",
+          "opt1_export_0/IState_Text55"
+        ]
+      },
+      "ffs_0_IState_Text56": {
+        "ports": [
+          "ffs_0/IState_Text56",
+          "opt1_export_0/IState_Text56"
+        ]
+      },
+      "ffs_0_IState_Text57": {
+        "ports": [
+          "ffs_0/IState_Text57",
+          "opt1_export_0/IState_Text57"
+        ]
+      },
+      "ffs_0_IState_Text58": {
+        "ports": [
+          "ffs_0/IState_Text58",
+          "opt1_export_0/IState_Text58"
+        ]
+      },
+      "ffs_0_IState_Text59": {
+        "ports": [
+          "ffs_0/IState_Text59",
+          "opt1_export_0/IState_Text59"
+        ]
+      },
+      "ffs_0_IState_Text60": {
+        "ports": [
+          "ffs_0/IState_Text60",
+          "opt1_export_0/IState_Text60"
+        ]
+      },
+      "ffs_0_IState_Text61": {
+        "ports": [
+          "ffs_0/IState_Text61",
+          "opt1_export_0/IState_Text61"
+        ]
+      },
+      "ffs_0_IState_Text62": {
+        "ports": [
+          "ffs_0/IState_Text62",
+          "opt1_export_0/IState_Text62"
+        ]
+      },
+      "ffs_0_IState_Text63": {
+        "ports": [
+          "ffs_0/IState_Text63",
+          "opt1_export_0/IState_Text63"
+        ]
+      },
+      "opt1_export_0_axi_r_1_ready": {
+        "ports": [
+          "opt1_export_0/axi_r_1_ready",
+          "ffs_0/axi_r_1_ready"
+        ]
+      },
+      "opt1_export_0_FIN": {
+        "ports": [
+          "opt1_export_0/FIN",
+          "FIN_0"
+        ]
+      },
+      "xlconstant_0_dout": {
+        "ports": [
+          "xlconstant_0/dout",
+          "opt1_export_0/ENB"
+        ]
+      },
+      "processing_system7_0_FCLK_CLK0": {
+        "ports": [
+          "processing_system7_0/FCLK_CLK0",
+          "processing_system7_0/M_AXI_GP0_ACLK",
+          "ps7_0_axi_periph/S00_ACLK",
+          "rst_ps7_0_100M/slowest_sync_clk",
+          "ps7_0_axi_periph/ACLK",
+          "clk_wiz/clk_in1"
+        ]
+      },
+      "processing_system7_0_FCLK_RESET0_N": {
+        "ports": [
+          "processing_system7_0/FCLK_RESET0_N",
+          "rst_ps7_0_100M/ext_reset_in",
+          "rst_clk_wiz_100M/ext_reset_in"
+        ]
+      },
+      "rst_ps7_0_100M_peripheral_aresetn": {
+        "ports": [
+          "rst_ps7_0_100M/peripheral_aresetn",
+          "ps7_0_axi_periph/S00_ARESETN",
+          "ps7_0_axi_periph/ARESETN"
+        ]
+      },
+      "clk_wiz_clk_out1": {
+        "ports": [
+          "clk_wiz/clk_out1",
+          "ffs_0/s00_axi_aclk",
+          "ps7_0_axi_periph/M00_ACLK",
+          "rst_clk_wiz_100M/slowest_sync_clk",
+          "opt1_export_0/CLK"
+        ]
+      },
+      "clk_wiz_locked": {
+        "ports": [
+          "clk_wiz/locked",
+          "rst_clk_wiz_100M/dcm_locked"
+        ]
+      },
+      "rst_clk_wiz_100M_peripheral_aresetn": {
+        "ports": [
+          "rst_clk_wiz_100M/peripheral_aresetn",
+          "ffs_0/s00_axi_aresetn",
+          "ps7_0_axi_periph/M00_ARESETN",
+          "opt1_export_0/RST"
+        ]
+      },
+      "reset_0_1": {
+        "ports": [
+          "reset_0",
+          "clk_wiz/reset"
+        ]
+      }
+    },
+    "addressing": {
+      "/processing_system7_0": {
+        "address_spaces": {
+          "Data": {
+            "segments": {
+              "SEG_ffs_0_S00_AXI_reg": {
+                "address_block": "/ffs_0/S00_AXI/S00_AXI_reg",
+                "offset": "0x43C00000",
+                "range": "64K"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

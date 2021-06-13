@@ -1,4 +1,5 @@
 * Requirements & How to run
+To run the C# code one nneds the .NET core 3.1 compiler and then every project can be run by running ~dotnet run~ from within the folder. To reproduce the FPGA design should be able to this from the files for the IP which is located in the HDL folders and by the specific versions .bd file using Xilinx Vivado. The code is located at: \url{https://github.com/Spatenheinz/Bachelor}
 * Setup used in benchmarking
 \label{benchmarksetup}
 #+BEGIN_EXPORT latex
@@ -44,10 +45,9 @@
 \begin{itemize}
 \itemsep0em
 \item Pi: Raspberry PI OS - buster\\
-\item i5: .NET 5.0 & .NET 3.1\\
+\item i5: Linux 5.9.16-1-MANJARO
 \end{itemize}
-Linux 5.9.16-1-MANJARO
-\subsubsection{Compiler:}
+\subsubsection{Compilers:}
 \begin{itemize}
 \itemsep0em
 \item C: gcc 10.2.0\\
