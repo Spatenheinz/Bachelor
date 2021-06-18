@@ -1,6 +1,23 @@
 \begin{frame}
-  \frametitle{Agenda}
+  \frametitle{Future work}
+  \fontsize{8pt}{10}\selectfont
+  Critical work
   \begin{itemize}
-  \item The Dependency routing needs to be fixed in the hashing functions. Furthermore we can create
+    \item The Dependency routing needs to be fixed in the hashing functions.
+  \item Make hashes able to switch between messages to circumvent the stalling.
+  \item Make a useful interface to expose our implementations.
+  \end{itemize}
+  Optimizing work
+  \begin{itemize}
+    \item Investigate SHA hopefully getting the performance to reasonable levels
+    \item Test if different approaches of AES approaches could yield better performance.
+          Sugestions:\\
+          1. Naive but pipelined\\
+          2. Stateful BRAM.
+  \end{itemize}
+  Comparing work
+  \begin{itemize}
+    \item Compare to other research papers results which often are written in HDL to see if SME can actually provide comparable results. This would require better a better FPGA.
+    \item Test against a GPU.
   \end{itemize}
 \end{frame}
