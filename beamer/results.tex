@@ -1,19 +1,47 @@
 \begin{frame}
   \frametitle{Results from pipelining}
-\fontsize{6pt}{7.2}\selectfont
+  \fontsize{4pt}{6}\selectfont
+\begin{minipage}[b]{0.3\textwidth}
+  \begin{tiny}
+  \begin{itemize}
+  \item $hi(x) = x+2 \cdot blocks$
+  \item $lo(x) = 2 + x \cdot blocks$
+  \item $C(x) = x + 2 \cdot blocks$
+  \item Zedboard bus: $2132$ MBps
+  \end{itemize}
+  \begin{itemize}
+    \item[MD5:] Is easily optimised beyond the memory limit.
+    \item[SHA:] Worst hard to optimize because of dependecies.
+    \item[AES:] Reached limit with current approach? Potentially other approaches can reach higher.
+    \item[ChaCha:] Easily reaches limit.
+  \end{itemize}
+  \end{tiny}
+\end{minipage}
+\qquad
+\begin{minipage}[b]{0.65\textwidth}
 \begin{tabular}{l r l r l r r r}
 \multicolumn{8}{c}{MD5}\\
 \hline
 Version & f$_{max}$(Mhz) & clocks$_{hi}$ & TP(MBps)$_{hi}$ &clocks$_{lo}$ & TP(MBps)$_{lo}$ & LUT & FF\\
 \hline
-Naive     & 2.38   & b      & 152 & b     & 152 & 11607 & 2304\\
-Proc$_{4}$ & 9.50   & hi(6)  & 266 & lo(6) & 101 & 10247 & 5226\\
-Proc$_{8}$ & 19.00  & hi(10) & 532 & lo(10)& 122 & 10087 & 7538\\
-Proc$_{16}$ & 33.50  & hi(18) & 937 & lo(18)& 119 & 10206 & 12162\\
-Proc$_{32}$ & 65.00  & hi(34) & 1817& lo(34)& 123 & 10149 & 21347\\
-Proc$_{64}$ & 115.00 & hi(66) & 3209& lo(66)&112 &  10350 & 39718\\
+Naive     & 2.38   & b      &   152& b     &  152 & 11607 & 2304\\
+Proc$_{4}$ & 9.50   & hi(6)  &  266& lo(6) & 101 & 10247 & 5226\\
+Proc$_{8}$ & 19.00  & hi(10) &  532& lo(10)& 122 & 10087 & 7538\\
+Proc$_{16}$ & 33.50  & hi(18) & 937& lo(18)&119 & 10206 & 12162\\
+Proc$_{32}$ & 65.00  & hi(34) & 1817& lo(34)&123 & 10149 & 21347\\
+\textbf{Proc}$_{64}$ & \textbf{115.00} & \textbf{hi(66)} & \textbf{3209}& \textbf{lo(66)} &\textbf{112} & \textbf{10350} & \textbf{39718}\\
 \end{tabular}
-\vspace{10px}
+% \vspace{10px}
+\begin{tabular}{l r l r l r r r}
+\multicolumn{8}{c}{SHA}\\
+\hline
+Version & f$_{max}$(Mhz) & clocks$_{hi}$ & TP(MBps)$_{hi}$ &clocks$_{lo}$ & TP(MBps)$_{lo}$ & LUT & FF\\
+\hline
+Naive    & 2.1 & b & 134.4 & b &  134.4 & 24330 & 2560\\
+\textbf{Proc}$_{4}$ & \textbf{8.0} & \textbf{hi(6)} &        \textbf{223.9} & \textbf{lo(6)} & \textbf{85.3} & \textbf{24466} & \textbf{8938}\\
+Proc$_{8}$ & 8.0 & hi(10) &       223.8 & lo(10) & 51.2 & 24756 & 14066\\
+\end{tabular}
+% \vspace{10px}
 \begin{tabular}{l r l r r r r}
 \multicolumn{7}{c}{AES}\\
 \hline
@@ -21,27 +49,81 @@ Version & f$_{max}$(Mhz) & clocks & TP(MBps) & LUT & FF & BRAM\\
 \hline
 Naive      &   22 & b          & 352    & 10612     &  3195 & 0\\
 TBox       &  25 & b           & 400 & 16458 & 3195 & 0\\
-Proc$_{4}$  &  68 & C(3) & 544 & 16474 & 2817 & 0\\
-Proc$_{11}$ & 208 & C(12) & 1663 & 15659 & 4383 & 0\\
-Proc$_{22}$ & 217 & C(24) & 1662 & 15454 & 7401 & 0\\
-BRAM$_{11}$ & 195 & C(31)  & 1556 & 10012 & 10398 & 72
+Proc$_{4}$  &  68 & C(3) &        544 & 16474 & 2817 & 0\\
+\textbf{Proc}$_{11}$ & \textbf{208} & \textbf{C(12)} &      \textbf{1663} & \textbf{15659} & \textbf{4383} & \textbf{0}\\
+Proc$_{22}$ & 217 & C(24) &      1662 & 15454 & 7401 & 0\\
+BRAM$_{11}$ & 195 & C(31)  &     1556 & 10012 & 10398 & 72
 \end{tabular}
-\begin{tabular}{l r l r l r r r}
-\multicolumn{8}{c}{SHA}\\
+% \vspace{10px}
+\begin{tabular}{l r r r r r}
+\multicolumn{6}{c}{ChaCha}\\
 \hline
-Version & f$_{max}$(Mhz) & clocks$_{hi}$ & TP(MBps)$_{hi}$ &clocks$_{lo}$ & TP(MBps)$_{lo}$ & LUT & FF\\
+Version & f$_{max}$(Mhz) & clocks & TP(MBps) & LUT & FF\\
 \hline
-Naive    & 2.1 & b & 134.4 & b & 134.4 & 24330 & 2560\\
-Proc$_{4}$ & 8.0 & hi(6) & 223.9 & lo(6) & 85.3 & 24466 & 8938\\
-Proc$_{8}$ & 8.0 & hi(10) & 223.8 & lo(10) & 51.2 & 24756 & 14066\\
+Naive  & 1.25 & b & 80           & 14670 & 3457\\
+Proc$_{11}$ & 40.00 & C(9) & 1279 &  14736 & 16898\\
+\textbf{Proc}$_{22}$ & \textbf{82.00} & \textbf{C(20)} & \textbf{2557} & \textbf{17565} & \textbf{32420}\\
 \end{tabular}
+\end{minipage}
 \end{frame}
 
 \begin{frame}
   \frametitle{Results compared to CPU}
+  \fontsize{4pt}{6}\selectfont
+\begin{minipage}[b]{0.4\textwidth}
+  \begin{tiny}
+  Comparing to CPU over GPU
   \begin{itemize}
-    \item Comparing to a CPU over GPU
-    \item closer in TDP, more accessible but sequential
+    \item GPU is the standard approach for hardware acceleration.
+    \item CPU is closer in TDP. %not prcise measurement but its what we got in the current state and still gives a good general overview.
+    \item CPU is more approachable and making a GPU version would require higher development time.
+    \item already reached some board limitations.
   \end{itemize}
+  \begin{itemize}
+    \item[MD5:] \~4.5 times faster than any comparable CPU version.
+    \item[AES:] Proximity of the C\# version, but cannot compete AES-NI.
+    \item[SHA:] Only half the speed of i5, but faster than ARM processor. Potential for improvement.
+    \item[ChaCha:] Reaches the bandwidth limit of the Zynq board. Not quite i5 speed. Doubling processes: 2714 MBps. Only 150 more than the previous version.
+  \end{itemize}
+  \end{tiny}
+\end{minipage}
+\qquad
+\begin{minipage}[b]{0.55\textwidth}
+\begin{tabular}{l r r r r r r r}
+\multicolumn{7}{c}{MD5}\\
+\hline
+ & Naive & Proc$_{64}$ & C\# & C & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
+\hline
+Pi & 152 & 3210 & 287 & 256 & 42 & 293\\
+i5 & 152 & 3210 & 604 & 622 & 81 & 691
+\end{tabular}
+
+\begin{tabular}{l r r r r r r}
+\multicolumn{7}{c}{AES}\\
+\hline
+ & Naive & Proc$_{11}$ & C\# & C & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
+\hline
+Pi & 400 & 1963 &    70& 198 & 72  & 89\\
+  i5 & 400 & 1699 & 1963& 340 & 847 & 5722
+\end{tabular}
+%error in AES
+\begin{tabular}{l r r r r r}
+\multicolumn{6}{c}{SHA}\\
+\hline
+ & Naive & Proc$_{4}$ & C\# & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
+\hline
+Pi & 134 & 224 & 163 & 42 & 165\\
+i5 & 134 & 224 & 438 & 61 & 461
+\end{tabular}
+
+\begin{tabular}{l r r r r}
+\multicolumn{5}{c}{ChaCha}\\
+\hline
+ & Naive & Proc & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
+\hline
+Pi & 80 & 2557 & 84 & 307\\
+i5 &  80  &  2557    & 388   & 3092
+\end{tabular}
+\end{minipage}
 \end{frame}
 %GPU often target for hardware acceleration
