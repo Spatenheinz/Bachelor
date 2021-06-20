@@ -7,13 +7,15 @@
   \item $hi(x) = x+2 \cdot blocks$
   \item $lo(x) = 2 + x \cdot blocks$
   \item $C(x) = x + 2 \cdot blocks$
-  \item Zedboard bus: $2132$ MBps
+  \item Streaming AXI
+    \item Zedboard bus: $2132$ MBps
   \end{itemize}
+  More processes is better throughput (to a certain extend)
   \begin{itemize}
-    \item[MD5:] Is easily optimised beyond the memory limit.
-    \item[SHA:] Worst hard to optimize because of dependecies.
-    \item[AES:] Reached limit with current approach? Potentially other approaches can reach higher.
-    \item[ChaCha:] Easily reaches limit.
+    \item[MD5:] Is easily optimised beyond the memory limit. 20x faster than Naive version.
+    \item[SHA:] Worst. Hard to optimize because of message expansion. 2x faster.
+    \item[AES:] Reached limit with current approach? Potentially other approaches can reach higher. 4x faster.
+    \item[ChaCha:] Starting to reach limit of board (10000 FF on board). 34x faster.
   \end{itemize}
   \end{tiny}
 \end{minipage}
@@ -62,7 +64,8 @@ Version & f$_{max}$(Mhz) & clocks & TP(MBps) & LUT & FF\\
 \hline
 Naive  & 1.25 & b & 80           & 14670 & 3457\\
 Proc$_{11}$ & 40.00 & C(9) & 1279 &  14736 & 16898\\
-\textbf{Proc}$_{22}$ & \textbf{82.00} & \textbf{C(20)} & \textbf{2557} & \textbf{17565} & \textbf{32420}\\
+Proc$_{22}$ & 82.00 & C(20) & 2557 &  17565 & 32420\\
+\textbf{Proc}$_{44}$ & \textbf{85.00} & \textbf{C(40)} & \textbf{2715} & \textbf{17612} & \textbf{62436}\\
 \end{tabular}
 \end{minipage}
 \end{frame}
@@ -75,15 +78,14 @@ Proc$_{11}$ & 40.00 & C(9) & 1279 &  14736 & 16898\\
   Comparing to CPU over GPU
   \begin{itemize}
     \item GPU is the standard approach for hardware acceleration.
-    \item CPU is closer in TDP. %not prcise measurement but its what we got in the current state and still gives a good general overview.
     \item CPU is more approachable and making a GPU version would require higher development time.
     \item already reached some board limitations.
   \end{itemize}
   \begin{itemize}
-    \item[MD5:] \~4.5 times faster than any comparable CPU version.
+    \item[MD5:] \textasciitilde 4.5 times faster than any comparable CPU version.
     \item[AES:] Proximity of the C\# version, but cannot compete AES-NI.
     \item[SHA:] Only half the speed of i5, but faster than ARM processor. Potential for improvement.
-    \item[ChaCha:] Reaches the bandwidth limit of the Zynq board. Not quite i5 speed. Doubling processes: 2714 MBps. Only 150 more than the previous version.
+    \item[ChaCha:] Percentagewise best but not quite speed of i5. Reaches the bandwidth limit of the Zynq board.
   \end{itemize}
   \end{tiny}
 \end{minipage}
@@ -121,8 +123,8 @@ i5 & 134 & 224 & 438 & 61 & 461
 \hline
  & Naive & Proc & OpenSLL$_{low}$ & OpenSLL$_{high}$\\
 \hline
-Pi & 80 & 2557 & 84 & 307\\
-i5 &  80  &  2557    & 388   & 3092
+Pi & 80 & 2715 & 84 & 307\\
+i5 &  80  &  2715    & 388   & 3092
 \end{tabular}
 \end{minipage}
 \end{frame}
